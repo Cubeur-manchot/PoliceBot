@@ -1,6 +1,6 @@
 "use strict";
 
-const {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, buildBadWordsLogEmbed, sendLog} = require("./messageHandler.js");
+const {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, buildBadWordsLogEmbed, sendLog, deleteMessage} = require("./messageHandler.js");
 
 const onReady = PoliceBot => {
 	PoliceBot.user.setActivity("lire les messages du serveur")
@@ -17,6 +17,7 @@ const onMessage = message => {
 		if (badWords !== null) {
 			sendMessageToChannel(message.channel, "Oh c'est pas bien de dire ça ! :eyes:");
 			sendLog(buildBadWordsLogEmbed(message, badWords), message);
+			deleteMessage(message);
 		}
 	}
 };

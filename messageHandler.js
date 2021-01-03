@@ -43,4 +43,11 @@ const sendLog = (messageInformation, originalMessage) => {
 	}
 };
 
-module.exports = {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, buildBadWordsLogEmbed, sendLog};
+const deleteMessage = message => {
+	if (message && !message.deleted) {
+		message.delete()
+			.catch(error => console.log(error));
+	}
+};
+
+module.exports = {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, buildBadWordsLogEmbed, sendLog, deleteMessage};
