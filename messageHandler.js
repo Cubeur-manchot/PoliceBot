@@ -32,8 +32,8 @@ const buildBadWordsLogEmbed = (message, badWords) => {
 	};
 };
 
-const sendLog = (messageInformation, originalMessage) => {
-	let logChannel = originalMessage.client.channels.cache.find(channel => {return channel.id === "795319669459648512"});
+const sendLog = (messageInformation, warningMessage) => {
+	let logChannel = warningMessage.client.channels.cache.find(channel => {return channel.id === "795319669459648512"});
 	if (messageInformation.title) { // embed message
 		logChannel.send(new Discord.MessageEmbed(messageInformation))
 			.catch(console.log);
