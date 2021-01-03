@@ -11,10 +11,9 @@ const messageIsPoliceBotCommandMessage = message => {
 	return message.content.startsWith("&");
 };
 
-const sendMessageToChannel = (channel, message, options) => {
+const sendMessageToChannel = (channel, message, options) =>
 	channel.send(message, options)
 		.catch(console.error);
-};
 
 const buildBadWordsLogEmbed = (message, badWords) => {
 	return {
