@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  policebot:
+    container_name: policebot
+    restart: always
+    build: .
+    env_file: .env
