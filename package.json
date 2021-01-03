@@ -1,0 +1,20 @@
+{
+  "name": "policebot",
+  "author": "Cubeur-manchot",
+  "description": "Discord bot to help moderators on a french-speaking server.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "homepage": "https://github.com/Cubeur-manchot/PoliceBot#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cubeur-manchot/PoliceBot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Cubeur-manchot/PoliceBot/issues"
+  },
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0"
+  },
+  "license": "ISC"
+}
