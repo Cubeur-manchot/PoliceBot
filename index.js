@@ -1,7 +1,6 @@
 "use strict";
 
 const Discord = require("discord.js");
-require("dotenv").config();
 
 const {onReady, onMessage, onMessageUpdate, onMessageDelete} = require("./eventHandler.js");
 
