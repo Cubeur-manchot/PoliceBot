@@ -1,15 +1,10 @@
 "use strict";
 
-const {badWords, badWordsRegex} = require("./badWords.js");
+const {badWordsRegex} = require("./badWords.js");
+const Discord = require("discord.js");
 
-const messageContainsBadWord = message => {
+const containedBadWords = message => {
 	return message.content.match(badWordsRegex);
-};
-
-const whichBadWordIsContained = message => {
-	return badWords.find(badWord => {
-		return message.content.match(badWord);
-	});
 };
 
 const messageIsPoliceBotCommandMessage = message => {
@@ -21,4 +16,31 @@ const sendMessageToChannel = (channel, message, options) => {
 		.catch(console.error);
 };
 
-module.exports = {messageContainsBadWord, whichBadWordIsContained, messageIsPoliceBotCommandMessage, sendMessageToChannel};
+const buildBadWordsLogEmbed = (message, badWords) => {
+	return {
+		color: "#0099ff",
+		title: "__Bad words__",
+		description: `User <@!${message.author.id}> sent bad word(s) in <#${message.channel.id}>`,
+		fields: [{
+			name: "Original message",
+			value: message.content
+		},{
+			name: "Bad word(s) :",
+			value: "- " + badWords.join("\n- ")
+		}],
+		timestamp: new Date()
+	};
+};
+
+const sendLog = (messageInformation, originalMessage) => {
+	let logChannel = originalMessage.client.channels.cache.find(channel => {return channel.id === "795319669459648512"});
+	if (messageInformation.title) { // embed message
+		logChannel.send(new Discord.MessageEmbed(messageInformation))
+			.catch(console.log);
+	} else { // simple message
+		logChannel.send(messageInformation)
+			.catch(console.log);
+	}
+};
+
+module.exports = {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, buildBadWordsLogEmbed, sendLog};
