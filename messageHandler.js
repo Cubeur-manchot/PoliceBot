@@ -15,11 +15,11 @@ const sendMessageToChannel = (channel, message, options) =>
 	channel.send(message, options)
 		.catch(console.error);
 
-const buildBadWordsLogEmbed = (message, badWords) => {
+const buildBadWordsLogEmbed = (message, badWords, warningMessage) => {
 	return {
 		color: "#0099ff",
 		title: "__Bad words__",
-		description: `User <@!${message.author.id}> sent bad word(s) in <#${message.channel.id}>`,
+		description: `User <@!${message.author.id}> sent bad word(s) in <#${message.channel.id}> [Jump to discussion](${warningMessage.url}).`,
 		fields: [{
 			name: "Original message",
 			value: message.content
