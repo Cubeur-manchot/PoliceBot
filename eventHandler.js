@@ -17,12 +17,4 @@ const onMessage = message => {
 	} // else normal message, don't care
 };
 
-const onMessageUpdate = (oldMessage, newMessage) => {
-	onMessage(newMessage);
-};
-
-const onMessageDelete = message => {
-
-};
-
-module.exports = {onReady, onMessage, onMessageUpdate, onMessageDelete};
+module.exports = {onReady, onMessage};
