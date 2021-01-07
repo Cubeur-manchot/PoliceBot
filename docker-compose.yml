@@ -5,3 +5,7 @@ services:
     restart: always
     build: .
     env_file: .env
+    volumes:
+      - type: bind
+        source: ./infractions.json
+        target: /infractions.json
