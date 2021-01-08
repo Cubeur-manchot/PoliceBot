@@ -7,5 +7,5 @@ services:
     env_file: .env
     volumes:
       - type: bind
-        source: ./infractions.json
-        target: /infractions.json
+        source: ./policeBotData.json
+        target: /policeBotData.json

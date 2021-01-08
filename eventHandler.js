@@ -1,7 +1,7 @@
 "use strict";
 
 const {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, buildBadWordsLogEmbed, sendLog, deleteMessage} = require("./messageHandler.js");
-const {readInfractions, writeInfractions} = require("./infractions");
+const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 
 const onReady = PoliceBot => {
 	PoliceBot.user.setActivity("lire les messages du serveur")
@@ -21,12 +21,12 @@ const onMessage = async message => {
 			sendLog(buildBadWordsLogEmbed(message, badWords, warningMessage), warningMessage);
 		}
 		if (message.content === "coucou") {
-			let currentInfractions = readInfractions();
-			currentInfractions["infractions"].push({
+			let currentInfractions = readInfoData("infractions");
+			let newInfraction = {
 				name: "new infraction",
 				type: "test"
-			});
-			writeInfractions(currentInfractions);
+			};
+			writeInfoData(newInfraction, "infractions");
 		}
 	}
 };
