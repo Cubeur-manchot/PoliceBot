@@ -1,6 +1,6 @@
 "use strict";
 
-const {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, buildBadWordsLogEmbed, sendLog, deleteMessage} = require("./messageHandler.js");
+const {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel, buildBadWordsLogEmbed, buildEmbedInfractionsList, sendLog, deleteMessage} = require("./messageHandler.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 
 const onReady = PoliceBot => {
@@ -12,8 +12,12 @@ const onReady = PoliceBot => {
 const onMessage = async message => {
 	if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
-		sendMessageToChannel(message.channel, "Désolé mais pour le moment je ne supporte aucune commande. "
-			+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
+		if (message.content === "&infractions") {
+			sendEmbedToChannel(message.channel, buildEmbedInfractionsList(readInfoData("infractions")));
+		} else {
+			sendMessageToChannel(message.channel, "Désolé mais pour me moment je ne connais pas cette commande. "
+				+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
+		}
 	} else if (message.author.id !== "719973594029097040") { // message not sent by PoliceBot, work on the content
 		let badWords = containedBadWords(message);
 		if (badWords !== null) {
