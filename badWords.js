@@ -1,5 +1,7 @@
 "use strict";
 
+const {sendMessageToChannel, sendLog, deleteMessage} = require("./messageHandler.js");
+
 const badWords = [
 	"b(i|1)tt?es?",
 	"teube?s?",
@@ -15,4 +17,33 @@ const badWords = [
 
 const badWordsRegex = new RegExp("(^| |	)" + badWords.join("|") + "( |	|$)", "gi");
 
-module.exports = {badWords, badWordsRegex};
+const handleBadWords = async message => {
+	let badWords = containedBadWords(message);
+	if (badWords !== null) {
+		deleteMessage(message);
+		let warningMessage = await sendMessageToChannel(message.channel, "Oh c'est pas bien de dire ça ! :eyes:");
+		sendLog(buildBadWordsLogEmbed(message, badWords, warningMessage), warningMessage);
+	}
+};
+
+const containedBadWords = message => {
+	return message.content.match(badWordsRegex);
+};
+
+const buildBadWordsLogEmbed = (message, badWords, warningMessage) => {
+	return {
+		color: "#0099ff",
+		title: "__Bad words__",
+		description: `:face_with_symbols_over_mouth: User <@!${message.author.id}> sent bad word(s) in <#${message.channel.id}> [Jump to discussion](${warningMessage.url}).`,
+		fields: [{
+			name: "Original message",
+			value: message.content
+		},{
+			name: "Bad word(s) :",
+			value: "- " + badWords.join("\n- ")
+		}],
+		timestamp: new Date()
+	};
+};
+
+module.exports = {handleBadWords};

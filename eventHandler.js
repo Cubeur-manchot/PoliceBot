@@ -1,7 +1,8 @@
 "use strict";
 
-const {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel, buildBadWordsLogEmbed, buildEmbedInfractionsList, sendLog, deleteMessage} = require("./messageHandler.js");
+const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel, buildEmbedInfractionsList} = require("./messageHandler.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
+const {handleBadWords} = require("./badWords");
 
 const onReady = PoliceBot => {
 	PoliceBot.user.setActivity("lire les messages du serveur")
@@ -9,7 +10,7 @@ const onReady = PoliceBot => {
 		.catch(console.error);
 };
 
-const onMessage = async message => {
+const onMessage = message => {
 	if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
 		if (message.content === "&infractions") {
@@ -19,12 +20,7 @@ const onMessage = async message => {
 				+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
 		}
 	} else if (message.author.id !== "719973594029097040") { // message not sent by PoliceBot, work on the content
-		let badWords = containedBadWords(message);
-		if (badWords !== null) {
-			deleteMessage(message);
-			let warningMessage = await sendMessageToChannel(message.channel, "Oh c'est pas bien de dire ça ! :eyes:");
-			sendLog(buildBadWordsLogEmbed(message, badWords, warningMessage), warningMessage);
-		}
+		handleBadWords(message);
 		if (message.content === "coucou") {
 			let currentInfractions = readInfoData("infractions");
 			let newInfraction = {

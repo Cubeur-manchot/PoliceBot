@@ -1,11 +1,6 @@
 "use strict";
 
-const {badWordsRegex} = require("./badWords.js");
 const Discord = require("discord.js");
-
-const containedBadWords = message => {
-	return message.content.match(badWordsRegex);
-};
 
 const messageIsPoliceBotCommandMessage = message => {
 	return message.content.startsWith("&");
@@ -17,22 +12,6 @@ const sendEmbedToChannel = (channel, embedObject) =>
 const sendMessageToChannel = (channel, message, options) =>
 	channel.send(message, options)
 		.catch(console.error);
-
-const buildBadWordsLogEmbed = (message, badWords, warningMessage) => {
-	return {
-		color: "#0099ff",
-		title: "__Bad words__",
-		description: `:face_with_symbols_over_mouth: User <@!${message.author.id}> sent bad word(s) in <#${message.channel.id}> [Jump to discussion](${warningMessage.url}).`,
-		fields: [{
-			name: "Original message",
-			value: message.content
-		},{
-			name: "Bad word(s) :",
-			value: "- " + badWords.join("\n- ")
-		}],
-		timestamp: new Date()
-	};
-};
 
 const buildEmbedInfractionsList = infractions => {
 	let embedObject = {
@@ -89,4 +68,4 @@ const deleteMessage = message => {
 	}
 };
 
-module.exports = {containedBadWords, messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel, buildBadWordsLogEmbed, buildEmbedInfractionsList, sendLog, deleteMessage};
+module.exports = {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel, buildEmbedInfractionsList, sendLog, deleteMessage};
