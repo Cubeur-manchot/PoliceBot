@@ -10,7 +10,8 @@ const onReady = PoliceBot => {
 };
 
 const onMessage = async message => {
-	if (messageIsPoliceBotCommandMessage(message)) { // message is a PoliceBot command
+	if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
+		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
 		sendMessageToChannel(message.channel, "Désolé mais pour le moment je ne supporte aucune commande. "
 			+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
 	} else if (message.author.id !== "719973594029097040") { // message not sent by PoliceBot, work on the content
