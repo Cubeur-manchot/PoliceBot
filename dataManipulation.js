@@ -36,4 +36,9 @@ const getReadableDate = date => {
 		+ ":" + (date.getSeconds() < 10 ? "0" : "") + date.getSeconds();
 };
 
-module.exports = {readInfoData, writeInfoData, getAvailableId, getReadableDate};
+const removeHelpMessage = "```\n&remove <elementId>```"
+	+ "`<elementId>` is the id of the element (infraction, warn, ban) to remove/revoke."
+	+ "\nIt can remove many elements at once."
+	+ "\n\nExample: ```\n&remove i#3 i#4 w#1```";
+
+module.exports = {readInfoData, writeInfoData, getAvailableId, getReadableDate, removeData, removeHelpMessage};

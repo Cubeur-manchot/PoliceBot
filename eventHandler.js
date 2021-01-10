@@ -1,7 +1,7 @@
 "use strict";
 
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-const {readInfoData} = require("./dataManipulation.js");
+const {readInfoData, removeHelpMessage, removeData} = require("./dataManipulation.js");
 const {infractionHelpMessage, buildEmbedInfractionsList, addInfractionCommand} = require("./infractions.js");
 const {handleBadWords} = require("./badWords");
 
@@ -22,6 +22,11 @@ const onMessage = message => {
 				sendMessageToChannel(message.channel, infractionHelpMessage);
 			} else { // with arguments, add an infraction
 				addInfractionCommand(message);
+			}
+		} else if (messageContentLowerCase.startsWith("&remove")) {
+			if (messageContentLowerCase === "&remove") { // without arguments, send help message
+				sendMessageToChannel(message.channel, removeHelpMessage);
+			} else { // with arguments, remove an object (infraction, warn, ban)
 			}
 		} else {
 			sendMessageToChannel(message.channel, "Désolé mais pour me moment je ne connais pas cette commande. "
