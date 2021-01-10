@@ -96,7 +96,7 @@ const getMemberIdAndInfractionType = (messageContent, memberList) => {
 			let firstPart = "";
 			let secondPart = listOfWords;
 			while (secondPart.length !== 0) {
-				firstPart += " " + secondPart.shift();
+				firstPart += (firstPart === "" ? "" : " ") + secondPart.shift();
 				let foundMembers = memberList.filter(member =>
 					member.nickname === firstPart // matches pseudo in server
 					|| member.user.username === firstPart // matches username in Discord
