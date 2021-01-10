@@ -1,7 +1,8 @@
 "use strict";
 
-const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel, buildEmbedInfractionsList} = require("./messageHandler.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
+const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
+const {buildEmbedInfractionsList} = require("./infractions.js");
 const {handleBadWords} = require("./badWords");
 
 const onReady = PoliceBot => {
