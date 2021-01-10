@@ -27,6 +27,7 @@ const onMessage = message => {
 			if (messageContentLowerCase === "&remove") { // without arguments, send help message
 				sendMessageToChannel(message.channel, removeHelpMessage);
 			} else { // with arguments, remove an object (infraction, warn, ban)
+				removeDataAndHandleResults(messageContentLowerCase.replace(/^&remove */, ""), message);
 			}
 		} else {
 			sendMessageToChannel(message.channel, "Désolé mais pour me moment je ne connais pas cette commande. "
@@ -34,6 +35,22 @@ const onMessage = message => {
 		}
 	} else if (message.author.id !== "719973594029097040") { // message not sent by PoliceBot, work on the content
 		handleBadWords(message);
+	}
+};
+
+const removeDataAndHandleResults = (argumentsString, message) => {
+	let {infractionsWereRemoved, warnsWereRemoved, bandWereRemoved, failed} = removeData(argumentsString, message);
+	if (infractionsWereRemoved) {
+		sendEmbedToChannel(message.channel, buildEmbedInfractionsList(readInfoData("infractions")));
+	}
+	if (warnsWereRemoved) {
+		// todo when embed is built
+	}
+	if (bandWereRemoved) {
+		// todo when embed is built
+	}
+	if (failed.length) {
+		sendMessageToChannel(message.channel, ":x: Failed to remove :\n- " + failed.join("\n- "));
 	}
 };
 
