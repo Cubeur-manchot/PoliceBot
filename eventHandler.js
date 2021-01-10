@@ -15,20 +15,16 @@ const onMessage = message => {
 	if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
 		let messageContentLowerCase = message.content.toLowerCase();
-		if (messageContentLowerCase === "&infractions") {
+		if (messageContentLowerCase === "&infractions") { // display list of infractions
 			sendEmbedToChannel(message.channel, buildEmbedInfractionsList(readInfoData("infractions")));
-		} else if (messageContentLowerCase.startsWith("&addinfraction")) {
-			if (messageContentLowerCase === "&addinfraction") { // without arguments, send help message
-				sendMessageToChannel(message.channel, infractionHelpMessage);
-			} else { // with arguments, add an infraction
-				addInfractionCommand(message);
-			}
-		} else if (messageContentLowerCase.startsWith("&remove")) {
-			if (messageContentLowerCase === "&remove") { // without arguments, send help message
-				sendMessageToChannel(message.channel, removeHelpMessage);
-			} else { // with arguments, remove an object (infraction, warn, ban)
-				removeDataAndHandleResults(messageContentLowerCase.replace(/^&remove */, ""), message);
-			}
+		} else if (messageContentLowerCase === "&addinfraction") { // help for &addinfraction
+			sendMessageToChannel(message.channel, infractionHelpMessage);
+		} else if (messageContentLowerCase.startsWith("&addinfraction ")) { // &addinfraction command
+			addInfractionCommand(message);
+		} else if (messageContentLowerCase === "&remove") { // help for &remove
+			sendMessageToChannel(message.channel, removeHelpMessage);
+		} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command
+			removeDataAndHandleResults(messageContentLowerCase.replace(/^&remove */, ""), message);
 		} else {
 			sendMessageToChannel(message.channel, "Désolé mais pour me moment je ne connais pas cette commande. "
 				+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
