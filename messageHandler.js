@@ -34,9 +34,9 @@ const buildEmbedInfractionsList = infractions => {
 		for (let memberId in infractionsBuffer) {
 			let memberInfractions = infractionsBuffer[memberId];
 			embedObject.description += `\n<@${memberId}> (${memberInfractions.length}) :\n`;
-			embedObject.description += "`Id  ` `Date      ` `Type          `\n";
+			embedObject.description += "`Id  ` `Date      ` `Type          `";
 			for (let infraction of memberInfractions) {
-				embedObject.description += "`" + infraction.id + (infraction.id.length === 3 ? " " : "")
+				embedObject.description += "\n`" + infraction.id + (infraction.id.length === 3 ? " " : "")
 					+ "` `" + infraction.date.substring(0,10) + "` `";
 				if (infraction.type.length > 14) {
 					embedObject.description += infraction.type.substring(0,11) + "..."; // cut before end, and add "..."

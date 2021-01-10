@@ -1,6 +1,7 @@
 "use strict";
 
 const {sendMessageToChannel, sendLog, deleteMessage} = require("./messageHandler.js");
+const {writeInfoData, getAvailableId, getReadableDate} = require("./dataManipulation.js");
 
 const badWords = [
 	"b(i|1)tt?es?",
@@ -21,6 +22,13 @@ const handleBadWords = async message => {
 	let badWords = containedBadWords(message);
 	if (badWords !== null) {
 		deleteMessage(message);
+		writeInfoData({
+			id: getAvailableId("infractions"),
+			memberId: message.author.id,
+			date: getReadableDate(message.createdAt),
+			type: "Bad word",
+			commentary: badWords.join(", ")
+		},"infractions");
 		let warningMessage = await sendMessageToChannel(message.channel, "Oh c'est pas bien de dire ça ! :eyes:");
 		sendLog(buildBadWordsLogEmbed(message, badWords, warningMessage), warningMessage);
 	}
