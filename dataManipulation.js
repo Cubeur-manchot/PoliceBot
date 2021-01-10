@@ -72,7 +72,7 @@ const removeData = (argumentsString) => {
 	return {
 		infractionsWereRemoved: infractionsWereRemoved,
 		warnsWereRemoved: warnsWereRemoved,
-		bandWereRemoved: bansWereRemoved,
+		bansWereRemoved: bansWereRemoved,
 		failed: failed
 	}
 };

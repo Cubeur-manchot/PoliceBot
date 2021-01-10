@@ -40,14 +40,14 @@ const onMessage = message => {
 };
 
 const removeDataAndHandleResults = (argumentsString, message) => {
-	let {infractionsWereRemoved, warnsWereRemoved, bandWereRemoved, failed} = removeData(argumentsString, message);
+	let {infractionsWereRemoved, warnsWereRemoved, bansWereRemoved, failed} = removeData(argumentsString, message);
 	if (infractionsWereRemoved) {
 		sendEmbedToChannel(message.channel, buildEmbedInfractionsList(readInfoData("infractions")));
 	}
 	if (warnsWereRemoved) {
 		// todo when embed is built
 	}
-	if (bandWereRemoved) {
+	if (bansWereRemoved) {
 		// todo when embed is built
 	}
 	if (failed.length) {
