@@ -3,6 +3,7 @@
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {readInfoData, removeHelpMessage, removeData} = require("./dataManipulation.js");
 const {infractionHelpMessage, buildEmbedInfractionsList, addInfractionCommand} = require("./infractions.js");
+const {buildEmbedWarnsList, warnHelpMessage} = require("./warns.js");
 const {handleBadWords} = require("./badWords");
 
 const onReady = PoliceBot => {
@@ -21,12 +22,16 @@ const onMessage = message => {
 			sendMessageToChannel(message.channel, infractionHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&addinfraction ")) { // &addinfraction command
 			addInfractionCommand(message);
+		} else if (messageContentLowerCase === "&warns") { // display list of warns
+			sendEmbedToChannel(message.channel, buildEmbedWarnsList(readInfoData("warns")));
+		} else if (messageContentLowerCase === "&addwarn") { // help for &addwarn
+			sendMessageToChannel(message.channel, warnHelpMessage);
 		} else if (messageContentLowerCase === "&remove") { // help for &remove
 			sendMessageToChannel(message.channel, removeHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command
 			removeDataAndHandleResults(messageContentLowerCase.replace(/^&remove */, ""), message);
 		} else {
-			sendMessageToChannel(message.channel, "Désolé mais pour me moment je ne connais pas cette commande. "
+			sendMessageToChannel(message.channel, "Désolé mais pour le moment je ne connais pas cette commande. "
 				+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
 		}
 	} else if (message.author.id !== "719973594029097040") { // message not sent by PoliceBot, work on the content
