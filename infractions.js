@@ -100,7 +100,8 @@ const getMemberIdAndInfractionType = (messageContent, memberList) => {
 				let foundMembers = memberList.filter(member =>
 					member.nickname === firstPart // matches pseudo in server
 					|| member.user.username === firstPart // matches username in Discord
-					|| member.user.tag === firstPart); // match username + tag number in Discord
+					|| member.user.tag === firstPart // match username + tag number in Discord
+				).array();
 				if (foundMembers.length === 1) { // unique match
 					return {
 						memberId: foundMembers[0].id,
