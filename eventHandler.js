@@ -21,14 +21,6 @@ const onMessage = message => {
 		}
 	} else if (message.author.id !== "719973594029097040") { // message not sent by PoliceBot, work on the content
 		handleBadWords(message);
-		if (message.content === "coucou") {
-			let currentInfractions = readInfoData("infractions");
-			let newInfraction = {
-				name: "new infraction",
-				type: "test"
-			};
-			writeInfoData(newInfraction, "infractions");
-		}
 	}
 };
 
