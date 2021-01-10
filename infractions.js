@@ -3,6 +3,7 @@
 const {getAvailableId, getReadableDate} = require("./dataManipulation.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
+const {groupElementsByMemberId} = require("./dataManipulation.js");
 
 const buildEmbedInfractionsList = infractions => {
 	let embedObject = {
@@ -13,15 +14,7 @@ const buildEmbedInfractionsList = infractions => {
 		embedObject.description = "No current infraction :innocent:";
 	} else {
 		embedObject.description = "Here is the list of all infractions :\n";
-		embedObject.fields = [];
-		let infractionsBuffer = [];
-		for (let infraction of infractions) {
-			if (infractionsBuffer[infraction.memberId]) { // member already has some infractions, simply add the new one
-				infractionsBuffer[infraction.memberId].push(infraction);
-			} else { // member has no infraction, create new array
-				infractionsBuffer[infraction.memberId] = [infraction];
-			}
-		}
+		let infractionsBuffer = groupElementsByMemberId(infractions);
 		for (let memberId in infractionsBuffer) {
 			let memberInfractions = infractionsBuffer[memberId];
 			embedObject.description += `\n<@${memberId}> (${memberInfractions.length}) :\n`;

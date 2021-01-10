@@ -77,4 +77,16 @@ const removeData = (argumentsString) => {
 	}
 };
 
-module.exports = {readInfoData, writeInfoData, getAvailableId, getReadableDate, removeData, removeHelpMessage};
+const groupElementsByMemberId = elementsArray => {
+	let result = [];
+	for (let element of elementsArray) {
+		if (result[element.memberId]) { // member already has some elements, simply add the new one
+			result[element.memberId].push(element);
+		} else { // member has no element, create new array
+			result[element.memberId] = [element];
+		}
+	}
+	return result;
+};
+
+module.exports = {readInfoData, writeInfoData, getAvailableId, getReadableDate, removeData, removeHelpMessage, groupElementsByMemberId};

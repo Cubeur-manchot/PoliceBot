@@ -1,5 +1,7 @@
 "use strict";
 
+const {groupElementsByMemberId} = require("./dataManipulation.js");
+
 const buildEmbedWarnsList = warns => {
 	let embedObject = {
 		color: "#cccc00",
@@ -9,15 +11,7 @@ const buildEmbedWarnsList = warns => {
 		embedObject.description = "No current warn :thumbsup:";
 	} else {
 		embedObject.description = "Here is the list of all warns :\n";
-		embedObject.fields = [];
-		let warnsBuffer = [];
-		for (let warn of warns) {
-			if (warnsBuffer[warn.memberId]) { // member already has some warns, simply add the new one
-				warnsBuffer[warn.memberId].push(warn);
-			} else { // member has no warn, create new array
-				warnsBuffer[warn.memberId] = [warn];
-			}
-		}
+		let warnsBuffer = groupElementsByMemberId(warns);
 		for (let memberId in warnsBuffer) {
 			let memberWarns = warnsBuffer[memberId];
 			embedObject.description += `\n<@${memberId}> (${memberWarns.length}) :\n`;
