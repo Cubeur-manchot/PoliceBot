@@ -1,8 +1,8 @@
 "use strict";
 
-const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-const {buildEmbedInfractionsList} = require("./infractions.js");
+const {readInfoData} = require("./dataManipulation.js");
+const {infractionHelpMessage, buildEmbedInfractionsList, addInfractionCommand} = require("./infractions.js");
 const {handleBadWords} = require("./badWords");
 
 const onReady = PoliceBot => {
@@ -14,8 +14,15 @@ const onReady = PoliceBot => {
 const onMessage = message => {
 	if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
-		if (message.content === "&infractions") {
+		let messageContentLowerCase = message.content.toLowerCase();
+		if (messageContentLowerCase === "&infractions") {
 			sendEmbedToChannel(message.channel, buildEmbedInfractionsList(readInfoData("infractions")));
+		} else if (messageContentLowerCase.startsWith("&addinfraction")) {
+			if (messageContentLowerCase === "&addinfraction") { // without arguments, send help message
+				sendMessageToChannel(message.channel, infractionHelpMessage);
+			} else { // with arguments, add an infraction
+				addInfractionCommand(message);
+			}
 		} else {
 			sendMessageToChannel(message.channel, "Désolé mais pour me moment je ne connais pas cette commande. "
 				+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
