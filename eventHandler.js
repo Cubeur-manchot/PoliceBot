@@ -1,10 +1,10 @@
 "use strict";
 
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-const {removeHelpMessage, removeData} = require("./dataManipulation.js");
+const {removeData} = require("./dataManipulation.js");
 const {addInfractionCommand} = require("./infractions.js");
 const {handleBadWords} = require("./badWords");
-const {addInfractionHelpMessage, addWarnHelpMessage, buildEmbedElementList} = require("./messageBuilder.js");
+const {addInfractionHelpMessage, addWarnHelpMessage, removeHelpMessage, buildEmbedElementList} = require("./messageBuilder.js");
 
 const onReady = PoliceBot => {
 	PoliceBot.user.setActivity("lire les messages du serveur")

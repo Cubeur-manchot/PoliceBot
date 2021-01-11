@@ -15,6 +15,11 @@ const addWarnHelpMessage = "```\n&addWarn <member> <reason> <infractionId> // <c
 	+ "\n`<commentary>` (optional) : gives more information about the warn."
 	+ "\n\nExample : ```\n&addWarn Cubeur-manchot#7706 HS répétitifs i#1 i#3 // c'est relou```";
 
+const removeHelpMessage = "```\n&remove <elementId>```"
+	+ "`<elementId>` is the id of the element (infraction, warn, ban) to remove/revoke."
+	+ "\nIt can remove many elements at once."
+	+ "\n\nExample: ```\n&remove i#3 i#4 w#1```";
+
 const embedColorFromType = {
 	"infractions": "#cccc00",
 	"warns": "#d56600",
@@ -59,4 +64,4 @@ const buildEmbedElementList = infoType => {
 	return embedObject;
 };
 
-module.exports = {addInfractionHelpMessage, addWarnHelpMessage, buildEmbedElementList};
+module.exports = {addInfractionHelpMessage, addWarnHelpMessage, removeHelpMessage, buildEmbedElementList};
