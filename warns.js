@@ -15,7 +15,7 @@ const buildEmbedWarnsList = warns => {
 		for (let memberId in warnsBuffer) {
 			let memberWarns = warnsBuffer[memberId];
 			embedObject.description += `\n<@${memberId}> (${memberWarns.length}) :\n`;
-			embedObject.description += "`Id  ` `Date      ` `Type          `";
+			embedObject.description += "`Id  ` `Date      ` `Reason        `";
 			for (let warn of memberWarns) {
 				embedObject.description += "\n`" + warn.id + (warn.id.length === 3 ? " " : "")
 					+ "` `" + warn.date.substring(0,10) + "` `";
