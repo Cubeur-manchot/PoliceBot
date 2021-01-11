@@ -38,15 +38,9 @@ const onMessage = message => {
 };
 
 const removeDataAndHandleResults = (argumentsString, message) => {
-	let {infractionsWereRemoved, warnsWereRemoved, bansWereRemoved, failed} = removeData(argumentsString, message);
-	if (infractionsWereRemoved) {
-		sendEmbedToChannel(message.channel, buildEmbedElementList("infractions"));
-	}
-	if (warnsWereRemoved) {
-		// todo when embed is built
-	}
-	if (bansWereRemoved) {
-		// todo when embed is built
+	let {typesElementsSuccessfullyRemoved, failed} = removeData(argumentsString, message);
+	for (let infoType in typesElementsSuccessfullyRemoved) {
+		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));
 	}
 	if (failed.length) {
 		sendMessageToChannel(message.channel, ":x: Failed to remove :\n- " + failed.join("\n- "));

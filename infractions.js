@@ -2,7 +2,7 @@
 
 const {getAvailableId, getReadableDate, readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-
+const {buildEmbedElementList} = require("./messageBuilder.js");
 
 const addInfractionCommand = commandMessage => {
 	let infractionId = getAvailableId("infractions");
@@ -32,7 +32,7 @@ const addInfractionCommand = commandMessage => {
 			type: infractionType,
 			commentary: infractionCommentary
 		}, "infractions");
-		sendEmbedToChannel(commandMessage.channel, buildEmbedInfractionsList(readInfoData("infractions")));
+		sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("infractions"));
 	}
 };
 
