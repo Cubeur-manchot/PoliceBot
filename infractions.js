@@ -1,9 +1,7 @@
 "use strict";
 
-const {getAvailableId, getReadableDate} = require("./dataManipulation.js");
-const {readInfoData, writeInfoData} = require("./dataManipulation.js");
+const {getAvailableId, getReadableDate, readInfoData, writeInfoData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-const {groupElementsByMemberId} = require("./dataManipulation.js");
 
 const buildEmbedInfractionsList = infractions => {
 	let embedObject = {
@@ -34,12 +32,6 @@ const buildEmbedInfractionsList = infractions => {
 	return embedObject;
 };
 
-const infractionHelpMessage = "```\n&addInfraction <member> <type> // <commentary>```"
-	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 7706, 217709941081767937."
-	+ "\n`<type>` : the type of infraction. Ex: HS, Bad words, ..."
-	+ "\n`<commentary>` (optional) : gives more information about the infraction."
-	+ "\n\nExample : ```\n&addInfraction Cubeur-manchot#7706 HS répétitifs // c'est relou```";
-
 const addInfractionCommand = commandMessage => {
 	let infractionId = getAvailableId("infractions");
 	let infractionDate = getReadableDate(commandMessage.createdAt);
@@ -67,7 +59,7 @@ const addInfractionCommand = commandMessage => {
 			date: infractionDate,
 			type: infractionType,
 			commentary: infractionCommentary
-		}, "infractions")
+		}, "infractions");
 		sendEmbedToChannel(commandMessage.channel, buildEmbedInfractionsList(readInfoData("infractions")));
 	}
 };
@@ -115,4 +107,4 @@ const getMemberIdAndInfractionType = (messageContent, memberList) => {
 	}
 };
 
-module.exports = {infractionHelpMessage, buildEmbedInfractionsList, addInfractionCommand};
+module.exports = {buildEmbedInfractionsList, addInfractionCommand};

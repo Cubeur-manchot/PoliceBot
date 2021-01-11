@@ -2,9 +2,10 @@
 
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {readInfoData, removeHelpMessage, removeData} = require("./dataManipulation.js");
-const {infractionHelpMessage, buildEmbedInfractionsList, addInfractionCommand} = require("./infractions.js");
+const {buildEmbedInfractionsList, addInfractionCommand} = require("./infractions.js");
 const {buildEmbedWarnsList, warnHelpMessage} = require("./warns.js");
 const {handleBadWords} = require("./badWords");
+const {addInfractionHelpMessage} = require("./messageBuilder.js");
 
 const onReady = PoliceBot => {
 	PoliceBot.user.setActivity("lire les messages du serveur")
@@ -19,7 +20,7 @@ const onMessage = message => {
 		if (messageContentLowerCase === "&infractions") { // display list of infractions
 			sendEmbedToChannel(message.channel, buildEmbedInfractionsList(readInfoData("infractions")));
 		} else if (messageContentLowerCase === "&addinfraction") { // help for &addinfraction
-			sendMessageToChannel(message.channel, infractionHelpMessage);
+			sendMessageToChannel(message.channel, addInfractionHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&addinfraction ")) { // &addinfraction command
 			addInfractionCommand(message);
 		} else if (messageContentLowerCase === "&warns") { // display list of warns
