@@ -2,7 +2,7 @@
 
 const {getAvailableId, getReadableDate, writeInfoData} = require("./dataManipulation.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-const {buildEmbedElementList} = require("./messageBuilder.js");
+const {buildEmbedElementList, addInfractionHelpMessage} = require("./messageBuilder.js");
 
 const addInfractionCommand = commandMessage => {
 	let infractionId = getAvailableId("infractions");
@@ -19,11 +19,11 @@ const addInfractionCommand = commandMessage => {
 	beginCommand = beginCommand.trim();
 	let {memberId, infractionType} = getMemberIdAndInfractionType(beginCommand, commandMessage.channel.guild.members.cache);
 	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + infractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addInfractionHelpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + infractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + addInfractionHelpMessage);
 	} else if (infractionType === "") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified infraction type.\n\n" + infractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified infraction type.\n\n" + addInfractionHelpMessage);
 	} else {
 		writeInfoData({
 			id: infractionId,
