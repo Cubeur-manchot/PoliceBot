@@ -9,7 +9,7 @@ const addInfractionCommand = commandMessage => {
 	let infractionDate = getReadableDate(commandMessage.createdAt);
 	let infractionCommentary, beginCommand;
 	let commandArguments = commandMessage.content.replace(/^&addinfraction */i, "");
-	if (commandMessage.content.includes("//")) {
+	if (commandMessage.content.includes("//")) { // split comments from the rest of the arguments
 		[beginCommand, infractionCommentary] = commandArguments.split("//");
 		infractionCommentary = infractionCommentary.replace(/\/\/ */, "");
 	} else {
@@ -17,7 +17,7 @@ const addInfractionCommand = commandMessage => {
 		infractionCommentary = "";
 	}
 	beginCommand = beginCommand.trim();
-	let {memberId, infractionType} = getMemberIdAndInfractionType(beginCommand, commandMessage.channel.guild.members.cache);
+	let {memberId, infractionType} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId and infractionType
 	if (!memberId) {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addInfractionHelpMessage);
 	} else if (memberId === "many") {
@@ -36,7 +36,7 @@ const addInfractionCommand = commandMessage => {
 	}
 };
 
-const getMemberIdAndInfractionType = (messageContent, memberList) => {
+const getMemberIdAndRestOfCommand = (messageContent, memberList) => {
 	let listOfWords = messageContent.split(" ").filter(word => word !== "");
 	if (listOfWords.length === 0) { // no argument
 		return {
