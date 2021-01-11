@@ -41,21 +41,14 @@ const removeData = (argumentsString) => {
 	let typesElementsSuccessfullyRemoved = [], failed = [];
 	let policeBotData = readPoliceBotData();
 	for (let elementIdToRemove of elementsIdToRemove) {
-		if (/i#[0-9]+/.test(elementIdToRemove)) { // infraction to remove
-			let indexToRemove = policeBotData.infractions.findIndex(element => element.id === elementIdToRemove);
+		if (/(i|w)#[0-9]+/.test(elementIdToRemove)) { // infraction or warn to remove
+			let elementType = elementIdToRemove[0] === "i" ? "infractions" : "warns";
+			let indexToRemove = policeBotData[elementType].findIndex(element => element.id === elementIdToRemove);
 			if (indexToRemove === -1) { // id doesn't exist
 				failed.push(elementIdToRemove);
-			} else { // id exists, remove the infraction
-				policeBotData.infractions.splice(indexToRemove, 1);
-				typesElementsSuccessfullyRemoved["infractions"] = true;
-			}
-		} else if (/w#[0-9]+/.test(elementIdToRemove)) { // warn to remove
-			let indexToRemove = policeBotData.warns.findIndex(element => element.id === elementIdToRemove);
-			if (indexToRemove === -1) { // id doesn't exist
-				failed.push(elementIdToRemove);
-			} else { // id exists, remove the warn
-				policeBotData.warns.splice(indexToRemove, 1);
-				typesElementsSuccessfullyRemoved["warns"] = true;
+			} else { // id exists, remove the infraction of warn
+				policeBotData[elementType].splice(indexToRemove, 1);
+				typesElementsSuccessfullyRemoved[elementType] = true;
 			}
 		} else if (/b#[0-9]+/.test(elementIdToRemove)) { // ban to remove
 			// todo special case
