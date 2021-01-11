@@ -2,10 +2,10 @@
 
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {readInfoData, removeHelpMessage, removeData} = require("./dataManipulation.js");
-const {buildEmbedInfractionsList, addInfractionCommand} = require("./infractions.js");
+const {addInfractionCommand} = require("./infractions.js");
 const {buildEmbedWarnsList} = require("./warns.js");
 const {handleBadWords} = require("./badWords");
-const {addInfractionHelpMessage, addWarnHelpMessage} = require("./messageBuilder.js");
+const {addInfractionHelpMessage, addWarnHelpMessage, buildEmbedInfractionsList} = require("./messageBuilder.js");
 
 const onReady = PoliceBot => {
 	PoliceBot.user.setActivity("lire les messages du serveur")
