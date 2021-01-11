@@ -1,6 +1,6 @@
 "use strict";
 
-const {groupElementsByMemberId} = require("./dataManipulation.js");
+const {groupElementsByMemberId, readInfoData} = require("./dataManipulation.js");
 
 const addInfractionHelpMessage = "```\n&addInfraction <member> <type> // <commentary>```"
 	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 7706, 217709941081767937."
@@ -15,27 +15,42 @@ const addWarnHelpMessage = "```\n&addWarn <member> <reason> <infractionId> // <c
 	+ "\n`<commentary>` (optional) : gives more information about the warn."
 	+ "\n\nExample : ```\n&addWarn Cubeur-manchot#7706 HS répétitifs i#1 i#3 // c'est relou```";
 
-const buildEmbedInfractionsList = infractions => {
+const embedColorFromType = {
+	"infractions": "#cccc00",
+	"warns": "#d56600",
+	"bans": "#fc0000"
+};
+
+const emojiWhenNoElement = {
+	"infractions": ":innocent:",
+	"warns": ":thumbsup:",
+	"bans": ":peace:"
+};
+
+const buildEmbedElementList = infoType => {
 	let embedObject = {
-		color: "#cccc00",
-		title: "__Infractions__",
+		color: embedColorFromType[infoType],
+		title: `__${infoType[0].toUpperCase()}${infoType.slice(1)}__`
 	};
-	if (infractions.length === 0) {
-		embedObject.description = "No current infraction :innocent:";
+	let typeOrReason = infoType === "infractions" ? "type" : "reason";
+	let elements = readInfoData(infoType);
+	if (elements.length === 0) {
+		embedObject.description = `No current ${infoType.slice(0,-1)} ${emojiWhenNoElement[infoType]}`;
 	} else {
-		embedObject.description = "Here is the list of all infractions :\n";
-		let infractionsBuffer = groupElementsByMemberId(infractions);
-		for (let memberId in infractionsBuffer) {
-			let memberInfractions = infractionsBuffer[memberId];
-			embedObject.description += `\n<@${memberId}> (${memberInfractions.length}) :\n`;
-			embedObject.description += "`Id  ` `Date      ` `Type          `";
-			for (let infraction of memberInfractions) {
-				embedObject.description += "\n`" + infraction.id + (infraction.id.length === 3 ? " " : "")
-					+ "` `" + infraction.date.substring(0,10) + "` `";
-				if (infraction.type.length > 14) {
-					embedObject.description += infraction.type.substring(0,11) + "..."; // cut before end, and add "..."
+		embedObject.description = `Here is the list of all ${infoType} :\n`;
+		let elementsGroupedByMemberId = groupElementsByMemberId(elements);
+		for (let memberId in elementsGroupedByMemberId) {
+			let memberElements = elementsGroupedByMemberId[memberId];
+			embedObject.description += `\n<@${memberId}> (${memberElements.length}) :\n`;
+			embedObject.description += "`Id  ` `Date      ` `" + (infoType === "infractions" ? "Type  " : "Reason") + "        `";
+			for (let element of memberElements) {
+				embedObject.description += "\n`" + element.id + (element.id.length === 3 ? " " : "")
+					+ "` `" + element.date.substring(0,10) + "` `";
+				let elementTypeOrReason = element[typeOrReason];
+				if (elementTypeOrReason.length > 14) {
+					embedObject.description += elementTypeOrReason.substring(0,11) + "..."; // cut before end, and add "..."
 				} else {
-					embedObject.description += infraction.type + " ".repeat(14 - infraction.type.length); // complete with spaces at the end
+					embedObject.description += elementTypeOrReason + " ".repeat(14 - elementTypeOrReason.length); // complete with spaces at the end
 				}
 				embedObject.description += "`";
 			}
@@ -44,33 +59,4 @@ const buildEmbedInfractionsList = infractions => {
 	return embedObject;
 };
 
-const buildEmbedWarnsList = warns => {
-	let embedObject = {
-		color: "#cccc00",
-		title: "__Warns__",
-	};
-	if (warns.length === 0) {
-		embedObject.description = "No current warn :thumbsup:";
-	} else {
-		embedObject.description = "Here is the list of all warns :\n";
-		let warnsBuffer = groupElementsByMemberId(warns);
-		for (let memberId in warnsBuffer) {
-			let memberWarns = warnsBuffer[memberId];
-			embedObject.description += `\n<@${memberId}> (${memberWarns.length}) :\n`;
-			embedObject.description += "`Id  ` `Date      ` `Reason        `";
-			for (let warn of memberWarns) {
-				embedObject.description += "\n`" + warn.id + (warn.id.length === 3 ? " " : "")
-					+ "` `" + warn.date.substring(0,10) + "` `";
-				if (warn.reason.length > 14) {
-					embedObject.description += warn.reason.substring(0,11) + "..."; // cut before end, and add "..."
-				} else {
-					embedObject.description += warn.reason + " ".repeat(14 - warn.reason.length); // complete with spaces at the end
-				}
-				embedObject.description += "`";
-			}
-		}
-	}
-	return embedObject;
-};
-
-module.exports = {addInfractionHelpMessage, addWarnHelpMessage, buildEmbedInfractionsList, buildEmbedWarnsList};
+module.exports = {addInfractionHelpMessage, addWarnHelpMessage, buildEmbedElementList};

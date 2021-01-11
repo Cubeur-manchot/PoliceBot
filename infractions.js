@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, getReadableDate, readInfoData, writeInfoData, groupElementsByMemberId} = require("./dataManipulation.js");
+const {getAvailableId, getReadableDate, readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 
 
@@ -79,4 +79,4 @@ const getMemberIdAndInfractionType = (messageContent, memberList) => {
 	}
 };
 
-module.exports = {buildEmbedInfractionsList, addInfractionCommand};
+module.exports = {addInfractionCommand};
