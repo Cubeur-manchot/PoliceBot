@@ -3,9 +3,9 @@
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {readInfoData, removeHelpMessage, removeData} = require("./dataManipulation.js");
 const {buildEmbedInfractionsList, addInfractionCommand} = require("./infractions.js");
-const {buildEmbedWarnsList, warnHelpMessage} = require("./warns.js");
+const {buildEmbedWarnsList} = require("./warns.js");
 const {handleBadWords} = require("./badWords");
-const {addInfractionHelpMessage} = require("./messageBuilder.js");
+const {addInfractionHelpMessage, addWarnHelpMessage} = require("./messageBuilder.js");
 
 const onReady = PoliceBot => {
 	PoliceBot.user.setActivity("lire les messages du serveur")
@@ -26,7 +26,7 @@ const onMessage = message => {
 		} else if (messageContentLowerCase === "&warns") { // display list of warns
 			sendEmbedToChannel(message.channel, buildEmbedWarnsList(readInfoData("warns")));
 		} else if (messageContentLowerCase === "&addwarn") { // help for &addwarn
-			sendMessageToChannel(message.channel, warnHelpMessage);
+			sendMessageToChannel(message.channel, addWarnHelpMessage);
 		} else if (messageContentLowerCase === "&remove") { // help for &remove
 			sendMessageToChannel(message.channel, removeHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command
