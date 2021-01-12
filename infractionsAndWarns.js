@@ -35,11 +35,11 @@ const addWarnCommand = commandMessage => {
 	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId
 	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addWarnHelpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + addWarnHelpMessage);
 	} else if (restOfCommand === "") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified warn reason.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified warn reason.\n\n" + addWarnHelpMessage);
 	} else {
 		let {reason, linkedInfractions, unlinkedInfractions} = getReasonAndLinkedInfractions(restOfCommand);
 		if (unlinkedInfractions.length) {
