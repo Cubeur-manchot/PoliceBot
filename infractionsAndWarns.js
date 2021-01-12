@@ -7,16 +7,8 @@ const {buildEmbedElementList, addInfractionHelpMessage, addWarnHelpMessage} = re
 const addInfractionCommand = commandMessage => {
 	let infractionId = getAvailableId("infractions");
 	let infractionDate = getReadableDate(commandMessage.createdAt);
-	let commentary, beginCommand;
 	let commandArguments = commandMessage.content.replace(/^&addinfraction */i, "");
-	if (commandMessage.content.includes("//")) { // split comments from the rest of the arguments
-		[beginCommand, commentary] = commandArguments.split("//");
-		commentary = commentary.trim();
-	} else {
-		beginCommand = commandArguments;
-		commentary = "";
-	}
-	beginCommand = beginCommand.trim();
+	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId and infractionType
 	if (!memberId) {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addInfractionHelpMessage);
@@ -39,16 +31,8 @@ const addInfractionCommand = commandMessage => {
 const addWarnCommand = commandMessage => {
 	let warnId = getAvailableId("warns");
 	let warnDate = getReadableDate(commandMessage.createdAt);
-	let commentary, beginCommand;
 	let commandArguments = commandMessage.content.replace(/^&addwarn */i, "");
-	if (commandMessage.content.includes("//")) {
-		[beginCommand, commentary] = commandArguments.split("//");
-		commentary = commentary.trim();
-	} else {
-		beginCommand = commandArguments;
-		commentary = "";
-	}
-	beginCommand = beginCommand.trim();
+	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId
 	if (!memberId) {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addInfractionHelpMessage);
@@ -74,8 +58,23 @@ const addWarnCommand = commandMessage => {
 	}
 };
 
-const getMemberIdAndRestOfCommand = (messageContent, memberList) => {
-	let listOfWords = messageContent.split(" ").filter(word => word !== "");
+const getCommentaryAndRestOfCommand = argumentsString => {
+	if (argumentsString.includes("//")) {
+		let argumentsSplitByDoubleSlash = argumentsString.split("//");
+		return {
+			beginCommand: argumentsSplitByDoubleSlash[0],
+			commentary: argumentsSplitByDoubleSlash.slice(1).join(" ").trim()
+		};
+	} else {
+		return {
+			beginCommand: argumentsString.trim(),
+			commentary: ""
+		}
+	}
+};
+
+const getMemberIdAndRestOfCommand = (argumentsString, memberList) => {
+	let listOfWords = argumentsString.split(" ").filter(word => word !== "");
 	if (listOfWords.length === 0) { // no argument
 		return {
 			memberId: undefined,
