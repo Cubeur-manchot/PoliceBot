@@ -59,18 +59,11 @@ const addWarnCommand = commandMessage => {
 };
 
 const getCommentaryAndRestOfCommand = argumentsString => {
-	if (argumentsString.includes("//")) {
-		let argumentsSplitByDoubleSlash = argumentsString.split("//");
-		return {
-			beginCommand: argumentsSplitByDoubleSlash[0],
-			commentary: argumentsSplitByDoubleSlash.slice(1).join(" ").trim()
-		};
-	} else {
-		return {
-			beginCommand: argumentsString.trim(),
-			commentary: ""
-		}
-	}
+	let [beginCommand, ...commentary] = argumentsString.split("//");
+	return {
+		beginCommand: beginCommand.trim(),
+		commentary: commentary.join(" ").trim()
+	};
 };
 
 const getMemberIdAndRestOfCommand = (argumentsString, memberList) => {
