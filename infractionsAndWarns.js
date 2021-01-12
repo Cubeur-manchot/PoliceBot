@@ -5,8 +5,6 @@ const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js"
 const {buildEmbedElementList, addInfractionHelpMessage, addWarnHelpMessage} = require("./messageBuilder.js");
 
 const addInfractionCommand = commandMessage => {
-	let infractionId = getAvailableId("infractions");
-	let infractionDate = getReadableDate(commandMessage.createdAt);
 	let commandArguments = commandMessage.content.replace(/^&addinfraction */i, "");
 	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId and infractionType
@@ -18,9 +16,9 @@ const addInfractionCommand = commandMessage => {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified infraction type.\n\n" + addInfractionHelpMessage);
 	} else {
 		writeInfoData({
-			id: infractionId,
+			id: getAvailableId("infractions"),
 			memberId: memberId,
-			date: infractionDate,
+			date: getReadableDate(commandMessage.createdAt),
 			type: restOfCommand,
 			commentary: commentary
 		}, "infractions");
@@ -29,8 +27,6 @@ const addInfractionCommand = commandMessage => {
 };
 
 const addWarnCommand = commandMessage => {
-	let warnId = getAvailableId("warns");
-	let warnDate = getReadableDate(commandMessage.createdAt);
 	let commandArguments = commandMessage.content.replace(/^&addwarn */i, "");
 	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId
@@ -46,9 +42,9 @@ const addWarnCommand = commandMessage => {
 			sendMessageToChannel(commandMessage.channel, `:x: Error : failed to link infraction(s) : ${unlinkedInfractions.join(", ")}.`);
 		} else {
 			writeInfoData({
-				id: warnId,
+				id: getAvailableId("warns"),
 				memberId: memberId,
-				date: warnDate,
+				date: getReadableDate(commandMessage.createdAt),
 				reason: reason,
 				infractions: linkedInfractions,
 				commentary: commentary
