@@ -7,14 +7,14 @@ const {buildEmbedElementList, addInfractionHelpMessage, addWarnHelpMessage} = re
 const addInfractionCommand = commandMessage => {
 	let infractionId = getAvailableId("infractions");
 	let infractionDate = getReadableDate(commandMessage.createdAt);
-	let infractionCommentary, beginCommand;
+	let commentary, beginCommand;
 	let commandArguments = commandMessage.content.replace(/^&addinfraction */i, "");
 	if (commandMessage.content.includes("//")) { // split comments from the rest of the arguments
-		[beginCommand, infractionCommentary] = commandArguments.split("//");
-		infractionCommentary = infractionCommentary.trim();
+		[beginCommand, commentary] = commandArguments.split("//");
+		commentary = commentary.trim();
 	} else {
 		beginCommand = commandArguments;
-		infractionCommentary = "";
+		commentary = "";
 	}
 	beginCommand = beginCommand.trim();
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId and infractionType
@@ -30,7 +30,7 @@ const addInfractionCommand = commandMessage => {
 			memberId: memberId,
 			date: infractionDate,
 			type: restOfCommand,
-			commentary: infractionCommentary
+			commentary: commentary
 		}, "infractions");
 		sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("infractions"));
 	}
@@ -39,14 +39,14 @@ const addInfractionCommand = commandMessage => {
 const addWarnCommand = commandMessage => {
 	let warnId = getAvailableId("warns");
 	let warnDate = getReadableDate(commandMessage.createdAt);
-	let warnCommentary, beginCommand;
+	let commentary, beginCommand;
 	let commandArguments = commandMessage.content.replace(/^&addwarn */i, "");
 	if (commandMessage.content.includes("//")) {
-		[beginCommand, warnCommentary] = commandArguments.split("//");
-		warnCommentary = warnCommentary.trim();
+		[beginCommand, commentary] = commandArguments.split("//");
+		commentary = commentary.trim();
 	} else {
 		beginCommand = commandArguments;
-		warnCommentary = "";
+		commentary = "";
 	}
 	beginCommand = beginCommand.trim();
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId
@@ -67,7 +67,7 @@ const addWarnCommand = commandMessage => {
 				date: warnDate,
 				reason: reason,
 				infractions: linkedInfractions,
-				commentary: warnCommentary
+				commentary: commentary
 			}, "warns");
 			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("warns"));
 		}
