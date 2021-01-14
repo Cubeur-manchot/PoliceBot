@@ -1,8 +1,8 @@
 "use strict";
 
-const {getAvailableId, getReadableDate, readInfoData, writeInfoData} = require("./dataManipulation.js");
+const {getAvailableId, getReadableDate, readInfoData, writeInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-const {buildEmbedElementList, addInfractionHelpMessage, addWarnHelpMessage} = require("./messageBuilder.js");
+const {buildEmbedElementList, buildEmbedElementDetails, addInfractionHelpMessage, addWarnHelpMessage, detailsHelpMessage} = require("./messageBuilder.js");
 
 const addInfractionCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&addinfraction */i, "");
@@ -51,6 +51,26 @@ const addWarnCommand = commandMessage => {
 			}, "warns");
 			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("warns"));
 		}
+	}
+};
+
+const detailsCommand = commandMessage => {
+	let commandArguments = commandMessage.content.replace(/^&details */i, "").split(" ").filter(word => word !== "");
+	let unknownElements = [];
+	for (let word of commandArguments) {
+		if (/^[iwb]#[0-9]+$/.test(word)) { // match id format
+			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
+			if (matchingElement) { // found a matching element, send information
+				sendEmbedToChannel(commandMessage.channel, buildEmbedElementDetails(matchingElement));
+			} else { // unknown element
+				unknownElements.push(word);
+			}
+		} else { // wrong id format
+			sendMessageToChannel(commandMessage.channel, ":x: Error : bad id format.\n\n" + detailsHelpMessage);
+		}
+	}
+	if (unknownElements.length) {
+		sendMessageToChannel(commandMessage.channel, `:x: Error : failed to find element(s) : ${unknownElements.join(", ")}.`);
 	}
 };
 
@@ -126,4 +146,4 @@ const getReasonAndLinkedInfractions = argumentsString => {
 	};
 };
 
-module.exports = {addInfractionCommand, addWarnCommand};
+module.exports = {addInfractionCommand, addWarnCommand, detailsCommand};

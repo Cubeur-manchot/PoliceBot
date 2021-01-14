@@ -1,6 +1,6 @@
 "use strict";
 
-const {groupElementsByMemberId, readInfoData} = require("./dataManipulation.js");
+const {groupElementsByMemberId, readInfoData, parseDate, getReadableDiffDate, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 
 const addInfractionHelpMessage = "```\n&addInfraction <member> <type> // <commentary>```"
 	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 7706, 217709941081767937."
@@ -14,6 +14,10 @@ const addWarnHelpMessage = "```\n&addWarn <member> <reason> <infractionId> // <c
 	+ "\n`<infractionId>` (optional) : the infraction(s) to be attached to the warn. Ex: i#1 i#3"
 	+ "\n`<commentary>` (optional) : gives more information about the warn."
 	+ "\n\nExample : ```\n&addWarn Cubeur-manchot#7706 HS répétitifs i#1 i#3 // c'est relou```";
+
+const detailsHelpMessage = "```&details <elementId>```"
+	+ "`<elementId>` : the id of the element you want details (infraction, warn or ban). Ex: i#1"
+	+ "\n\nExample : ```\n&details i#1```";
 
 const removeHelpMessage = "```\n&remove <elementId>```"
 	+ "`<elementId>` is the id of the element (infraction, warn, ban) to remove/revoke."
@@ -64,4 +68,29 @@ const buildEmbedElementList = infoType => {
 	return embedObject;
 };
 
-module.exports = {addInfractionHelpMessage, addWarnHelpMessage, removeHelpMessage, buildEmbedElementList};
+const buildEmbedElementDetails = element => {
+	let infoType = infoTypeFromIdFirstLetter[element.id[0]];
+	let description = `**Member** : <@${element.memberId}>`; // member
+	description += `\n**Date** : ${element.date} (${getReadableDiffDate(new Date(), parseDate(element.date))} ago)`; // date
+	if (infoType === "infractions") {
+		description += `\n**Type** : ${element.type}`; // infraction type
+	} else {
+		if (infoType === "bans") {
+			description += `\n**Expiration date** : ${element.expirationDate} (${getReadableDiffDate(parseDate(element.expirationDate), new Date())} remaining)`; // date
+		}
+		description += `\n**Reason** : ${element.reason}`; // warn or ban reason
+		if (infoType === "warns") {
+			description += `\n**Linked infractions** : ${element.infractions === "" ? "none" : element.infractions.replace(/ /g, ", ")}`; // linked infractions for warns
+		} else {
+			description += `\n**Linked warns** : ${element.warns === "" ? "none" : element.warns.replace(/ /g, ", ")}`; // linked warns for bans
+		}
+	}
+	description += `\n**Commentary** : ${element.commentary === "" ? "none" : element.commentary}`;
+	return {
+		color: embedColorFromType[infoType], // color
+		title: `__Details of ${infoType.slice(0, -1)} ${element.id}__`, // id
+		description: description
+	};
+};
+
+module.exports = {addInfractionHelpMessage, addWarnHelpMessage, detailsHelpMessage, removeHelpMessage, buildEmbedElementList, buildEmbedElementDetails};
