@@ -36,6 +36,15 @@ const getReadableDate = date => {
 		+ ":" + (date.getSeconds() < 10 ? "0" : "") + date.getSeconds();
 };
 
+const parseDate = dateString => new Date(
+		dateString.substr(6, 4), // year
+		dateString.substr(3, 2) - 1, // month
+		dateString.substr(0,2), // day
+		dateString.substr(11, 2), // hours
+		dateString.substr(14,2), // minutes
+		dateString.substr(17,2) // seconds
+	);
+
 const removeData = (argumentsString) => {
 	let elementsIdToRemove = argumentsString.split(" ").filter(word => word !== "");
 	let typesElementsSuccessfullyRemoved = [], failed = [];
