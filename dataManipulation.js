@@ -45,6 +45,12 @@ const parseDate = dateString => new Date(
 		dateString.substr(17,2) // seconds
 	);
 
+const infoTypeFromIdFirstLetter = {
+	i: "infractions",
+	w: "warns",
+	b: "bans"
+};
+
 const removeData = (argumentsString) => {
 	let elementsIdToRemove = argumentsString.split(" ").filter(word => word !== "");
 	let typesElementsSuccessfullyRemoved = [], failed = [];
