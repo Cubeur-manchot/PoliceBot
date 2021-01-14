@@ -89,7 +89,7 @@ const buildEmbedElementDetails = element => {
 	return {
 		color: embedColorFromType[infoType], // color
 		title: `__Details of ${infoType.slice(0, -1)} ${element.id}__`, // id
-		description: description
+		description: description // description
 	};
 };
 
