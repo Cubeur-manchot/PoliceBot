@@ -18,9 +18,9 @@ const onMessage = message => {
 		let messageContentLowerCase = message.content.toLowerCase();
 		if (messageContentLowerCase === "&infractions" || messageContentLowerCase === "&warns" || messageContentLowerCase === "&bans") { // display all elements of a type
 			sendEmbedToChannel(message.channel, buildEmbedElementList(messageContentLowerCase.slice(1)));
-		} else if (messageContentLowerCase === "&addinfraction") { // help for &addinfraction
+		} else if (messageContentLowerCase === "&addinfraction" || messageContentLowerCase === "&infraction") { // help for &addinfraction
 			sendMessageToChannel(message.channel, addInfractionHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&addinfraction ")) { // &addinfraction command
+		} else if (messageContentLowerCase.startsWith("&addinfraction ") || messageContentLowerCase.startsWith("&infraction ")) { // &addinfraction command
 			addInfractionCommand(message);
 		} else if (messageContentLowerCase === "&addwarn" || messageContentLowerCase === "&warn") { // help for &addwarn
 			sendMessageToChannel(message.channel, addWarnHelpMessage);
