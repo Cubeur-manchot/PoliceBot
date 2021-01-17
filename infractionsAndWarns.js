@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, getReadableDate, readInfoData, writeInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, getReadableDate, parseDate, readInfoData, writeInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage} = require("./helpMessages.js");
@@ -50,6 +50,35 @@ const addWarnCommand = commandMessage => {
 				commentary: commentary
 			}, "warns");
 			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("warns"));
+		}
+	}
+};
+
+const addBanCommand = commandMessage => {
+	let commandArguments = commandMessage.content.replace(/^&(add)?ban */i, "");
+	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
+	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId
+	if (!memberId) {
+		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addBanHelpMessage);
+	} else if (memberId === "many") {
+		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + addBanHelpMessage);
+	} else {
+		let {reason, linkedWarns, notLinkedWarns, expirationDate} = getReasonLinkedWarnsAndExpirationDate(restOfCommand);
+		if (notLinkedWarns.length) {
+			sendMessageToChannel(commandMessage.channel, `:x: Error : failed to link warn(s) : ${notLinkedWarns.join(", ")}.`);
+		} else if (reason === "") {
+			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified ban reason.\n\n" + addBanHelpMessage);
+		} else {
+			writeInfoData({
+				id: getAvailableId("warns"),
+				memberId: memberId,
+				date: getReadableDate(commandMessage.createdAt),
+				expirationDate: expirationDate,
+				reason: reason,
+				warns: linkedWarns,
+				commentary: commentary
+			}, "bans");
+			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("bans"));
 		}
 	}
 };
@@ -146,4 +175,28 @@ const getReasonAndLinkedInfractions = argumentsString => {
 	};
 };
 
-module.exports = {addInfractionCommand, addWarnCommand, detailsCommand};
+const getReasonLinkedWarnsAndExpirationDate = argumentsString => {
+	let reasonArray = [], existingWarns = [], nonExistingWarns = [], expirationDate = "";
+	let allWarns = readInfoData("warns");
+	for (let word of argumentsString.split(" ").filter(word => word !== "")) {
+		if (/^w#[0-9]+$/i.test(word)) { // word matches a warn id
+			if (allWarns.find(warn => warn.id === word)) { // warn id exists
+				existingWarns.push(word);
+			} else { // warn id doesn't exist
+				nonExistingWarns.push(word);
+			}
+		} else if (/^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/.test(word)) { // word matches a date
+			expirationDate = (getReadableDate(parseDate(word)) + "").substring(0, 10); // clean date before saving it
+		} else { // normal word
+			reasonArray.push(word);
+		}
+	}
+	return {
+		reason: reasonArray.join(" "),
+		linkedWarns: existingWarns.join(" "),
+		notLinkedWarns: nonExistingWarns,
+		expirationDate: expirationDate
+	}
+};
+
+module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand};
