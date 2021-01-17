@@ -142,7 +142,7 @@ const getReasonAndLinkedInfractions = argumentsString => {
 	return {
 		reason: reasonArray.join(" "),
 		linkedInfractions: existingInfractions.join(" "),
-		unlinkedInfractions: nonExistingInfractions
+		notLinkedInfractions: nonExistingInfractions
 	};
 };
 
