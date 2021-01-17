@@ -2,7 +2,8 @@
 
 const {getAvailableId, getReadableDate, readInfoData, writeInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-const {buildEmbedElementList, buildEmbedElementDetails, addInfractionHelpMessage, addWarnHelpMessage, detailsHelpMessage} = require("./messageBuilder.js");
+const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
+const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&addinfraction */i, "");
