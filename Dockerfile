@@ -6,6 +6,6 @@ COPY package.json .
 
 RUN npm install
 
-COPY index.js eventHandler.js messageHandler.js messageBuilder.js badWords.js dataManipulation.js infractionsAndWarns.js /
+COPY index.js eventHandler.js messageHandler.js messageBuilder.js helpMessages.js badWords.js dataManipulation.js infractionsAndWarns.js /
 
 CMD ["node", "index.js"]
