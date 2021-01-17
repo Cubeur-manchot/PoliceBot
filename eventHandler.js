@@ -27,6 +27,8 @@ const onMessage = message => {
 			sendMessageToChannel(message.channel, addWarnHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&addwarn ") || messageContentLowerCase.startsWith("&warn ")) { // &addwarn command
 			addWarnCommand(message);
+		} else if (messageContentLowerCase === "&addban" || messageContentLowerCase === "&ban") { // help for &ban
+			sendMessageToChannel(message.channel, addBanHelpMessage);
 		} else if (messageContentLowerCase === "&details") { // help for &details
 			sendMessageToChannel(message.channel, detailsHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&details ")) { // &details command
