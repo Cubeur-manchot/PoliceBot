@@ -27,7 +27,7 @@ const addInfractionCommand = commandMessage => {
 };
 
 const addWarnCommand = commandMessage => {
-	let commandArguments = commandMessage.content.replace(/^&addwarn */i, "");
+	let commandArguments = commandMessage.content.replace(/^&(add)?warn */i, "");
 	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId
 	if (!memberId) {

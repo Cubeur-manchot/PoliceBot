@@ -22,9 +22,9 @@ const onMessage = message => {
 			sendMessageToChannel(message.channel, addInfractionHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&addinfraction ")) { // &addinfraction command
 			addInfractionCommand(message);
-		} else if (messageContentLowerCase === "&addwarn") { // help for &addwarn
+		} else if (messageContentLowerCase === "&addwarn" || messageContentLowerCase === "&warn") { // help for &addwarn
 			sendMessageToChannel(message.channel, addWarnHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&addwarn ")) { // &addwarn command
+		} else if (messageContentLowerCase.startsWith("&addwarn ") || messageContentLowerCase.startsWith("&warn ")) { // &addwarn command
 			addWarnCommand(message);
 		} else if (messageContentLowerCase === "&details") { // help for &details
 			sendMessageToChannel(message.channel, detailsHelpMessage);
