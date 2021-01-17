@@ -37,9 +37,9 @@ const addWarnCommand = commandMessage => {
 	} else if (restOfCommand === "") {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified warn reason.\n\n" + addWarnHelpMessage);
 	} else {
-		let {reason, linkedInfractions, unlinkedInfractions} = getReasonAndLinkedInfractions(restOfCommand);
-		if (unlinkedInfractions.length) {
-			sendMessageToChannel(commandMessage.channel, `:x: Error : failed to link infraction(s) : ${unlinkedInfractions.join(", ")}.`);
+		let {reason, linkedInfractions, notLinkedInfractions} = getReasonAndLinkedInfractions(restOfCommand);
+		if (notLinkedInfractions.length) {
+			sendMessageToChannel(commandMessage.channel, `:x: Error : failed to link infraction(s) : ${notLinkedInfractions.join(", ")}.`);
 		} else {
 			writeInfoData({
 				id: getAvailableId("warns"),
