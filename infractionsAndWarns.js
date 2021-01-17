@@ -34,12 +34,12 @@ const addWarnCommand = commandMessage => {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addWarnHelpMessage);
 	} else if (memberId === "many") {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + addWarnHelpMessage);
-	} else if (restOfCommand === "") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified warn reason.\n\n" + addWarnHelpMessage);
 	} else {
 		let {reason, linkedInfractions, notLinkedInfractions} = getReasonAndLinkedInfractions(restOfCommand);
 		if (notLinkedInfractions.length) {
 			sendMessageToChannel(commandMessage.channel, `:x: Error : failed to link infraction(s) : ${notLinkedInfractions.join(", ")}.`);
+		} else if (reason === "") {
+			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified warn reason.\n\n" + addWarnHelpMessage);
 		} else {
 			writeInfoData({
 				id: getAvailableId("warns"),
