@@ -28,8 +28,7 @@ const addInfractionCommand = commandMessage => {
 };
 
 const addWarnCommand = commandMessage => {
-	let commandArguments = commandMessage.content.replace(/^&(add)?warn */i, "");
-	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
+	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandMessage.content.replace(/^&(add)?warn */i, ""));
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.channel.guild.members.cache); // parse memberId
 	if (!memberId) {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addWarnHelpMessage);
