@@ -129,7 +129,7 @@ const getReasonAndLinkedInfractions = argumentsString => {
 	let reasonArray = [], existingInfractions = [], nonExistingInfractions = [];
 	let allInfractions = readInfoData("infractions");
 	for (let word of argumentsString.split(" ").filter(word => word !== "")) {
-		if (/^[iwb]#[0-9]+$/i.test(word)) { // word matches an id
+		if (/^i#[0-9]+$/i.test(word)) { // word matches an infraction id
 			if (allInfractions.find(infraction => infraction.id === word)) { // infraction id exists
 				existingInfractions.push(word);
 			} else { // infractions id doesn't exist
