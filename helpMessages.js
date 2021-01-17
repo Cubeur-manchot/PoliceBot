@@ -15,7 +15,8 @@ const addWarnHelpMessage = "```\n&warn <member> <reason> <infractionId> // <comm
 
 const detailsHelpMessage = "```&details <elementId>```"
 	+ "`<elementId>` : the id of the element you want details (infraction, warn or ban). Ex: i#1"
-	+ "\n\nExample : ```\n&details i#1```";
+	+ "\nIt can show many elements at once."
+	+ "\n\nExample : ```\n&details i#1 i#4 w#1```";
 
 const removeHelpMessage = "```\n&remove <elementId>```"
 	+ "`<elementId>` is the id of the element (infraction, warn, ban) to remove/revoke."
