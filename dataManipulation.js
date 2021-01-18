@@ -184,7 +184,7 @@ const getMemberFromId = (memberIdToSearch, memberList) => {
 const getMembersFromName = (memberNameToSearch, memberList) => {
 	let matchingMembersId = [];
 	for (let memberId of Object.keys(memberList)) {
-		if (memberList[memberId] === memberNameToSearch) {
+		if (memberList[memberId].username === memberNameToSearch || memberList[memberId].tag === memberNameToSearch) {
 			matchingMembersId.push(memberId);
 		}
 	}
