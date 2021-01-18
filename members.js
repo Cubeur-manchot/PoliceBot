@@ -19,4 +19,7 @@ const getMembersFromName = (memberNameToSearch, memberList) => {
 	return matchingMembersId;
 };
 
-module.exports = {getMemberFromId, getMembersFromName};
+const banMember = (memberId, memberList) => memberList.ban(memberId)
+	.catch(console.error);
+
+module.exports = {getMemberFromId, getMembersFromName, banMember};
