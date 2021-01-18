@@ -70,7 +70,7 @@ const addBanCommand = commandMessage => {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified ban reason.\n\n" + addBanHelpMessage);
 		} else {
 			addInfoData({
-				id: getAvailableId("warns"),
+				id: getAvailableId("bans"),
 				memberId: memberId,
 				date: getReadableDate(commandMessage.createdAt),
 				expirationDate: expirationDate,
