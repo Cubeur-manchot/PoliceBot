@@ -2,7 +2,7 @@
 
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {removeData, readInfoData, writeInfoData} = require("./dataManipulation.js");
-const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand} = require("./infractionsAndWarns.js");
+const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand} = require("./infractionsWarnsBans.js");
 const {handleBadWords} = require("./badWords");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage} = require("./helpMessages.js");
 const {buildEmbedElementList} = require("./messageBuilder.js");
