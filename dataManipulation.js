@@ -11,7 +11,7 @@ const readInfoData = infoType =>
 const writePoliceBotData = policeBotDataObject =>
 	fs.writeFileSync("./policeBotData.json", JSON.stringify(policeBotDataObject, null, "\t"));
 
-const writeInfoData = (newData, infoType) => {
+const addInfoData = (newData, infoType) => {
 	let policeBotData = readPoliceBotData();
 	policeBotData[infoType].push(newData);
 	writePoliceBotData(policeBotData);
@@ -166,4 +166,4 @@ const groupElementsByMemberId = elementsArray => {
 	return result;
 };
 
-module.exports = {readInfoData, writeInfoData, getAvailableId, getReadableDate, getReadableDiffDate, parseDate, removeData, groupElementsByMemberId, infoTypeFromIdFirstLetter};
+module.exports = {readInfoData, addInfoData, getAvailableId, getReadableDate, getReadableDiffDate, parseDate, removeData, groupElementsByMemberId, infoTypeFromIdFirstLetter};

@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, getReadableDate, parseDate, readInfoData, writeInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, getReadableDate, parseDate, readInfoData, addInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage} = require("./helpMessages.js");
@@ -16,7 +16,7 @@ const addInfractionCommand = commandMessage => {
 	} else if (restOfCommand === "") {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified infraction type.\n\n" + addInfractionHelpMessage);
 	} else {
-		writeInfoData({
+		addInfoData({
 			id: getAvailableId("infractions"),
 			memberId: memberId,
 			date: getReadableDate(commandMessage.createdAt),
@@ -41,7 +41,7 @@ const addWarnCommand = commandMessage => {
 		} else if (reason === "") {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified warn reason.\n\n" + addWarnHelpMessage);
 		} else {
-			writeInfoData({
+			addInfoData({
 				id: getAvailableId("warns"),
 				memberId: memberId,
 				date: getReadableDate(commandMessage.createdAt),
@@ -69,7 +69,7 @@ const addBanCommand = commandMessage => {
 		} else if (reason === "") {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified ban reason.\n\n" + addBanHelpMessage);
 		} else {
-			writeInfoData({
+			addInfoData({
 				id: getAvailableId("warns"),
 				memberId: memberId,
 				date: getReadableDate(commandMessage.createdAt),
