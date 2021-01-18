@@ -79,6 +79,7 @@ const addBanCommand = commandMessage => {
 				commentary: commentary
 			}, "bans");
 			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("bans"));
+			commandMessage.guild.members.ban(memberId).catch(console.error);
 		}
 	}
 };
