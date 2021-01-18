@@ -138,7 +138,7 @@ const removeData = (argumentsString) => {
 	let typesElementsSuccessfullyRemoved = [], failed = [];
 	let policeBotData = readPoliceBotData();
 	for (let elementIdToRemove of elementsIdToRemove) {
-		if (/(i|w)#[0-9]+/.test(elementIdToRemove)) { // infraction or warn to remove
+		if (/[iw]#[0-9]+/.test(elementIdToRemove)) { // infraction or warn to remove
 			let elementType = elementIdToRemove[0] === "i" ? "infractions" : "warns";
 			let indexToRemove = policeBotData[elementType].findIndex(element => element.id === elementIdToRemove);
 			if (indexToRemove === -1) { // id doesn't exist
