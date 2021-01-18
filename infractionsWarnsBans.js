@@ -1,6 +1,7 @@
 "use strict";
 
-const {getAvailableId, readInfoData, addInfoData, getMemberFromId, getMembersFromName, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, addInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getMemberFromId, getMembersFromName} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
