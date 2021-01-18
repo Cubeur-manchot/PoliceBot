@@ -17,6 +17,12 @@ const addInfoData = (newData, infoType) => {
 	writePoliceBotData(policeBotData);
 };
 
+const writeInfoData = (newData, infoType) => {
+	let policeBotData = readPoliceBotData();
+	policeBotData[infoType] = newData;
+	writePoliceBotData(policeBotData);
+};
+
 const getAvailableId = infoType => {
 	let dataOfThisType = readInfoData(infoType);
 	let idWithoutIncrement = infoType[0].toLowerCase() + "#";
@@ -166,4 +172,4 @@ const groupElementsByMemberId = elementsArray => {
 	return result;
 };
 
-module.exports = {readInfoData, addInfoData, getAvailableId, getReadableDate, getReadableDiffDate, parseDate, removeData, groupElementsByMemberId, infoTypeFromIdFirstLetter};
+module.exports = {readInfoData, addInfoData, writeInfoData, getAvailableId, getReadableDate, getReadableDiffDate, parseDate, removeData, groupElementsByMemberId, infoTypeFromIdFirstLetter};

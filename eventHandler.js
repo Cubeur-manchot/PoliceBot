@@ -1,7 +1,7 @@
 "use strict";
 
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-const {removeData} = require("./dataManipulation.js");
+const {removeData, readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand} = require("./infractionsAndWarns.js");
 const {handleBadWords} = require("./badWords");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage} = require("./helpMessages.js");
@@ -45,6 +45,14 @@ const onMessage = message => {
 		}
 	} else if (message.author.id !== "719973594029097040") { // message not sent by PoliceBot, work on the content
 		handleBadWords(message);
+	}
+	let members = readInfoData("members");
+	if (!members[message.author.id] // member is not already registered in the list
+		|| ((message.member && message.member.nickname) // if the member has a nickname
+			? members[message.author.id] !== message.member.nickname // the nickname doesn't match the registered one
+			: members[message.author.id] !== message.author.username)) { // the username doesn't match the registered one
+		members[message.author.id] = (message.member && message.member.nickname) ? message.member.nickname : message.author.username; // update name
+		writeInfoData(members, "members"); // save in data
 	}
 };
 
