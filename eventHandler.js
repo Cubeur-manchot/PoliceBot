@@ -52,7 +52,10 @@ const onMessage = message => {
 		|| ((message.member && message.member.nickname) // if the member has a nickname
 			? members[message.author.id] !== message.member.nickname // the nickname doesn't match the registered one
 			: members[message.author.id] !== message.author.username)) { // the username doesn't match the registered one
-		members[message.author.id] = (message.member && message.member.nickname) ? message.member.nickname : message.author.username; // update name
+		members[message.author.id] = { // update current username and tag
+			username: (message.member && message.member.nickname) ? message.member.nickname : message.author.username,
+			tag: message.author.tag
+		};
 		writeInfoData(members, "members"); // save in data
 		message.client.memberList = members; // update cache
 	}
