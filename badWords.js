@@ -1,7 +1,8 @@
 "use strict";
 
 const {sendMessageToChannel, sendLog, deleteMessage} = require("./messageHandler.js");
-const {addInfoData, getAvailableId, getReadableDate} = require("./dataManipulation.js");
+const {addInfoData, getAvailableId} = require("./dataManipulation.js");
+const {getReadableDate} = require("./date.js");
 
 const badWords = [
 	"b(i|1)tt?es?",

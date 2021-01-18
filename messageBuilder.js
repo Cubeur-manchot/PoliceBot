@@ -1,6 +1,7 @@
 "use strict";
 
-const {groupElementsByMemberId, readInfoData, parseDate, getReadableDiffDate, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {groupElementsByMemberId, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {parseDate, getReadableDiffDate} = require("./date.js");
 
 const embedColorFromType = {
 	"infractions": "#cccc00",
