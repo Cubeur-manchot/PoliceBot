@@ -39,7 +39,7 @@ const infoTypeFromIdFirstLetter = {
 	b: "bans"
 };
 
-const removeData = (argumentsString) => {
+const removeData = argumentsString => {
 	let elementsIdToRemove = argumentsString.split(" ").filter(word => word !== "");
 	let typesElementsSuccessfullyRemoved = [], failed = [];
 	let policeBotData = readPoliceBotData();
