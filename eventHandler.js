@@ -4,7 +4,7 @@ const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChanne
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand} = require("./infractionsWarnsBans.js");
 const {handleBadWords} = require("./badWords");
-const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage} = require("./helpMessages.js");
+const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 const {buildEmbedElementList} = require("./messageBuilder.js");
 
 const onReady = PoliceBot => {
@@ -40,6 +40,8 @@ const onMessage = message => {
 			sendMessageToChannel(message.channel, removeHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command
 			removeCommand(messageContentLowerCase.replace(/^&remove */, ""), message);
+		} else if (messageContentLowerCase === "&unban") { // help for &unban
+			sendMessageToChannel(message.channel, unbanHelpMessage);
 		} else {
 			sendMessageToChannel(message.channel, "Désolé mais pour le moment je ne connais pas cette commande. "
 				+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");

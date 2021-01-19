@@ -31,4 +31,7 @@ const removeHelpMessage = "```\n&remove <elementId>```"
 	+ "\nIt can remove many elements at once."
 	+ "\n\nExample: ```\n&remove i#3 i#4 w#1```";
 
-module.exports = {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage};
+const unbanHelpMessage = "```\n&unban <member>```"
+	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937.";
+
+module.exports = {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage, unbanHelpMessage};
