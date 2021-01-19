@@ -33,6 +33,12 @@ const getAvailableId = infoType => {
 	}
 };
 
+const removePoliceBotData = (infoType, indexOfElement) => {
+	let dataOfThisType = readInfoData(infoType);
+	dataOfThisType.splice(indexOfElement, 1);
+	writeInfoData(dataOfThisType, infoType);
+};
+
 const infoTypeFromIdFirstLetter = {
 	i: "infractions",
 	w: "warns",
@@ -51,4 +57,4 @@ const groupElementsByMemberId = elementsArray => {
 	return result;
 };
 
-module.exports = {readInfoData, addInfoData, writeInfoData, readPoliceBotData, writePoliceBotData, getAvailableId, groupElementsByMemberId, infoTypeFromIdFirstLetter};
+module.exports = {readInfoData, addInfoData, writeInfoData, readPoliceBotData, removePoliceBotData, getAvailableId, groupElementsByMemberId, infoTypeFromIdFirstLetter};

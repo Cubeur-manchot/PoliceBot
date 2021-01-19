@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readPoliceBotData, writePoliceBotData, readInfoData, addInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, readPoliceBotData, removePoliceBotData, readInfoData, addInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
@@ -238,7 +238,7 @@ const removeElement = argumentsString => {
 			if (indexToRemove === -1) { // id doesn't exist
 				failed.push(elementIdToRemove);
 			} else { // id exists, remove the infraction of warn
-				policeBotData[elementType].splice(indexToRemove, 1);
+				removePoliceBotData(elementType, indexToRemove);
 				typesElementsSuccessfullyRemoved[elementType] = true;
 			}
 		} else if (/b#[0-9]+/.test(elementIdToRemove)) { // ban to remove
@@ -247,7 +247,6 @@ const removeElement = argumentsString => {
 			failed.push(elementIdToRemove);
 		}
 	}
-	writePoliceBotData(policeBotData); // update with modified data
 	return {
 		typesElementsSuccessfullyRemoved: typesElementsSuccessfullyRemoved,
 		failed: failed
