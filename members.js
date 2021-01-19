@@ -25,5 +25,4 @@ const banMember = (memberId, memberList) => memberList.ban(memberId)
 const unbanMember = (memberId, memberList) => memberList.unban(memberId)
 	.catch(console.error);
 
-
 module.exports = {getMemberFromId, getMembersFromName, banMember, unbanMember};

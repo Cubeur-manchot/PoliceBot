@@ -39,7 +39,7 @@ const onMessage = message => {
 		} else if (messageContentLowerCase === "&remove") { // help for &remove
 			sendMessageToChannel(message.channel, removeHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command
-			removeDataAndHandleResults(messageContentLowerCase.replace(/^&remove */, ""), message);
+			removeCommand(messageContentLowerCase.replace(/^&remove */, ""), message);
 		} else {
 			sendMessageToChannel(message.channel, "Désolé mais pour le moment je ne connais pas cette commande. "
 				+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
@@ -61,7 +61,7 @@ const onMessage = message => {
 	}
 };
 
-const removeDataAndHandleResults = (argumentsString, message) => {
+const removeCommand = (argumentsString, message) => {
 	let {typesElementsSuccessfullyRemoved, failed} = removeData(argumentsString, message);
 	for (let infoType in typesElementsSuccessfullyRemoved) {
 		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));
