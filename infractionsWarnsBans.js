@@ -106,7 +106,8 @@ const detailsCommand = commandMessage => {
 	}
 };
 
-const removeCommand = (argumentsString, message) => {
+const removeCommand = message => {
+	let argumentsString = message.content.replace(/^&remove */i,"");
 	let {typesElementsSuccessfullyRemoved, failed} = removeData(argumentsString, message);
 	for (let infoType in typesElementsSuccessfullyRemoved) {
 		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));

@@ -39,7 +39,7 @@ const onMessage = message => {
 		} else if (messageContentLowerCase === "&remove") { // help for &remove
 			sendMessageToChannel(message.channel, removeHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command
-			removeCommand(messageContentLowerCase.replace(/^&remove */, ""), message);
+			removeCommand(message);
 		} else if (messageContentLowerCase === "&unban") { // help for &unban
 			sendMessageToChannel(message.channel, unbanHelpMessage);
 		} else {
