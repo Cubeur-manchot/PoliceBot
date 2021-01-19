@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readInfoData, addInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, addInfoData, removeData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
@@ -106,6 +106,16 @@ const detailsCommand = commandMessage => {
 	}
 };
 
+const removeCommand = (argumentsString, message) => {
+	let {typesElementsSuccessfullyRemoved, failed} = removeData(argumentsString, message);
+	for (let infoType in typesElementsSuccessfullyRemoved) {
+		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));
+	}
+	if (failed.length) {
+		sendMessageToChannel(message.channel, ":x: Failed to remove :\n- " + failed.join("\n- "));
+	}
+};
+
 const getCommentaryAndRestOfCommand = argumentsString => {
 	let [beginCommand, ...commentary] = argumentsString.split("//");
 	return {
@@ -198,4 +208,4 @@ const getReasonLinkedWarnsAndExpirationDate = argumentsString => {
 	}
 };
 
-module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand};
+module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand};

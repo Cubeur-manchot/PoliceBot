@@ -1,8 +1,8 @@
 "use strict";
 
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
-const {removeData, readInfoData, writeInfoData} = require("./dataManipulation.js");
-const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand} = require("./infractionsWarnsBans.js");
+const {readInfoData, writeInfoData} = require("./dataManipulation.js");
+const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand} = require("./infractionsWarnsBans.js");
 const {handleBadWords} = require("./badWords");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage} = require("./helpMessages.js");
 const {buildEmbedElementList} = require("./messageBuilder.js");
@@ -58,16 +58,6 @@ const onMessage = message => {
 		};
 		writeInfoData(members, "members"); // save in data
 		message.client.memberList = members; // update cache
-	}
-};
-
-const removeCommand = (argumentsString, message) => {
-	let {typesElementsSuccessfullyRemoved, failed} = removeData(argumentsString, message);
-	for (let infoType in typesElementsSuccessfullyRemoved) {
-		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));
-	}
-	if (failed.length) {
-		sendMessageToChannel(message.channel, ":x: Failed to remove :\n- " + failed.join("\n- "));
 	}
 };
 
