@@ -5,7 +5,7 @@ const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require(".
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
-const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage} = require("./helpMessages.js");
+const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&addinfraction */i, "");
@@ -117,6 +117,24 @@ const removeCommand = message => {
 	}
 };
 
+const unbanCommand = commandMessage => {
+	let commandArguments = commandMessage.content.replace(/^&unban */i, "");
+	let {memberId} = getMemberIdAndRestOfCommand(commandArguments, commandMessage.client.memberList); // parse memberId
+	if (!memberId) {
+		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + unbanHelpMessage);
+	} else if (memberId === "many") {
+		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + unbanHelpMessage);
+	} else {
+		let banId = readInfoData("bans").find(ban => ban.memberId === memberId).id; // find the banId corresponding to the ban of the memberId
+		if (!banId) {
+			sendMessageToChannel(commandMessage.channel, ":x: Error : member is not banned.\n\n" + unbanHelpMessage);
+		} else {
+			commandMessage.content = "&remove " + banId; // change message content in message object to fake a &remove command
+			removeCommand(commandMessage); // behave exactly as if there was a &remove command with the banId
+		}
+	}
+};
+
 const getCommentaryAndRestOfCommand = argumentsString => {
 	let [beginCommand, ...commentary] = argumentsString.split("//");
 	return {
@@ -209,4 +227,4 @@ const getReasonLinkedWarnsAndExpirationDate = argumentsString => {
 	}
 };
 
-module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand};
+module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand, unbanCommand};
