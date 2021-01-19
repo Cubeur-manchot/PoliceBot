@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readInfoData, addInfoData, removeElement, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, readPoliceBotData, writePoliceBotData, readInfoData, addInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
@@ -224,6 +224,33 @@ const getReasonLinkedWarnsAndExpirationDate = argumentsString => {
 		linkedWarns: existingWarns.join(" "),
 		notLinkedWarns: nonExistingWarns,
 		expirationDate: expirationDate
+	}
+};
+
+const removeElement = argumentsString => {
+	let elementsIdToRemove = argumentsString.split(" ").filter(word => word !== "");
+	let typesElementsSuccessfullyRemoved = [], failed = [];
+	let policeBotData = readPoliceBotData();
+	for (let elementIdToRemove of elementsIdToRemove) {
+		if (/[iw]#[0-9]+/.test(elementIdToRemove)) { // infraction or warn to remove
+			let elementType = elementIdToRemove[0] === "i" ? "infractions" : "warns";
+			let indexToRemove = policeBotData[elementType].findIndex(element => element.id === elementIdToRemove);
+			if (indexToRemove === -1) { // id doesn't exist
+				failed.push(elementIdToRemove);
+			} else { // id exists, remove the infraction of warn
+				policeBotData[elementType].splice(indexToRemove, 1);
+				typesElementsSuccessfullyRemoved[elementType] = true;
+			}
+		} else if (/b#[0-9]+/.test(elementIdToRemove)) { // ban to remove
+			// todo special case
+		} else {
+			failed.push(elementIdToRemove);
+		}
+	}
+	writePoliceBotData(policeBotData); // update with modified data
+	return {
+		typesElementsSuccessfullyRemoved: typesElementsSuccessfullyRemoved,
+		failed: failed
 	}
 };
 

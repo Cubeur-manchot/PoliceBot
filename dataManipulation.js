@@ -39,33 +39,6 @@ const infoTypeFromIdFirstLetter = {
 	b: "bans"
 };
 
-const removeElement = argumentsString => {
-	let elementsIdToRemove = argumentsString.split(" ").filter(word => word !== "");
-	let typesElementsSuccessfullyRemoved = [], failed = [];
-	let policeBotData = readPoliceBotData();
-	for (let elementIdToRemove of elementsIdToRemove) {
-		if (/[iw]#[0-9]+/.test(elementIdToRemove)) { // infraction or warn to remove
-			let elementType = elementIdToRemove[0] === "i" ? "infractions" : "warns";
-			let indexToRemove = policeBotData[elementType].findIndex(element => element.id === elementIdToRemove);
-			if (indexToRemove === -1) { // id doesn't exist
-				failed.push(elementIdToRemove);
-			} else { // id exists, remove the infraction of warn
-				policeBotData[elementType].splice(indexToRemove, 1);
-				typesElementsSuccessfullyRemoved[elementType] = true;
-			}
-		} else if (/b#[0-9]+/.test(elementIdToRemove)) { // ban to remove
-			// todo special case
-		} else {
-			failed.push(elementIdToRemove);
-		}
-	}
-	writePoliceBotData(policeBotData); // update with modified data
-	return {
-		typesElementsSuccessfullyRemoved: typesElementsSuccessfullyRemoved,
-		failed: failed
-	}
-};
-
 const groupElementsByMemberId = elementsArray => {
 	let result = [];
 	for (let element of elementsArray) {
@@ -78,4 +51,4 @@ const groupElementsByMemberId = elementsArray => {
 	return result;
 };
 
-module.exports = {readInfoData, addInfoData, writeInfoData, getAvailableId, removeElement, groupElementsByMemberId, infoTypeFromIdFirstLetter};
+module.exports = {readInfoData, addInfoData, writeInfoData, readPoliceBotData, writePoliceBotData, getAvailableId, groupElementsByMemberId, infoTypeFromIdFirstLetter};
