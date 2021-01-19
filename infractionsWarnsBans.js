@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readInfoData, addInfoData, removeData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, addInfoData, removeElement, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
@@ -108,7 +108,7 @@ const detailsCommand = commandMessage => {
 
 const removeCommand = message => {
 	let argumentsString = message.content.replace(/^&remove */i,"");
-	let {typesElementsSuccessfullyRemoved, failed} = removeData(argumentsString);
+	let {typesElementsSuccessfullyRemoved, failed} = removeElement(argumentsString);
 	for (let infoType in typesElementsSuccessfullyRemoved) {
 		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));
 	}

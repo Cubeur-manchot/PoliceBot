@@ -39,7 +39,7 @@ const infoTypeFromIdFirstLetter = {
 	b: "bans"
 };
 
-const removeData = argumentsString => {
+const removeElement = argumentsString => {
 	let elementsIdToRemove = argumentsString.split(" ").filter(word => word !== "");
 	let typesElementsSuccessfullyRemoved = [], failed = [];
 	let policeBotData = readPoliceBotData();
@@ -78,4 +78,4 @@ const groupElementsByMemberId = elementsArray => {
 	return result;
 };
 
-module.exports = {readInfoData, addInfoData, writeInfoData, getAvailableId, removeData, groupElementsByMemberId, infoTypeFromIdFirstLetter};
+module.exports = {readInfoData, addInfoData, writeInfoData, getAvailableId, removeElement, groupElementsByMemberId, infoTypeFromIdFirstLetter};
