@@ -125,12 +125,13 @@ const unbanCommand = commandMessage => {
 	} else if (memberId === "many") {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + unbanHelpMessage);
 	} else {
-		let banId = readInfoData("bans").find(ban => ban.memberId === memberId).id; // find the banId corresponding to the ban of the memberId
-		if (!banId) {
+		let policeBotBanData = readInfoData("bans");
+		let banIndex = policeBotBanData.findIndex(ban => ban.memberId === memberId).id; // find the ban corresponding to the memberId
+		if (banIndex === -1) {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : member is not banned.\n\n" + unbanHelpMessage);
 		} else {
-			commandMessage.content = "&remove " + banId; // change message content in message object to fake a &remove command
-			removeCommand(commandMessage); // behave exactly as if there was a &remove command with the banId
+			unbanMember(memberId, commandMessage.guild.members); // unban member
+			policeBotBanData[banIndex].expirationDate = getReadableDate(new Date()).substring(0, 10); // end the ban
 		}
 	}
 };
