@@ -55,7 +55,12 @@ const buildEmbedElementDetails = element => {
 		description += `\n**Type** : ${element.type}`; // infraction type
 	} else {
 		if (infoType === "bans") {
-			description += `\n**Expiration date** : ${element.expirationDate} (${getReadableDiffDate(parseDate(element.expirationDate), new Date())} remaining)`; // date
+			description += "\n**Expiration date** : "; // expiration date
+			if (element.expirationDate === "") {
+				description += "None (definitive ban)";
+			} else {
+				description += `${element.expirationDate} (${getReadableDiffDate(parseDate(element.expirationDate), new Date())} remaining)`;
+			}
 		}
 		description += `\n**Reason** : ${element.reason}`; // warn or ban reason
 		if (infoType === "warns") {
