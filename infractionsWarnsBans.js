@@ -113,7 +113,7 @@ const detailsCommand = commandMessage => {
 
 const removeCommand = message => {
 	let argumentsString = message.content.replace(/^&remove */i,"");
-	let {typesElementsSuccessfullyRemoved, failed} = removeElement(argumentsString);
+	let {typesElementsSuccessfullyRemoved, failed} = removeElement(argumentsString, message);
 	for (let infoType in typesElementsSuccessfullyRemoved) {
 		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));
 	}
@@ -235,7 +235,7 @@ const getReasonLinkedWarnsAndExpirationDate = argumentsString => {
 	}
 };
 
-const removeElement = argumentsString => {
+const removeElement = (argumentsString, message) => {
 	let elementsIdToRemove = argumentsString.split(" ").filter(word => word !== "");
 	let typesElementsSuccessfullyRemoved = [], failed = [];
 	let policeBotData = readPoliceBotData();
@@ -250,7 +250,15 @@ const removeElement = argumentsString => {
 				typesElementsSuccessfullyRemoved[elementType] = true;
 			}
 		} else if (/b#[0-9]+/.test(elementIdToRemove)) { // ban to remove
-			// todo special case
+			let indexToRemove = policeBotData["bans"].findIndex(element => element.id === elementIdToRemove);
+			if (indexToRemove === -1) { // id doesn't exist
+				failed.push(elementIdToRemove);
+			} else { // id exists
+				let memberId = policeBotData["bans"][indexToRemove].memberId;
+				removePoliceBotData("bans", indexToRemove); // remove element in PoliceBot data
+				unbanMember(memberId, message.guild.members); // unban the member
+				typesElementsSuccessfullyRemoved["bans"] = true;
+			}
 		} else {
 			failed.push(elementIdToRemove);
 		}
