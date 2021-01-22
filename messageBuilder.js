@@ -59,7 +59,11 @@ const buildEmbedElementDetails = element => {
 			if (element.expirationDate === "") {
 				description += "None (definitive ban)";
 			} else {
-				description += `${element.expirationDate} (${getReadableDiffDate(parseDate(element.expirationDate), new Date())} remaining)`;
+				let currentDate = new Date();
+				let expirationDate = parseDate(element.expirationDate);
+				description += (currentDate < expirationDate
+						? `${element.expirationDate} (${getReadableDiffDate(expirationDate, currentDate)} remaining)`
+						: `${element.expirationDate} (finished ${getReadableDiffDate(currentDate, expirationDate)} ago)`);
 			}
 		}
 		description += `\n**Reason** : ${element.reason}`; // warn or ban reason
