@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readPoliceBotData, removePoliceBotData, readInfoData, addInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, readPoliceBotData, removePoliceBotData, readInfoData, addInfoData, writeInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
@@ -82,6 +82,11 @@ const addBanCommand = commandMessage => {
 			}, "bans");
 			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("bans"));
 			banMember(memberId, commandMessage.guild.members);
+			if (expirationDate !== "") { // temp ban
+				setTimeout(() => {
+					unbanMember(memberId, commandMessage.guild.members);
+				}, parseDate(expirationDate).getTime() - commandMessage.createdAt.getTime());
+			}
 		}
 	}
 };
@@ -126,12 +131,14 @@ const unbanCommand = commandMessage => {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + unbanHelpMessage);
 	} else {
 		let policeBotBanData = readInfoData("bans");
-		let banIndex = policeBotBanData.findIndex(ban => ban.memberId === memberId).id; // find the ban corresponding to the memberId
+		let banIndex = policeBotBanData.findIndex(ban => ban.memberId === memberId); // find the ban corresponding to the memberId
 		if (banIndex === -1) {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : member is not banned.\n\n" + unbanHelpMessage);
 		} else {
 			unbanMember(memberId, commandMessage.guild.members); // unban member
-			policeBotBanData[banIndex].expirationDate = getReadableDate(new Date()).substring(0, 10); // end the ban
+			policeBotBanData[banIndex].expirationDate = getReadableDate(new Date()); // end the ban
+			writeInfoData(policeBotBanData, "bans"); // save modification
+			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("bans"));
 		}
 	}
 };
