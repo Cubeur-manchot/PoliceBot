@@ -22,7 +22,9 @@ const getMembersFromName = (memberNameToSearch, memberList) => {
 const banMember = (memberId, memberList) => memberList.ban(memberId)
 	.catch(console.error);
 
-const unbanMember = (memberId, memberList) => memberList.unban(memberId)
-	.catch(console.error);
+const unbanMember = (memberId, memberList, withoutConsole) => {
+	memberList.unban(memberId)
+		.catch(withoutConsole ? () => {} : console.error)
+};
 
 module.exports = {getMemberFromId, getMembersFromName, banMember, unbanMember};
