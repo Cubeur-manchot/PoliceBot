@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readPoliceBotData, removePoliceBotData, readInfoData, addInfoData, writeInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, readPoliceBotData, removePoliceBotData, readInfoData, addInfoData, writeInfoData, groupElementsByMemberId, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
@@ -263,4 +263,40 @@ const removeElement = (argumentsString, message) => {
 	}
 };
 
-module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand, unbanCommand};
+const reloadTempBans = PoliceBot => {
+	let cubeursFrancophonesServer = PoliceBot.guilds.cache.get("329175643877015553");
+	let bansGroupedByMemberId = groupElementsByMemberId(readInfoData("bans"));
+	let bansExpirationDate = [];
+	for (let memberId in bansGroupedByMemberId) {
+		let bansOfThisMember = bansGroupedByMemberId[memberId];
+		for (let ban of bansOfThisMember) {
+			let expirationDate = parseDate(ban.expirationDate);
+			if (expirationDate === "") { // member is definitively banned
+				bansExpirationDate[memberId] = undefined;
+				break;
+			} else if (expirationDate > bansExpirationDate[memberId]) { // found later expiration date, update the saved one
+				bansExpirationDate[memberId] = expirationDate;
+			}
+		}
+	}
+	let relaunchedTempBansCount = 0;
+	let currentDate = new Date();
+	for (let memberId in bansExpirationDate) {
+		let expirationDate = bansExpirationDate[memberId];
+		if (expirationDate) { // check if date is not undefined
+			if (expirationDate > currentDate) { // expiration date is in the future, the unban must be planed from now
+				setTimeout(() => {
+					unbanMember(memberId, cubeursFrancophonesServer.members);
+				}, expirationDate.getTime() - currentDate.getTime());
+				relaunchedTempBansCount ++;
+			} else { // expiration date is in the past, member must be unbanned
+				unbanMember(memberId, cubeursFrancophonesServer.members, true);
+			}
+		}
+	}
+	if (relaunchedTempBansCount) {
+		console.log(`PoliceBot has relaunched ${relaunchedTempBansCount} temporary ban${relaunchedTempBansCount === 1 ? "" : "s"}`);
+	}
+};
+
+module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand, unbanCommand, reloadTempBans};

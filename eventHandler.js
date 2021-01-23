@@ -2,7 +2,7 @@
 
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messageHandler.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
-const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand, unbanCommand} = require("./infractionsWarnsBans.js");
+const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords} = require("./badWords");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 const {buildEmbedElementList} = require("./messageBuilder.js");
@@ -12,6 +12,7 @@ const onReady = PoliceBot => {
 		.then(() => console.log("PoliceBot is ready !"))
 		.catch(console.error);
 	PoliceBot.memberList = readInfoData("members");
+	reloadTempBans(PoliceBot);
 };
 
 const onMessage = message => {
