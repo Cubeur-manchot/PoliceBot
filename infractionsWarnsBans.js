@@ -240,24 +240,18 @@ const removeElement = (argumentsString, message) => {
 	let typesElementsSuccessfullyRemoved = [], failed = [];
 	let policeBotData = readPoliceBotData();
 	for (let elementIdToRemove of elementsIdToRemove) {
-		if (/[iw]#[0-9]+/.test(elementIdToRemove)) { // infraction or warn to remove
-			let elementType = elementIdToRemove[0] === "i" ? "infractions" : "warns";
+		if (/[iwb]#[0-9]+/.test(elementIdToRemove)) { // infraction, warn or ban to remove
+			let elementType = infoTypeFromIdFirstLetter[elementIdToRemove[0]];
 			let indexToRemove = policeBotData[elementType].findIndex(element => element.id === elementIdToRemove);
 			if (indexToRemove === -1) { // id doesn't exist
 				failed.push(elementIdToRemove);
 			} else { // id exists, remove the infraction of warn
+				if (elementType === "bans") {
+					let memberId = policeBotData["bans"][indexToRemove].memberId;
+					unbanMember(memberId, message.guild.members); // unban the member
+				}
 				removePoliceBotData(elementType, indexToRemove);
 				typesElementsSuccessfullyRemoved[elementType] = true;
-			}
-		} else if (/b#[0-9]+/.test(elementIdToRemove)) { // ban to remove
-			let indexToRemove = policeBotData["bans"].findIndex(element => element.id === elementIdToRemove);
-			if (indexToRemove === -1) { // id doesn't exist
-				failed.push(elementIdToRemove);
-			} else { // id exists
-				let memberId = policeBotData["bans"][indexToRemove].memberId;
-				removePoliceBotData("bans", indexToRemove); // remove element in PoliceBot data
-				unbanMember(memberId, message.guild.members); // unban the member
-				typesElementsSuccessfullyRemoved["bans"] = true;
 			}
 		} else {
 			failed.push(elementIdToRemove);
