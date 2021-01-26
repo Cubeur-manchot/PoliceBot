@@ -274,7 +274,7 @@ const reloadTempBans = PoliceBot => {
 			if (expirationDate === "") { // member is definitively banned
 				bansExpirationDate[memberId] = undefined;
 				break;
-			} else if (expirationDate > bansExpirationDate[memberId]) { // found later expiration date, update the saved one
+			} else if (expirationDate > bansExpirationDate[memberId] || bansExpirationDate[memberId] === undefined) { // found later expiration date, update the saved one
 				bansExpirationDate[memberId] = expirationDate;
 			}
 		}
