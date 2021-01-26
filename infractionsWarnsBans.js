@@ -255,6 +255,7 @@ const removeElement = (argumentsString, message) => {
 					unbanMember(memberId, message.guild.members); // unban the member
 				}
 				removePoliceBotData(elementType, indexToRemove);
+				policeBotData = readPoliceBotData();
 				typesElementsSuccessfullyRemoved[elementType] = true;
 			}
 		} else {
