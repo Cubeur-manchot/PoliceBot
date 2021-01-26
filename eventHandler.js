@@ -4,8 +4,8 @@ const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChanne
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords} = require("./badWords");
-const {purgeHelpMessage, addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 const {buildEmbedElementList} = require("./messageBuilder.js");
+const helpMessages = require("./helpMessages.js");
 
 const onReady = PoliceBot => {
 	PoliceBot.user.setActivity("lire les messages du serveur")
@@ -20,31 +20,31 @@ const onMessage = message => {
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
 		let messageContentLowerCase = message.content.toLowerCase();
 		if (messageContentLowerCase === "&purge") { // help for &purge command
-			sendMessageToChannel(message.channel, purgeHelpMessage);
+			sendMessageToChannel(message.channel, helpMessages.purgeHelpMessage);
 		} else if (messageContentLowerCase === "&infractions" || messageContentLowerCase === "&warns" || messageContentLowerCase === "&bans") { // display all elements of a type
 			sendEmbedToChannel(message.channel, buildEmbedElementList(messageContentLowerCase.slice(1)));
 		} else if (messageContentLowerCase === "&addinfraction" || messageContentLowerCase === "&infraction") { // help for &addinfraction
-			sendMessageToChannel(message.channel, addInfractionHelpMessage);
+			sendMessageToChannel(message.channel, helpMessages.addInfractionHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&addinfraction ") || messageContentLowerCase.startsWith("&infraction ")) { // &addinfraction command
 			addInfractionCommand(message);
 		} else if (messageContentLowerCase === "&addwarn" || messageContentLowerCase === "&warn") { // help for &addwarn
-			sendMessageToChannel(message.channel, addWarnHelpMessage);
+			sendMessageToChannel(message.channel, helpMessages.addWarnHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&addwarn ") || messageContentLowerCase.startsWith("&warn ")) { // &addwarn command
 			addWarnCommand(message);
 		} else if (messageContentLowerCase === "&addban" || messageContentLowerCase === "&ban") { // help for &ban
-			sendMessageToChannel(message.channel, addBanHelpMessage);
+			sendMessageToChannel(message.channel, helpMessages.addBanHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&ban ")) {
 			addBanCommand(message);
 		} else if (messageContentLowerCase === "&details") { // help for &details
-			sendMessageToChannel(message.channel, detailsHelpMessage);
+			sendMessageToChannel(message.channel, helpMessages.detailsHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&details ")) { // &details command
 			detailsCommand(message);
 		} else if (messageContentLowerCase === "&remove") { // help for &remove
-			sendMessageToChannel(message.channel, removeHelpMessage);
+			sendMessageToChannel(message.channel, helpMessages.removeHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command
 			removeCommand(message);
 		} else if (messageContentLowerCase === "&unban") { // help for &unban
-			sendMessageToChannel(message.channel, unbanHelpMessage);
+			sendMessageToChannel(message.channel, helpMessages.unbanHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&unban ")) { // &unban command
 			unbanCommand(message);
 		} else {
