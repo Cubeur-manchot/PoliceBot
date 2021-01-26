@@ -4,7 +4,7 @@ const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChanne
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords} = require("./badWords");
-const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
+const {purgeHelpMessage, addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 const {buildEmbedElementList} = require("./messageBuilder.js");
 
 const onReady = PoliceBot => {
@@ -19,7 +19,9 @@ const onMessage = message => {
 	if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
 		let messageContentLowerCase = message.content.toLowerCase();
-		if (messageContentLowerCase === "&infractions" || messageContentLowerCase === "&warns" || messageContentLowerCase === "&bans") { // display all elements of a type
+		if (messageContentLowerCase === "&purge") { // help for &purge command
+			sendMessageToChannel(message.channel, purgeHelpMessage);
+		} else if (messageContentLowerCase === "&infractions" || messageContentLowerCase === "&warns" || messageContentLowerCase === "&bans") { // display all elements of a type
 			sendEmbedToChannel(message.channel, buildEmbedElementList(messageContentLowerCase.slice(1)));
 		} else if (messageContentLowerCase === "&addinfraction" || messageContentLowerCase === "&infraction") { // help for &addinfraction
 			sendMessageToChannel(message.channel, addInfractionHelpMessage);

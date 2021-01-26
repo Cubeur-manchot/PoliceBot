@@ -1,5 +1,9 @@
 "use strict";
 
+const purgeHelpMessage = "```&purge <nbMessages>```"
+	+ "`<nbMessages>` : the number of messages to purge."
+	+ "\n\nExample : ```\n&purge 42```";
+
 const addInfractionHelpMessage = "```\n&addInfraction <member> <type> // <commentary>```"
 	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
 	+ "\n`<type>` : the type of infraction. Ex: HS, Bad words, ..."
@@ -34,4 +38,4 @@ const removeHelpMessage = "```\n&remove <elementId>```"
 const unbanHelpMessage = "```\n&unban <member>```"
 	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937.";
 
-module.exports = {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage, unbanHelpMessage};
+module.exports = {purgeHelpMessage, addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage, unbanHelpMessage};
