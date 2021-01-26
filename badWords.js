@@ -1,6 +1,6 @@
 "use strict";
 
-const {sendMessageToChannel, sendLog, deleteMessage} = require("./messageHandler.js");
+const {sendMessageToChannel, sendLog, deleteMessage} = require("./messages.js");
 const {addInfoData, getAvailableId} = require("./dataManipulation.js");
 const {getReadableDate} = require("./date.js");
 
