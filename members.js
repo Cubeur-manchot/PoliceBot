@@ -19,8 +19,18 @@ const getMembersFromName = (memberNameToSearch, memberList) => {
 	return matchingMembersId;
 };
 
-const banMember = (memberId, memberList) => memberList.ban(memberId)
-	.catch(console.error);
+const banMember = async (memberId, memberList) => {
+	let status = "Success";
+	await memberList.ban(memberId)
+		.catch(error => {
+			if (("" + error).includes("Missing Permissions")) {
+				status = "Missing Permissions";
+			} else {
+				status = "Error";
+			}
+		});
+	return status;
+};
 
 const unbanMember = (memberId, memberList, withoutConsole) => {
 	memberList.unban(memberId)
