@@ -56,7 +56,7 @@ const addWarnCommand = commandMessage => {
 	}
 };
 
-const addBanCommand = commandMessage => {
+const addBanCommand = async commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&(add)?ban */i, "");
 	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId
@@ -81,11 +81,15 @@ const addBanCommand = commandMessage => {
 				commentary: commentary
 			}, "bans");
 			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("bans"));
-			banMember(memberId, commandMessage.guild.members);
-			if (expirationDate !== "") { // temp ban
-				setTimeout(() => {
-					unbanMember(memberId, commandMessage.guild.members);
-				}, parseDate(expirationDate).getTime() - commandMessage.createdAt.getTime());
+			let banStatus = await banMember(memberId, commandMessage.guild.members);
+			if(banStatus === "Missing Permissions") { // check if ban was successful or not
+				sendMessageToChannel(commandMessage.channel, ":x: Error : I don't have the permission to ban this member.");
+			} else {
+				if (expirationDate !== "") { // temp ban
+					setTimeout(() => {
+						unbanMember(memberId, commandMessage.guild.members);
+					}, parseDate(expirationDate).getTime() - commandMessage.createdAt.getTime());
+				}
 			}
 		}
 	}
