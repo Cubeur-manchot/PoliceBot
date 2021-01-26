@@ -117,7 +117,7 @@ const detailsCommand = commandMessage => {
 
 const removeCommand = message => {
 	let argumentsString = message.content.replace(/^&remove */i,"");
-	let {typesElementsSuccessfullyRemoved, failed} = removeElement(argumentsString, message);
+	let {typesElementsSuccessfullyRemoved, failed} = removeElements(argumentsString, message);
 	for (let infoType in typesElementsSuccessfullyRemoved) {
 		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));
 	}
@@ -239,7 +239,7 @@ const getReasonLinkedWarnsAndExpirationDate = argumentsString => {
 	}
 };
 
-const removeElement = (argumentsString, message) => {
+const removeElements = (argumentsString, message) => {
 	let elementsIdToRemove = argumentsString.split(" ").filter(word => word !== "");
 	let typesElementsSuccessfullyRemoved = [], failed = [];
 	let policeBotData = readPoliceBotData();
