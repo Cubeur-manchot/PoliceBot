@@ -1,7 +1,10 @@
 "use strict";
 
 const {sendMessageToChannel, sendEmbedToChannel, deleteMessage} = require("./messages.js");
+const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {purgeHelpMessage} = require("./helpMessages.js");
+const {getReadableDate} = require("./date.js");
+const {buildEmbedDiscussionList} = require("./messageBuilder.js");
 
 const purgeCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&purge */i, "").split(" ");
@@ -15,10 +18,24 @@ const purgeCommand = commandMessage => {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : the number of messages to delete must be strictly positive.\n\n" + purgeHelpMessage);
 		} else {
 			let messagesIdToDelete = getLastMessagesIdOfChannel(numberOfMessagesToDelete + 1, commandMessage.channel);
+			let purgedMessages = [];
 			for (let messageId of messagesIdToDelete) {
 				let messageToDelete = commandMessage.channel.messages.cache.get(messageId);
+				purgedMessages.push({
+					authorId: messageToDelete.author.id,
+					date: getReadableDate(messageToDelete.createdAt),
+					content: messageToDelete.content
+				});
 				deleteMessage(messageToDelete);
 			}
+			addInfoData({
+				id: getAvailableId("discussions"),
+				savingDate: getReadableDate(commandMessage.createdAt),
+				purged: true,
+				channelId: commandMessage.channel.id,
+				messages: purgedMessages
+			}, "discussions");
+			sendEmbedToChannel(commandMessage.channel, buildEmbedDiscussionList());
 		}
 	}
 };

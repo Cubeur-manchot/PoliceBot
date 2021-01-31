@@ -81,4 +81,25 @@ const buildEmbedElementDetails = element => {
 	};
 };
 
-module.exports = {buildEmbedElementList, buildEmbedElementDetails};
+const buildEmbedDiscussionList = () => {
+	let embedObject = {
+		color: "#666666",
+		title: `__Saved discussions__`
+	};
+	let savedDiscussions = readInfoData("discussions");
+	if (savedDiscussions.length === 0) {
+		embedObject.description = `No current saved discussion :zipper_mouth:`;
+	} else {
+		embedObject.description = "Here is the list of all saved discussions :\n`Id  ` `Date      ` `Channel                 `";
+		for (let savedDiscussion of savedDiscussions) {
+			embedObject.description += "\n`"
+				+ savedDiscussion.id + (savedDiscussion.id.length === 3 ? " " : "")
+				+ "` `" + savedDiscussion.savingDate.substring(0,10)
+				+ "` <#" + savedDiscussion.channelId
+				+ ">";
+		}
+	}
+	return embedObject;
+};
+
+module.exports = {buildEmbedElementList, buildEmbedElementDetails, buildEmbedDiscussionList};
