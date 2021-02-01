@@ -6,7 +6,8 @@ const {parseDate, getReadableDiffDate} = require("./date.js");
 const embedColorFromType = {
 	"infractions": "#cccc00",
 	"warns": "#d56600",
-	"bans": "#fc0000"
+	"bans": "#fc0000",
+	"discussions": "#666666"
 };
 
 const emojiWhenNoElement = {
@@ -83,7 +84,7 @@ const buildEmbedElementDetails = element => {
 
 const buildEmbedDiscussionList = () => {
 	let embedObject = {
-		color: "#666666",
+		color: embedColorFromType["discussions"],
 		title: `__Saved discussions__`
 	};
 	let savedDiscussions = readInfoData("discussions");
