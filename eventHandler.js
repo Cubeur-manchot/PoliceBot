@@ -3,7 +3,8 @@
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
 const {purgeCommand} = require("./discussions.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
-const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
+const {removeCommand} = require("./generalCommands.js");
+const {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords} = require("./badWords");
 const {buildEmbedElementList} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
