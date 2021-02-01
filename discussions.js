@@ -4,7 +4,7 @@ const {sendMessageToChannel, sendEmbedToChannel, deleteMessage} = require("./mes
 const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {purgeHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
-const {buildEmbedDiscussionList} = require("./messageBuilder.js");
+const {buildEmbedElementList} = require("./messageBuilder.js");
 
 const purgeCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&purge */i, "").split(" ");
@@ -35,7 +35,7 @@ const purgeCommand = commandMessage => {
 				channelId: commandMessage.channel.id,
 				messages: purgedMessages
 			}, "discussions");
-			sendEmbedToChannel(commandMessage.channel, buildEmbedDiscussionList());
+			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("discussions"));
 		}
 	}
 };

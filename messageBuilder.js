@@ -13,7 +13,8 @@ const embedColorFromType = {
 const emojiWhenNoElement = {
 	"infractions": ":innocent:",
 	"warns": ":thumbsup:",
-	"bans": ":peace:"
+	"bans": ":peace:",
+	"discussions": ":zipper_mouth:"
 };
 
 const buildEmbedElementList = infoType => {
@@ -21,27 +22,37 @@ const buildEmbedElementList = infoType => {
 		color: embedColorFromType[infoType],
 		title: `__${infoType[0].toUpperCase()}${infoType.slice(1)}__`
 	};
-	let typeOrReason = infoType === "infractions" ? "type" : "reason";
 	let elements = readInfoData(infoType);
 	if (elements.length === 0) {
 		embedObject.description = `No current ${infoType.slice(0,-1)} ${emojiWhenNoElement[infoType]}`;
 	} else {
 		embedObject.description = `Here is the list of all ${infoType} :\n`;
-		let elementsGroupedByMemberId = groupElementsByMemberId(elements);
-		for (let memberId in elementsGroupedByMemberId) {
-			let memberElements = elementsGroupedByMemberId[memberId];
-			embedObject.description += `\n<@${memberId}> (${memberElements.length}) :\n`;
-			embedObject.description += "`Id  ` `Date      ` `" + (infoType === "infractions" ? "Type  " : "Reason") + "        `";
-			for (let element of memberElements) {
-				embedObject.description += "\n`" + element.id + (element.id.length === 3 ? " " : "")
-					+ "` `" + element.date.substring(0,10) + "` `";
-				let elementTypeOrReason = element[typeOrReason];
-				if (elementTypeOrReason.length > 14) {
-					embedObject.description += elementTypeOrReason.substring(0,11) + "..."; // cut before end, and add "..."
-				} else {
-					embedObject.description += elementTypeOrReason + " ".repeat(14 - elementTypeOrReason.length); // complete with spaces at the end
+		if (infoType === "discussions") { // discussions : display simple list
+			for (let savedDiscussion of elements) {
+				embedObject.description += "\n`"
+					+ savedDiscussion.id + (savedDiscussion.id.length === 3 ? " " : "")
+					+ "` `" + savedDiscussion.savingDate.substring(0,10)
+					+ "` <#" + savedDiscussion.channelId
+					+ ">";
+			}
+		} else { // infractions, warns and bans : group by member
+			let typeOrReason = infoType === "infractions" ? "type" : "reason";
+			let elementsGroupedByMemberId = groupElementsByMemberId(elements);
+			for (let memberId in elementsGroupedByMemberId) {
+				let memberElements = elementsGroupedByMemberId[memberId];
+				embedObject.description += `\n<@${memberId}> (${memberElements.length}) :\n`;
+				embedObject.description += "`Id  ` `Date      ` `" + (infoType === "infractions" ? "Type  " : "Reason") + "        `";
+				for (let element of memberElements) {
+					embedObject.description += "\n`" + element.id + (element.id.length === 3 ? " " : "")
+						+ "` `" + element.date.substring(0, 10) + "` `";
+					let elementTypeOrReason = element[typeOrReason];
+					if (elementTypeOrReason.length > 14) {
+						embedObject.description += elementTypeOrReason.substring(0, 11) + "..."; // cut before end, and add "..."
+					} else {
+						embedObject.description += elementTypeOrReason + " ".repeat(14 - elementTypeOrReason.length); // complete with spaces at the end
+					}
+					embedObject.description += "`";
 				}
-				embedObject.description += "`";
 			}
 		}
 	}
@@ -82,25 +93,9 @@ const buildEmbedElementDetails = element => {
 	};
 };
 
-const buildEmbedDiscussionList = () => {
-	let embedObject = {
-		color: embedColorFromType["discussions"],
-		title: `__Saved discussions__`
-	};
-	let savedDiscussions = readInfoData("discussions");
-	if (savedDiscussions.length === 0) {
-		embedObject.description = `No current saved discussion :zipper_mouth:`;
 	} else {
-		embedObject.description = "Here is the list of all saved discussions :\n`Id  ` `Date      ` `Channel                 `";
-		for (let savedDiscussion of savedDiscussions) {
-			embedObject.description += "\n`"
-				+ savedDiscussion.id + (savedDiscussion.id.length === 3 ? " " : "")
-				+ "` `" + savedDiscussion.savingDate.substring(0,10)
-				+ "` <#" + savedDiscussion.channelId
-				+ ">";
 		}
 	}
-	return embedObject;
 };
 
 module.exports = {buildEmbedElementList, buildEmbedElementDetails, buildEmbedDiscussionList};

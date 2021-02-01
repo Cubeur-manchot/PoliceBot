@@ -25,7 +25,10 @@ const onMessage = message => {
 			sendMessageToChannel(message.channel, helpMessages.purgeHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&purge ")) { // &purge command
 			purgeCommand(message);
-		} else if (messageContentLowerCase === "&infractions" || messageContentLowerCase === "&warns" || messageContentLowerCase === "&bans") { // display all elements of a type
+		} else if (messageContentLowerCase === "&infractions"
+			|| messageContentLowerCase === "&warns"
+			|| messageContentLowerCase === "&bans"
+			|| messageContentLowerCase === "&discussions") { // display all elements of a type
 			sendEmbedToChannel(message.channel, buildEmbedElementList(messageContentLowerCase.slice(1)));
 		} else if (messageContentLowerCase === "&addinfraction" || messageContentLowerCase === "&infraction") { // help for &addinfraction
 			sendMessageToChannel(message.channel, helpMessages.addInfractionHelpMessage);

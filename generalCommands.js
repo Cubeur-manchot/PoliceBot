@@ -22,7 +22,7 @@ const removeElements = (argumentsString, message) => {
 	let typesElementsSuccessfullyRemoved = [], failed = [];
 	let policeBotData = readPoliceBotData();
 	for (let elementIdToRemove of elementsIdToRemove) {
-		if (/[iwb]#[0-9]+/.test(elementIdToRemove)) { // infraction, warn or ban to remove
+		if (/[iwbd]#[0-9]+/.test(elementIdToRemove)) { // infraction, warn or ban to remove
 			let elementType = infoTypeFromIdFirstLetter[elementIdToRemove[0]];
 			let indexToRemove = policeBotData[elementType].findIndex(element => element.id === elementIdToRemove);
 			if (indexToRemove === -1) { // id doesn't exist
