@@ -1,11 +1,11 @@
 "use strict";
 
-const {getAvailableId, readPoliceBotData, removePoliceBotData, readInfoData, addInfoData, writeInfoData, groupElementsByMemberId, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, addInfoData, writeInfoData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
-const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
-const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
+const {buildEmbedElementList} = require("./messageBuilder.js");
+const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&addinfraction */i, "");
@@ -95,25 +95,6 @@ const addBanCommand = async commandMessage => {
 	}
 };
 
-const detailsCommand = commandMessage => {
-	let commandArguments = commandMessage.content.replace(/^&details */i, "").split(" ").filter(word => word !== "");
-	let unknownElements = [];
-	for (let word of commandArguments) {
-		if (/^[iwb]#[0-9]+$/.test(word)) { // match id format of infraction, warn or ban
-			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
-			if (matchingElement) { // found a matching element, send information
-				sendEmbedToChannel(commandMessage.channel, buildEmbedElementDetails(matchingElement));
-			} else { // unknown element
-				unknownElements.push(word);
-			}
-		} else { // wrong id format
-			sendMessageToChannel(commandMessage.channel, ":x: Error : bad id format.\n\n" + detailsHelpMessage);
-		}
-	}
-	if (unknownElements.length) {
-		sendMessageToChannel(commandMessage.channel, `:x: Error : failed to find element(s) : ${unknownElements.join(", ")}.`);
-	}
-};
 
 const unbanCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&unban */i, "");
@@ -264,4 +245,4 @@ const reloadTempBans = PoliceBot => {
 	}
 };
 
-module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, unbanCommand, reloadTempBans};
+module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans};

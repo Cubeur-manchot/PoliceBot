@@ -1,9 +1,10 @@
 "use strict";
 
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
-const {buildEmbedElementList} = require("./messageBuilder.js");
-const {readPoliceBotData, removePoliceBotData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
+const {readPoliceBotData, removePoliceBotData, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {unbanMember} = require("./members.js");
+const {detailsHelpMessage} = require("./helpMessages.js");
 
 const removeCommand = message => {
 	let argumentsString = message.content.replace(/^&remove */i,"");
@@ -45,4 +46,24 @@ const removeElements = (argumentsString, message) => {
 	}
 };
 
-module.exports = {removeCommand};
+const detailsCommand = commandMessage => {
+	let commandArguments = commandMessage.content.replace(/^&details */i, "").split(" ").filter(word => word !== "");
+	let unknownElements = [];
+	for (let word of commandArguments) {
+		if (/^[iwb]#[0-9]+$/.test(word)) { // match id format of infraction, warn or ban
+			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
+			if (matchingElement) { // found a matching element, send information
+				sendEmbedToChannel(commandMessage.channel, buildEmbedElementDetails(matchingElement));
+			} else { // unknown element
+				unknownElements.push(word);
+			}
+		} else { // wrong id format
+			sendMessageToChannel(commandMessage.channel, ":x: Error : bad id format.\n\n" + detailsHelpMessage);
+		}
+	}
+	if (unknownElements.length) {
+		sendMessageToChannel(commandMessage.channel, `:x: Error : failed to find element(s) : ${unknownElements.join(", ")}.`);
+	}
+};
+
+module.exports = {removeCommand, detailsCommand};
