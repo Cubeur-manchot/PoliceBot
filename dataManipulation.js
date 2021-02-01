@@ -42,7 +42,8 @@ const removePoliceBotData = (infoType, indexOfElement) => {
 const infoTypeFromIdFirstLetter = {
 	i: "infractions",
 	w: "warns",
-	b: "bans"
+	b: "bans",
+	d: "discussions"
 };
 
 const groupElementsByMemberId = elementsArray => {
