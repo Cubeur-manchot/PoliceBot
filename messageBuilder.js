@@ -93,9 +93,12 @@ const buildEmbedElementDetails = element => {
 	};
 };
 
-	} else {
-		}
-	}
+const buildEmbedDiscussionDetails = discussion => { // todo
+	return {
+		color: embedColorFromType["discussions"], // color
+		title: `__Details of discussion ${discussion.id}__`, // id
+		description: "test" // description
+	};
 };
 
-module.exports = {buildEmbedElementList, buildEmbedElementDetails, buildEmbedDiscussionList};
+module.exports = {buildEmbedElementList, buildEmbedElementDetails, buildEmbedDiscussionDetails};

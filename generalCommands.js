@@ -1,7 +1,7 @@
 "use strict";
 
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
-const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
+const {buildEmbedElementList, buildEmbedElementDetails, buildEmbedDiscussionDetails} = require("./messageBuilder.js");
 const {readPoliceBotData, removePoliceBotData, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {unbanMember} = require("./members.js");
 const {detailsHelpMessage} = require("./helpMessages.js");
@@ -50,10 +50,14 @@ const detailsCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&details */i, "").split(" ").filter(word => word !== "");
 	let unknownElements = [];
 	for (let word of commandArguments) {
-		if (/^[iwb]#[0-9]+$/.test(word)) { // match id format of infraction, warn or ban
+		if (/^[iwbd]#[0-9]+$/.test(word)) { // match id format of infraction, warn, ban or discussion
 			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
 			if (matchingElement) { // found a matching element, send information
-				sendEmbedToChannel(commandMessage.channel, buildEmbedElementDetails(matchingElement));
+				if (word.includes("d")) {
+					sendEmbedToChannel(commandMessage.channel, buildEmbedDiscussionDetails(matchingElement));
+				} else {
+					sendEmbedToChannel(commandMessage.channel, buildEmbedElementDetails(matchingElement));
+				}
 			} else { // unknown element
 				unknownElements.push(word);
 			}
