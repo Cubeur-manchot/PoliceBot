@@ -99,7 +99,7 @@ const detailsCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&details */i, "").split(" ").filter(word => word !== "");
 	let unknownElements = [];
 	for (let word of commandArguments) {
-		if (/^[iwb]#[0-9]+$/.test(word)) { // match id format
+		if (/^[iwb]#[0-9]+$/.test(word)) { // match id format of infraction, warn or ban
 			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
 			if (matchingElement) { // found a matching element, send information
 				sendEmbedToChannel(commandMessage.channel, buildEmbedElementDetails(matchingElement));
