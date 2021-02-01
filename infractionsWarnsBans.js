@@ -115,17 +115,6 @@ const detailsCommand = commandMessage => {
 	}
 };
 
-const removeCommand = message => {
-	let argumentsString = message.content.replace(/^&remove */i,"");
-	let {typesElementsSuccessfullyRemoved, failed} = removeElements(argumentsString, message);
-	for (let infoType in typesElementsSuccessfullyRemoved) {
-		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));
-	}
-	if (failed.length) {
-		sendMessageToChannel(message.channel, ":x: Failed to remove :\n- " + failed.join("\n- "));
-	}
-};
-
 const unbanCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&unban */i, "");
 	let {memberId} = getMemberIdAndRestOfCommand(commandArguments, commandMessage.client.memberList); // parse memberId
@@ -239,35 +228,6 @@ const getReasonLinkedWarnsAndExpirationDate = argumentsString => {
 	}
 };
 
-const removeElements = (argumentsString, message) => {
-	let elementsIdToRemove = argumentsString.split(" ").filter(word => word !== "");
-	let typesElementsSuccessfullyRemoved = [], failed = [];
-	let policeBotData = readPoliceBotData();
-	for (let elementIdToRemove of elementsIdToRemove) {
-		if (/[iwb]#[0-9]+/.test(elementIdToRemove)) { // infraction, warn or ban to remove
-			let elementType = infoTypeFromIdFirstLetter[elementIdToRemove[0]];
-			let indexToRemove = policeBotData[elementType].findIndex(element => element.id === elementIdToRemove);
-			if (indexToRemove === -1) { // id doesn't exist
-				failed.push(elementIdToRemove);
-			} else { // id exists, remove the infraction of warn
-				if (elementType === "bans") {
-					let memberId = policeBotData["bans"][indexToRemove].memberId;
-					unbanMember(memberId, message.guild.members); // unban the member
-				}
-				removePoliceBotData(elementType, indexToRemove);
-				policeBotData = readPoliceBotData();
-				typesElementsSuccessfullyRemoved[elementType] = true;
-			}
-		} else {
-			failed.push(elementIdToRemove);
-		}
-	}
-	return {
-		typesElementsSuccessfullyRemoved: typesElementsSuccessfullyRemoved,
-		failed: failed
-	}
-};
-
 const reloadTempBans = PoliceBot => {
 	let cubeursFrancophonesServer = PoliceBot.guilds.cache.get("329175643877015553");
 	let bansGroupedByMemberId = groupElementsByMemberId(readInfoData("bans"));
@@ -304,4 +264,4 @@ const reloadTempBans = PoliceBot => {
 	}
 };
 
-module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, removeCommand, unbanCommand, reloadTempBans};
+module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, detailsCommand, unbanCommand, reloadTempBans};
