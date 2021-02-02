@@ -31,7 +31,7 @@ const detailsHelpMessage = "```&details <elementId>```"
 	+ "\n\nExample : ```\n&details i#1 i#4 w#1```";
 
 const removeHelpMessage = "```\n&remove <elementId>```"
-	+ "`<elementId>` is the id of the element (infraction, warn, ban) to remove/revoke."
+	+ "`<elementId>` is the id of the element (infraction, warn, ban or saved discussion) to remove/revoke."
 	+ "\nIt can remove many elements at once."
 	+ "\n\nExample: ```\n&remove i#3 i#4 w#1```";
 
