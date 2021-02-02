@@ -99,9 +99,18 @@ const buildEmbedDiscussionDetails = discussion => { // todo
 	let id = discussion.id;
 	let purged = discussion.purged;
 	let channelId = discussion.channelId;
-	let description = `Saving date : ${savingDate}\nChannel : <#${channelId}>\n Command: \`&${purged ? "purge" : "save"}\`\n`;
-	for (let message of messages) {
-		description += `\n${message.date} <@${message.authorId}> : ${message.content}`;
+	let description = `Saving date : ${savingDate}\nChannel : <#${channelId}>\n Command: \`&${purged ? "purge" : "save"}\``;
+	if (messages.length) {
+		let currentDay = "";
+		for (let message of messages) {
+			if (message.date.substring(0, 10) !== currentDay) {
+				currentDay = message.date.substring(0, 10);
+				description += `\n\n__${currentDay}__`;
+			}
+			description += `\n\`${message.date.substring(11)}\` <@${message.authorId}> : ${message.content}`;
+		}
+	} else {
+		description += "\n\nNo message :mailbox_with_no_mail:";
 	}
 	return {
 		color: embedColorFromType["discussions"], // color
