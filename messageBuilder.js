@@ -94,10 +94,19 @@ const buildEmbedElementDetails = element => {
 };
 
 const buildEmbedDiscussionDetails = discussion => { // todo
+	let savingDate = discussion.savingDate;
+	let messages = discussion.messages;
+	let id = discussion.id;
+	let purged = discussion.purged;
+	let channelId = discussion.channelId;
+	let description = `Saving date : ${savingDate}\nChannel : <#${channelId}>\n Command: \`&${purged ? "purge" : "save"}\`\n`;
+	for (let message of messages) {
+		description += `\n${message.date} <@${message.authorId}> : ${message.content}`;
+	}
 	return {
 		color: embedColorFromType["discussions"], // color
 		title: `__Details of discussion ${discussion.id}__`, // id
-		description: "test" // description
+		description: description // list of messages
 	};
 };
 
