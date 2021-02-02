@@ -26,7 +26,7 @@ const addBanHelpMessage = "```\n&ban <member> <reason> <expirationDate> <warnsId
 	+ "\n\nExample: ```\n&ban Cubeur-manchot#7706 3 warns 18/04/2021 w#1 w#3 w#4 // c'est relou```";
 
 const detailsHelpMessage = "```&details <elementId>```"
-	+ "`<elementId>` : the id of the element you want details (infraction, warn or ban). Ex: i#1."
+	+ "`<elementId>` : the id of the element you want details (infraction, warn, ban or saved discussion). Ex: i#1."
 	+ "\nIt can show many elements at once."
 	+ "\n\nExample : ```\n&details i#1 i#4 w#1```";
 
