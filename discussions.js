@@ -2,7 +2,7 @@
 
 const {sendMessageToChannel, sendEmbedToChannel, deleteMessage} = require("./messages.js");
 const {getAvailableId, addInfoData} = require("./dataManipulation.js");
-const {purgeHelpMessage} = require("./helpMessages.js");
+const {saveHelpMessage, purgeHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
 const {buildEmbedElementList} = require("./messageBuilder.js");
 
@@ -40,6 +40,40 @@ const purgeCommand = commandMessage => {
 	}
 };
 
+const saveCommand = commandMessage => {
+	let commandArguments = commandMessage.content.replace(/^&save */i, "").split(" ");
+	if (commandArguments.length > 1) {
+		sendMessageToChannel(commandMessage.channel, ":x: Error : please specify only the number of messages to save.\n\n" + saveHelpMessage);
+	} else {
+		let numberOfMessagesToSave = parseInt(commandArguments[0]);
+		if (isNaN(numberOfMessagesToSave)) {
+			sendMessageToChannel(commandMessage.channel, ":x: Error : wrong format for the number of messages to save.\n\n" + saveHelpMessage);
+		} else if (numberOfMessagesToSave < 1) {
+			sendMessageToChannel(commandMessage.channel, ":x: Error : the number of messages to save must be strictly positive.\n\n" + saveHelpMessage);
+		} else {
+			let messagesIdToSave = getLastMessagesIdOfChannel(numberOfMessagesToSave + 1, commandMessage.channel);
+			let savedMessages = [];
+			for (let messageId of messagesIdToSave) {
+				let messageToSave = commandMessage.channel.messages.cache.get(messageId);
+				savedMessages.push({
+					authorId: messageToSave.author.id,
+					date: getReadableDate(messageToSave.createdAt),
+					content: messageToSave.content
+				});
+			}
+			addInfoData({
+				id: getAvailableId("discussions"),
+				savingDate: getReadableDate(commandMessage.createdAt),
+				purged: false,
+				channelId: commandMessage.channel.id,
+				messages: savedMessages
+			}, "discussions");
+			deleteMessage(commandMessage);
+			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("discussions"));
+		}
+	}
+};
+
 const getLastMessagesIdOfChannel = (nbMessages, channel) => {
 	let channelMessages = channel.messages.cache.array();
 	let newestMessages = [{index: 0, id: channelMessages[0].id}];
@@ -65,4 +99,4 @@ const getLastMessagesIdOfChannel = (nbMessages, channel) => {
 	return result;
 };
 
-module.exports = {purgeCommand};
+module.exports = {saveCommand, purgeCommand};
