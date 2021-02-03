@@ -3,7 +3,7 @@
 const saveHelpMessage = "```&save <nbMessages>```"
 	+ "`<nbMessages>` : the number of messages to save."
 	+ "\nThe command message will be deleted."
-	+ "\n\nExample : ```\n&purge 42```";
+	+ "\n\nExample : ```\n&save 42```";
 
 const purgeHelpMessage = "```&purge <nbMessages>```"
 	+ "`<nbMessages>` : the number of messages to purge."
