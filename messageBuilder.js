@@ -93,16 +93,13 @@ const buildEmbedElementDetails = element => {
 	};
 };
 
-const buildEmbedDiscussionDetails = discussion => { // todo
-	let savingDate = discussion.savingDate;
-	let messages = discussion.messages;
-	let id = discussion.id;
-	let purged = discussion.purged;
-	let channelId = discussion.channelId;
-	let description = `Saving date : ${savingDate}\nChannel : <#${channelId}>\n Command: \`&${purged ? "purge" : "save"}\``;
-	if (messages.length) {
+const buildEmbedDiscussionDetails = discussion => {
+	let description = "Saving date : " + discussion.savingDate
+		+ `\nChannel : <#${discussion.channelId}>`
+		+ `\nCommand: \`&${discussion.purged ? "purge" : "save"}\``;
+	if (discussion.messages.length) {
 		let currentDay = "";
-		for (let message of messages) {
+		for (let message of discussion.messages) {
 			if (message.date.substring(0, 10) !== currentDay) {
 				currentDay = message.date.substring(0, 10);
 				description += `\n\n__${currentDay}__`;
