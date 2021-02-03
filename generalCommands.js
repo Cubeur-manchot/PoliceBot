@@ -1,7 +1,7 @@
 "use strict";
 
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
-const {buildEmbedElementList, buildEmbedElementDetails, buildEmbedDiscussionDetails} = require("./messageBuilder.js");
+const {buildEmbedElementList, buildEmbedElementDetails, buildEmbedsDiscussionDetails} = require("./messageBuilder.js");
 const {readPoliceBotData, removePoliceBotData, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {unbanMember} = require("./members.js");
 const {detailsHelpMessage} = require("./helpMessages.js");
@@ -54,7 +54,7 @@ const detailsCommand = commandMessage => {
 			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
 			if (matchingElement) { // found a matching element, send information
 				if (word.includes("d")) {
-					let embedList = buildEmbedDiscussionDetails(matchingElement);
+					let embedList = buildEmbedsDiscussionDetails(matchingElement);
 					for (let embed of embedList) {
 						sendEmbedToChannel(commandMessage.channel, embed);
 					}

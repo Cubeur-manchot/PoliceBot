@@ -93,29 +93,41 @@ const buildEmbedElementDetails = element => {
 	};
 };
 
-const buildEmbedDiscussionDetails = discussion => {
-	let description = "Saving date : " + discussion.savingDate
+const buildEmbedsDiscussionDetails = discussion => {
+	let embedList = [];
+	let currentDescription = "Saving date : " + discussion.savingDate
 		+ `\nChannel : <#${discussion.channelId}>`
 		+ `\nCommand: \`&${discussion.purged ? "purge" : "save"}\``;
 	if (discussion.messages.length) {
 		let currentDay = "";
 		for (let message of discussion.messages) {
+			let descriptionForMessage = "";
 			if (message.date.substring(0, 10) !== currentDay) {
 				currentDay = message.date.substring(0, 10);
-				description += `\n\n__${currentDay}__`;
+				descriptionForMessage += `\n\n__${currentDay}__`;
 			}
-			description += `\n\`${message.date.substring(11)}\` <@${message.authorId}> : ${message.content}`;
+			descriptionForMessage += `\n\`${message.date.substring(11)}\` <@${message.authorId}> : ${message.content}`;
+			if (currentDescription.length + descriptionForMessage.length <= 2048) { // if the description would not be too long, add it
+				currentDescription += descriptionForMessage;
+			} else { // else start a new embed with a new description
+				embedList.push({
+					color: embedColorFromType["discussions"],
+					description: currentDescription
+				});
+				currentDescription = descriptionForMessage;
+			}
 		}
 	} else {
-		description += "\n\nNo message :mailbox_with_no_mail:";
+		currentDescription += "\n\nNo message :mailbox_with_no_mail:";
 	}
-	return [{
-		color: embedColorFromType["discussions"], // color
-		title: `__Details of discussion ${discussion.id}__`, // id
-		description: description // list of messages
-	}];
+	embedList.push({
+		color: embedColorFromType["discussions"],
+		description: currentDescription
+	});
+	embedList[0].title = `__Details of discussion ${discussion.id}__`;
+	return embedList;
 };
 	};
 };
 
-module.exports = {buildEmbedElementList, buildEmbedElementDetails, buildEmbedDiscussionDetails};
+module.exports = {buildEmbedElementList, buildEmbedElementDetails, buildEmbedsDiscussionDetails};
