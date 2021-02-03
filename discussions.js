@@ -42,7 +42,7 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 			addInfoData({
 				id: getAvailableId("discussions"),
 				savingDate: getReadableDate(commandMessage.createdAt),
-				purged: true,
+				purged: purge,
 				channelId: commandMessage.channel.id,
 				messages: messages
 			}, "discussions");
