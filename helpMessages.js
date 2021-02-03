@@ -1,5 +1,10 @@
 "use strict";
 
+const saveHelpMessage = "```&save <nbMessages>```"
+	+ "`<nbMessages>` : the number of messages to save."
+	+ "\nThe command message will be deleted."
+	+ "\n\nExample : ```\n&purge 42```";
+
 const purgeHelpMessage = "```&purge <nbMessages>```"
 	+ "`<nbMessages>` : the number of messages to purge."
 	+ "\n\nExample : ```\n&purge 42```";
@@ -38,4 +43,6 @@ const removeHelpMessage = "```\n&remove <elementId>```"
 const unbanHelpMessage = "```\n&unban <member>```"
 	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937.";
 
-module.exports = {purgeHelpMessage, addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, detailsHelpMessage, removeHelpMessage, unbanHelpMessage};
+module.exports = {saveHelpMessage, purgeHelpMessage,
+	addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage,
+	detailsHelpMessage, removeHelpMessage};
