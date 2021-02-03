@@ -109,10 +109,12 @@ const buildEmbedDiscussionDetails = discussion => {
 	} else {
 		description += "\n\nNo message :mailbox_with_no_mail:";
 	}
-	return {
+	return [{
 		color: embedColorFromType["discussions"], // color
 		title: `__Details of discussion ${discussion.id}__`, // id
 		description: description // list of messages
+	}];
+};
 	};
 };
 
