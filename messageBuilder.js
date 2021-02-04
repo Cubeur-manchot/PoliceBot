@@ -127,7 +127,21 @@ const buildEmbedsDiscussionDetails = discussion => {
 	embedList[0].title = `__Details of discussion ${discussion.id}__`;
 	return embedList;
 };
+
+const buildBadWordsLogEmbed = (message, badWords, warningMessage) => {
+	return {
+		color: embedColorFromType["infractions"],
+		title: "__Bad words__",
+		description: `:face_with_symbols_over_mouth: User <@!${message.author.id}> sent bad word(s) in <#${message.channel.id}> [Jump to discussion](${warningMessage.url}).`,
+		fields: [{
+			name: "Original message",
+			value: message.content
+		},{
+			name: "Bad word(s) :",
+			value: "- " + badWords.join("\n- ")
+		}],
+		timestamp: new Date()
 	};
 };
 
-module.exports = {buildEmbedElementList, buildEmbedElementDetails, buildEmbedsDiscussionDetails};
+module.exports = {buildEmbedElementList, buildEmbedElementDetails, buildEmbedsDiscussionDetails, buildBadWordsLogEmbed};
