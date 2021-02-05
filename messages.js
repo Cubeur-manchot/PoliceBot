@@ -15,7 +15,7 @@ const sendMessageToChannel = (channel, message, options) =>
 
 const sendLog = (messageInformation, anyMessage) => {
 	let logChannel = anyMessage.client.channels.cache.find(channel => {return channel.id === "795319669459648512"});
-	if (messageInformation.title) { // embed message
+	if (messageInformation.title || messageInformation.description) { // embed message
 		logChannel.send(new Discord.MessageEmbed(messageInformation))
 			.catch(console.log);
 	} else { // simple message

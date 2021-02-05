@@ -1,10 +1,10 @@
 "use strict";
 
-const {sendMessageToChannel, sendEmbedToChannel, deleteMessage} = require("./messages.js");
+const {sendMessageToChannel, sendLog, deleteMessage} = require("./messages.js");
 const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
-const {buildEmbedElementList} = require("./messageBuilder.js");
+const {buildEmbedElementList, buildEmbedsDiscussionDetails} = require("./messageBuilder.js");
 
 const purgeCommand = commandMessage => purgeOrSaveCommand(commandMessage, true);
 
@@ -39,17 +39,20 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 					deleteMessage(message);
 				}
 			}
-			addInfoData({
+			let discussion = {
 				id: getAvailableId("discussions"),
 				savingDate: getReadableDate(commandMessage.createdAt),
 				purged: purge,
 				channelId: commandMessage.channel.id,
 				messages: messages
-			}, "discussions");
+			};
+			addInfoData(discussion, "discussions");
 			if (!purge) {
 				deleteMessage(commandMessage);
 			}
-			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("discussions"));
+			for (let embed of buildEmbedsDiscussionDetails(discussion)) {
+				sendLog(embed, commandMessage);
+			}
 		}
 	}
 };
