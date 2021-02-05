@@ -44,15 +44,16 @@ const addWarnCommand = commandMessage => {
 		} else if (reason === "") {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified warn reason.\n\n" + addWarnHelpMessage);
 		} else {
-			addInfoData({
+			let warn = {
 				id: getAvailableId("warns"),
 				memberId: memberId,
 				date: getReadableDate(commandMessage.createdAt),
 				reason: reason,
 				infractions: linkedInfractions,
 				commentary: commentary
-			}, "warns");
-			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("warns"));
+			};
+			addInfoData(warn, "warns");
+			sendLog(buildEmbedElementDetails(warn), commandMessage);
 		}
 	}
 };
