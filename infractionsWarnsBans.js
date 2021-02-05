@@ -73,7 +73,7 @@ const addBanCommand = async commandMessage => {
 		} else if (reason === "") {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified ban reason.\n\n" + addBanHelpMessage);
 		} else {
-			addInfoData({
+			let ban = {
 				id: getAvailableId("bans"),
 				memberId: memberId,
 				date: getReadableDate(commandMessage.createdAt),
@@ -81,12 +81,13 @@ const addBanCommand = async commandMessage => {
 				reason: reason,
 				warns: linkedWarns,
 				commentary: commentary
-			}, "bans");
-			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("bans"));
+			};
 			let banStatus = await banMember(memberId, commandMessage.guild.members);
 			if(banStatus === "Missing Permissions") { // check if ban was successful or not
 				sendMessageToChannel(commandMessage.channel, ":x: Error : I don't have the permission to ban this member.");
 			} else {
+				addInfoData(ban, "bans");
+				sendLog(buildEmbedElementDetails(ban), commandMessage);
 				if (expirationDate !== "") { // temp ban
 					setTimeout(() => {
 						unbanMember(memberId, commandMessage.guild.members);
