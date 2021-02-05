@@ -3,8 +3,8 @@
 const {getAvailableId, readInfoData, addInfoData, writeInfoData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
-const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
-const {buildEmbedElementList} = require("./messageBuilder.js");
+const {sendMessageToChannel, sendEmbedToChannel, sendLog} = require("./messages.js");
+const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = commandMessage => {
@@ -18,14 +18,15 @@ const addInfractionCommand = commandMessage => {
 	} else if (restOfCommand === "") {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified infraction type.\n\n" + addInfractionHelpMessage);
 	} else {
-		addInfoData({
+		let infraction = {
 			id: getAvailableId("infractions"),
 			memberId: memberId,
 			date: getReadableDate(commandMessage.createdAt),
 			type: restOfCommand,
 			commentary: commentary
-		}, "infractions");
-		sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("infractions"));
+		};
+		addInfoData(infraction, "infractions");
+		sendLog(buildEmbedElementDetails(infraction), commandMessage);
 	}
 };
 
