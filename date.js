@@ -21,7 +21,11 @@ const parseDate = dateString => new Date(
 const getReadableDiffDate = (firstDate, secondDate) => { // todo : if < x seconds, return "just now"
 	let diffResultFirstLevel = getReadableDiffDateOneLevel(firstDate, secondDate);
 	if (diffResultFirstLevel.unit === "seconds") { // if only seconds, display only one level
-		return `${diffResultFirstLevel.diffTime} second${diffResultFirstLevel.diffTime === 1 ? "" : "s"}`;
+		if (Math.abs(diffResultFirstLevel.diffTime) <= 5) {
+			return "equals";
+		} else {
+			return `${diffResultFirstLevel.diffTime} second${diffResultFirstLevel.diffTime === 1 ? "" : "s"}`;
+		}
 	} else { // else, display two levels
 		let diffResultSecondLevel = getReadableDiffDateOneLevel(firstDate, diffResultFirstLevel.approximatedDate);
 		return `${diffResultFirstLevel.diffTime} ${diffResultFirstLevel.unit} and ${diffResultSecondLevel.diffTime} ${diffResultSecondLevel.unit}`;

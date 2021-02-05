@@ -62,7 +62,13 @@ const buildEmbedElementList = infoType => {
 const buildEmbedElementDetails = element => {
 	let infoType = infoTypeFromIdFirstLetter[element.id[0]];
 	let description = `**Member** : <@${element.memberId}>`; // member
-	description += `\n**Date** : ${element.date} (${getReadableDiffDate(new Date(), parseDate(element.date))} ago)`; // date
+	let diffDate = getReadableDiffDate(new Date(), parseDate(element.date));
+	description += `\n**Date** : ${element.date} `;
+	if (diffDate === "equals") {
+		description += "(just now)";
+	} else {
+		description += `(${diffDate} ago)`;
+	}
 	if (infoType === "infractions") {
 		description += `\n**Type** : ${element.type}`; // infraction type
 	} else {
@@ -73,9 +79,22 @@ const buildEmbedElementDetails = element => {
 			} else {
 				let currentDate = new Date();
 				let expirationDate = parseDate(element.expirationDate);
-				description += (currentDate < expirationDate
-						? `${element.expirationDate} (${getReadableDiffDate(expirationDate, currentDate)} remaining)`
-						: `${element.expirationDate} (finished ${getReadableDiffDate(currentDate, expirationDate)} ago)`);
+				description += element.expirationDate;
+				if (currentDate < expirationDate) {
+					let banExpirationDiffDate = getReadableDiffDate(expirationDate, currentDate);
+					if (banExpirationDiffDate === "equals") {
+						description += " (just now)";
+					} else {
+						description += ` (${banExpirationDiffDate} remaining)`;
+					}
+				} else {
+					let banExpiredDiffDate = getReadableDiffDate(currentDate, expirationDate);
+					if (banExpiredDiffDate === "equals") {
+						description += " (just now)";
+					} else {
+						description += ` (finished ${banExpiredDiffDate} ago)`;
+					}
+				}
 			}
 		}
 		description += `\n**Reason** : ${element.reason}`; // warn or ban reason
