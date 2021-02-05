@@ -115,7 +115,7 @@ const unbanCommand = commandMessage => {
 			unbanMember(memberId, commandMessage.guild.members); // unban member
 			policeBotBanData[banIndex].expirationDate = getReadableDate(new Date()); // end the ban
 			writeInfoData(policeBotBanData, "bans"); // save modification
-			sendEmbedToChannel(commandMessage.channel, buildEmbedElementList("bans"));
+			sendLog(buildEmbedElementDetails(policeBotBanData[banIndex]), commandMessage);
 		}
 	}
 };
