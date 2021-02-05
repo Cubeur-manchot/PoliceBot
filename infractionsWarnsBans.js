@@ -3,8 +3,8 @@
 const {getAvailableId, readInfoData, addInfoData, writeInfoData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
-const {sendMessageToChannel, sendEmbedToChannel, sendLog} = require("./messages.js");
-const {buildEmbedElementList, buildEmbedElementDetails} = require("./messageBuilder.js");
+const {sendMessageToChannel, sendLog} = require("./messages.js");
+const {buildEmbedElementDetails} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = commandMessage => {
