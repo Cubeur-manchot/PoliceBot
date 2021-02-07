@@ -11,6 +11,11 @@ const purgeHelpMessage = "```&purge <nbMessages>```"
 	+ "`<nbMessages>` : the number of messages to purge."
 	+ "\n\nExample : ```\n&purge 42```";
 
+const moveHelpMessage = "```&move <nbMessages> <channel>```"
+	+ "`<nbMessages>` : the number of messages to move."
+	+ "\n`<channel>` : the channel in which the messages should be moved."
+	+ "\n\nExample : ```\n&move 42 #bots_poubelle```";
+
 // help messages for infractions, warns and bans commands
 
 const addInfractionHelpMessage = "```\n&addInfraction <member> <type> // <commentary>```"
@@ -49,6 +54,6 @@ const removeHelpMessage = "```\n&remove <elementId>```"
 	+ "\nIt can remove many elements at once."
 	+ "\n\nExample: ```\n&remove i#3 i#4 w#1```";
 
-module.exports = {saveHelpMessage, purgeHelpMessage,
+module.exports = {saveHelpMessage, purgeHelpMessage, moveHelpMessage,
 	addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage,
 	detailsHelpMessage, removeHelpMessage};

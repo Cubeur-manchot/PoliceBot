@@ -29,6 +29,8 @@ const onMessage = message => {
 			sendMessageToChannel(message.channel, helpMessages.purgeHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&purge ")) { // &purge command
 			purgeCommand(message);
+		} else if (messageContentLowerCase === "&move") { // help for &move command
+			sendMessageToChannel(message.channel, helpMessages.moveHelpMessage);
 		} else if (messageContentLowerCase === "&infractions"
 			|| messageContentLowerCase === "&warns"
 			|| messageContentLowerCase === "&bans"
