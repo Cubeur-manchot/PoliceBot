@@ -1,7 +1,7 @@
 "use strict";
 
 const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
-const {saveCommand, purgeCommand} = require("./discussions.js");
+const {saveCommand, purgeCommand, moveCommand} = require("./discussions.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
@@ -31,6 +31,8 @@ const onMessage = message => {
 			purgeCommand(message);
 		} else if (messageContentLowerCase === "&move") { // help for &move command
 			sendMessageToChannel(message.channel, helpMessages.moveHelpMessage);
+		} else if (messageContentLowerCase.startsWith("&move ")) { // &move command
+			moveCommand(message);
 		} else if (messageContentLowerCase === "&infractions"
 			|| messageContentLowerCase === "&warns"
 			|| messageContentLowerCase === "&bans"

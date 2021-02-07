@@ -2,7 +2,7 @@
 
 const {sendMessageToChannel, sendLog, deleteMessage} = require("./messages.js");
 const {getAvailableId, addInfoData} = require("./dataManipulation.js");
-const {saveHelpMessage, purgeHelpMessage} = require("./helpMessages.js");
+const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
 const {buildEmbedElementList, buildEmbedsDiscussionDetails} = require("./messageBuilder.js");
 
@@ -39,6 +39,8 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 					deleteMessage(message);
 				}
 			}
+const moveCommand = commandMessage => {
+};
 			let discussion = {
 				id: getAvailableId("discussions"),
 				savingDate: getReadableDate(commandMessage.createdAt),
@@ -82,4 +84,4 @@ const getLastMessagesIdOfChannel = (nbMessages, channel) => {
 	return result;
 };
 
-module.exports = {saveCommand, purgeCommand};
+module.exports = {saveCommand, purgeCommand, moveCommand};
