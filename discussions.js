@@ -27,10 +27,16 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 				`:x: Error : the number of messages to ${purgeOrSave} must be strictly positive.\n\n${helpMessage}`);
 		} else {
 			let messagesId = getLastMessagesIdOfChannel(numberOfMessages + 1, commandMessage.channel);
-			let messages = [];
+			let discussion = {
+				id: getAvailableId("discussions"),
+				savingDate: getReadableDate(commandMessage.createdAt),
+				purged: purge,
+				channelId: commandMessage.channel.id,
+				messages: []
+			};
 			for (let messageId of messagesId) {
 				let message = commandMessage.channel.messages.cache.get(messageId);
-				messages.push({
+				discussion.messages.push({
 					authorId: message.author.id,
 					date: getReadableDate(message.createdAt),
 					content: message.content
