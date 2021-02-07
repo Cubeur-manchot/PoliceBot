@@ -1,5 +1,7 @@
 "use strict";
 
+// help messages for discussion commands
+
 const saveHelpMessage = "```&save <nbMessages>```"
 	+ "`<nbMessages>` : the number of messages to save."
 	+ "\nThe command message will be deleted."
@@ -8,6 +10,8 @@ const saveHelpMessage = "```&save <nbMessages>```"
 const purgeHelpMessage = "```&purge <nbMessages>```"
 	+ "`<nbMessages>` : the number of messages to purge."
 	+ "\n\nExample : ```\n&purge 42```";
+
+// help messages for infractions, warns and bans commands
 
 const addInfractionHelpMessage = "```\n&addInfraction <member> <type> // <commentary>```"
 	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
@@ -30,6 +34,11 @@ const addBanHelpMessage = "```\n&ban <member> <reason> <expirationDate> <warnsId
 	+ "\n`<commentary>` (optional) : gives more information about the warn."
 	+ "\n\nExample: ```\n&ban Cubeur-manchot#7706 3 warns 18/04/2021 w#1 w#3 w#4 // c'est relou```";
 
+const unbanHelpMessage = "```\n&unban <member>```"
+	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937.";
+
+// help messages for general commands
+
 const detailsHelpMessage = "```&details <elementId>```"
 	+ "`<elementId>` : the id of the element you want details (infraction, warn, ban or saved discussion). Ex: i#1."
 	+ "\nIt can show many elements at once."
@@ -39,9 +48,6 @@ const removeHelpMessage = "```\n&remove <elementId>```"
 	+ "`<elementId>` is the id of the element (infraction, warn, ban or saved discussion) to remove/revoke."
 	+ "\nIt can remove many elements at once."
 	+ "\n\nExample: ```\n&remove i#3 i#4 w#1```";
-
-const unbanHelpMessage = "```\n&unban <member>```"
-	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937.";
 
 module.exports = {saveHelpMessage, purgeHelpMessage,
 	addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage,
