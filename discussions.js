@@ -45,6 +45,17 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 					deleteMessage(message);
 				}
 			}
+			addInfoData(discussion, "discussions");
+			if (!purge) {
+				deleteMessage(commandMessage);
+			}
+			for (let embed of buildEmbedsDiscussionDetails(discussion)) {
+				sendLog(embed, commandMessage);
+			}
+		}
+	}
+};
+
 const moveCommand = commandMessage => {
 };
 			let discussion = {
