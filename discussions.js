@@ -4,7 +4,7 @@ const {sendMessageToChannel, sendLog, deleteMessage} = require("./messages.js");
 const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
-const {buildEmbedElementList, buildEmbedsDiscussionDetails} = require("./messageBuilder.js");
+const {buildEmbedsDiscussionDetails} = require("./messageBuilder.js");
 
 const purgeCommand = commandMessage => purgeOrSaveCommand(commandMessage, true);
 
