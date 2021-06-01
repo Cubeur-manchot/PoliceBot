@@ -1,6 +1,6 @@
 "use strict";
 
-const {sendMessageToChannel, sendLog, deleteMessage} = require("./messages.js");
+const {sendMessageToChannel, sendEmbedToChannel, sendLog, deleteMessage} = require("./messages.js");
 const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
@@ -30,7 +30,7 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 			let discussion = {
 				id: getAvailableId("discussions"),
 				savingDate: getReadableDate(commandMessage.createdAt),
-				purged: purge,
+				action: purge ? "purge" : "save",
 				channelId: commandMessage.channel.id,
 				messages: []
 			};
@@ -57,20 +57,48 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 };
 
 const moveCommand = commandMessage => {
-};
-			let discussion = {
-				id: getAvailableId("discussions"),
-				savingDate: getReadableDate(commandMessage.createdAt),
-				purged: purge,
-				channelId: commandMessage.channel.id,
-				messages: messages
-			};
-			addInfoData(discussion, "discussions");
-			if (!purge) {
-				deleteMessage(commandMessage);
-			}
-			for (let embed of buildEmbedsDiscussionDetails(discussion)) {
-				sendLog(embed, commandMessage);
+	let commandArguments = commandMessage.content.replace(/^&move */i, "").split(" ");
+	if (commandArguments.length !== 2) {
+		sendMessageToChannel(commandMessage.channel,
+			":x: Error : please specify the number of messages to move and the destination channel.\n\n" + moveHelpMessage);
+	} else {
+		let numberOfMessages = parseInt(commandArguments[0]);
+		let destinationChannelMention = commandArguments[1];
+		if (!destinationChannelMention.startsWith("<#") || !destinationChannelMention.endsWith(">")) {
+			sendMessageToChannel(commandMessage.channel,
+				":x: Error : please mention the channel (exemple : <#330348166799163393>).\n\n" + moveHelpMessage);
+		} else {
+			let channelId = destinationChannelMention.substring(2, destinationChannelMention.length - 1);
+			let destinationChannel = commandMessage.guild.channels.cache.find(channel => {return channel.id === channelId;});
+			if (isNaN(numberOfMessages)) {
+				sendMessageToChannel(commandMessage.channel,
+					":x: Error : wrong format for the number of messages to move.\n\n" + moveHelpMessage);
+			} else if (numberOfMessages < 1) {
+				sendMessageToChannel(commandMessage.channel,
+					":x: Error : the number of messages to move must be strictly positive.\n\n" + moveHelpMessage);
+			} else {
+				let messagesId = getLastMessagesIdOfChannel(numberOfMessages + 1, commandMessage.channel);
+				let discussion = {
+					id: getAvailableId("discussions"),
+					savingDate: getReadableDate(commandMessage.createdAt),
+					action: "move",
+					channelId: commandMessage.channel.id,
+					messages: []
+				};
+				for (let messageId of messagesId) {
+					let message = commandMessage.channel.messages.cache.get(messageId);
+					discussion.messages.push({
+						authorId: message.author.id,
+						date: getReadableDate(message.createdAt),
+						content: message.content
+					});
+					deleteMessage(message);
+				}
+				addInfoData(discussion, "discussions");
+				for (let embed of buildEmbedsDiscussionDetails(discussion)) {
+					sendEmbedToChannel(destinationChannel, embed);
+					sendLog(embed, commandMessage);
+				}
 			}
 		}
 	}

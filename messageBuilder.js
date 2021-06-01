@@ -116,7 +116,7 @@ const buildEmbedsDiscussionDetails = discussion => {
 	let embedList = [];
 	let currentDescription = "Saving date : " + discussion.savingDate
 		+ `\nChannel : <#${discussion.channelId}>`
-		+ `\nCommand : \`&${discussion.purged ? "purge" : "save"}\``;
+		+ `\nCommand : \`&${discussion.action}\``;
 	if (discussion.messages.length) {
 		let currentDay = "";
 		for (let message of discussion.messages) {
