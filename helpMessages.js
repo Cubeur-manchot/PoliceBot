@@ -1,5 +1,24 @@
 "use strict";
 
+// main help message
+
+const mainHelpMessage = "Here is the list of commands I support. "
+	+ "To get specific help for one of them, simply type the command without any argument."
+	+ "\n`&help` : display this help."
+	+ "\n`&save` : saves some messages."
+	+ "\n`&purge` : delete some messages."
+	+ "\n`&move` : move some messages to another channel."
+	+ "\n`&discussions` : display the list of all saved discussions."
+	+ "\n`&infraction`/`&addInfraction` : add an infraction to a member."
+	+ "\n`&infractions` : display the list of all infractions."
+	+ "\n`&warn`/`&addWarn` : add a warn to a member."
+	+ "\n`&infractions` : display the list of all warns."
+	+ "\n`&ban`/`&addBan` : ban a member."
+	+ "\n`&unban` : unban a member."
+	+ "\n`&bans` : display the list of all bans."
+	+ "\n`&details` : display the detailed information of an infractions, a warn or a ban."
+	+ "\n`&remove` : remove an infractions, a warn or a ban.";
+
 // help messages for discussion commands
 
 const saveHelpMessage = "```&save <nbMessages>```"
@@ -54,6 +73,7 @@ const removeHelpMessage = "```\n&remove <elementId>```"
 	+ "\nIt can remove many elements at once."
 	+ "\n\nExample: ```\n&remove i#3 i#4 w#1```";
 
-module.exports = {saveHelpMessage, purgeHelpMessage, moveHelpMessage,
+module.exports = {mainHelpMessage,
+	saveHelpMessage, purgeHelpMessage, moveHelpMessage,
 	addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage,
 	detailsHelpMessage, removeHelpMessage};

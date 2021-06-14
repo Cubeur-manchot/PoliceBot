@@ -21,7 +21,9 @@ const onMessage = message => {
 	if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
 		let messageContentLowerCase = message.content.toLowerCase();
-		if (messageContentLowerCase === "&save") { // help for &save command
+		if (messageContentLowerCase.startsWith("&help")) { // main &help command
+			sendMessageToChannel(message.channel, helpMessages.mainHelpMessage);
+		} else if (messageContentLowerCase === "&save") { // help for &save command
 			sendMessageToChannel(message.channel, helpMessages.saveHelpMessage);
 		} else if (messageContentLowerCase.startsWith("&save ")) { // &save command
 			saveCommand(message);
