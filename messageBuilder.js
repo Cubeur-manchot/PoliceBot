@@ -112,11 +112,19 @@ const buildEmbedElementDetails = element => {
 	};
 };
 
-const buildEmbedsDiscussionDetails = discussion => {
+const buildEmbedDiscussionMovedFrench = (nbMessages, channelId) => {
+	return `${nbMessages} message${nbMessages > 1 ? "s ont été déplacés" : " a été déplacé"} vers le salon <#${channelId}>`;
+};
+
+const buildEmbedDiscussionMoved = (nbMessages, originChannelId, destinationChannelId, discussionId) => {
+	return `${nbMessages} message were moved from <#${originChannelId}> to <#${destinationChannelId}> (${discussionId})`;
+};
+
+const buildEmbedsDiscussionDetails = (discussion, mode) => {
 	let embedList = [];
-	let currentDescription = "Saving date : " + discussion.savingDate
-		+ `\nChannel : <#${discussion.channelId}>`
-		+ `\nCommand : \`&${discussion.action}\``;
+	let currentDescription = mode === "moved french"
+		? `Le : ${discussion.savingDate}\nSalon d'origine : <#${discussion.channelId}>`
+		: `Saving date : ${discussion.savingDate}\nChannel : <#${discussion.channelId}>\nCommand : \`&${discussion.action}\``;
 	if (discussion.messages.length) {
 		let currentDay = "";
 		for (let message of discussion.messages) {
@@ -137,13 +145,17 @@ const buildEmbedsDiscussionDetails = discussion => {
 			}
 		}
 	} else {
-		currentDescription += "\n\nNo message :mailbox_with_no_mail:";
+		currentDescription += mode === "moved french"
+			? "\n\nDiscussion vide :mailbox_with_no_mail:"
+			: "\n\nNo message :mailbox_with_no_mail:";
 	}
 	embedList.push({
 		color: embedColorFromType["discussions"],
 		description: currentDescription
 	});
-	embedList[0].title = `__Details of discussion ${discussion.id}__`;
+	embedList[0].title = mode === "moved french"
+		? `__Messages déplacés depuis un autre salon__`
+		: `__Details of discussion ${discussion.id}__`;
 	return embedList;
 };
 
@@ -163,4 +175,6 @@ const buildBadWordsLogEmbed = (message, badWords, warningMessage) => {
 	};
 };
 
-module.exports = {buildEmbedElementList, buildEmbedElementDetails, buildEmbedsDiscussionDetails, buildBadWordsLogEmbed};
+module.exports = {buildEmbedElementList, buildEmbedElementDetails,
+	buildEmbedsDiscussionDetails, buildEmbedDiscussionMovedFrench, buildEmbedDiscussionMoved,
+	buildBadWordsLogEmbed};

@@ -54,7 +54,7 @@ const detailsCommand = commandMessage => {
 			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
 			if (matchingElement) { // found a matching element, send information
 				if (word.includes("d")) {
-					let embedList = buildEmbedsDiscussionDetails(matchingElement);
+					let embedList = buildEmbedsDiscussionDetails(matchingElement, "normal");
 					for (let embed of embedList) {
 						sendEmbedToChannel(commandMessage.channel, embed);
 					}
