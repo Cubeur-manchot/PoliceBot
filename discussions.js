@@ -4,7 +4,9 @@ const {sendMessageToChannel, sendEmbedToChannel, sendLog, deleteMessage} = requi
 const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
-const {buildEmbedsDiscussionDetails, buildEmbedDiscussionMoved, buildEmbedDiscussionMovedFrench} = require("./messageBuilder.js");
+const {buildEmbedsDiscussionDetails,
+	buildEmbedDiscussionMoved, buildEmbedDiscussionMovedFrench,
+	buildEmbedDiscussionPurgedOrSaved, buildEmbedDiscussionPurgedOrSavedFrench} = require("./messageBuilder.js");
 
 const purgeCommand = commandMessage => purgeOrSaveCommand(commandMessage, true);
 
@@ -46,12 +48,12 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 				}
 			}
 			addInfoData(discussion, "discussions");
-			if (!purge) {
-				deleteMessage(commandMessage);
-			}
-			for (let embed of buildEmbedsDiscussionDetails(discussion, "normal")) {
-				sendLog(embed, commandMessage);
-			}
+			// embed in origin channel
+			let embedInfoOrigin = buildEmbedDiscussionPurgedOrSavedFrench(discussion.messages.length - 1, purge);
+			sendMessageToChannel(commandMessage.channel, embedInfoOrigin);
+			// embed in log channel
+			let embedLog = buildEmbedDiscussionPurgedOrSaved(discussion.messages.length - 1, commandMessage.channel.id, discussion.id, purge);
+			sendLog(embedLog, commandMessage);
 		}
 	}
 };
@@ -100,10 +102,10 @@ const moveCommand = commandMessage => {
 					sendEmbedToChannel(destinationChannel, embed);
 				}
 				// embed in origin channel
-				let embedInfoOrigin = buildEmbedDiscussionMovedFrench(discussion.messages.length, destinationChannel.id);
+				let embedInfoOrigin = buildEmbedDiscussionMovedFrench(discussion.messages.length - 1, destinationChannel.id);
 				sendMessageToChannel(commandMessage.channel, embedInfoOrigin);
 				// embed in log channel
-				let embedLog = buildEmbedDiscussionMoved(discussion.messages.length, commandMessage.channel.id, destinationChannel.id, discussion.id);
+				let embedLog = buildEmbedDiscussionMoved(discussion.messages.length - 1, commandMessage.channel.id, destinationChannel.id, discussion.id);
 				sendLog(embedLog, commandMessage);
 			}
 		}

@@ -112,12 +112,20 @@ const buildEmbedElementDetails = element => {
 	};
 };
 
-const buildEmbedDiscussionMovedFrench = (nbMessages, channelId) => {
-	return `${nbMessages} message${nbMessages > 1 ? "s ont été déplacés" : " a été déplacé"} vers le salon <#${channelId}>`;
+const buildEmbedDiscussionPurgedOrSavedFrench = (nbMessages, purge) => {
+	return `${nbMessages} message${nbMessages > 1 ? "s ont été" : " a été"} ${purge ? "supprimé" : "sauvegardé"}${nbMessages > 1 ? "s" : ""}`;
+};
+
+const buildEmbedDiscussionPurgedOrSaved = (nbMessages, channelId, discussionId, purge) => {
+	return `${nbMessages} message${nbMessages > 1 ? "s were" : " was"} ${purge ? "purged" : "saved"} in channel <#${channelId}> (${discussionId})`;
+};
+
+const buildEmbedDiscussionMovedFrench = (nbMessages, destinationChannelId) => {
+	return `${nbMessages} message${nbMessages > 1 ? "s ont été déplacés" : " a été déplacé"} vers le salon <#${destinationChannelId}>`;
 };
 
 const buildEmbedDiscussionMoved = (nbMessages, originChannelId, destinationChannelId, discussionId) => {
-	return `${nbMessages} message were moved from <#${originChannelId}> to <#${destinationChannelId}> (${discussionId})`;
+	return `${nbMessages} message${nbMessages > 1 ? "s were" : "was"} moved from <#${originChannelId}> to <#${destinationChannelId}> (${discussionId})`;
 };
 
 const buildEmbedsDiscussionDetails = (discussion, mode) => {
@@ -176,5 +184,7 @@ const buildBadWordsLogEmbed = (message, badWords, warningMessage) => {
 };
 
 module.exports = {buildEmbedElementList, buildEmbedElementDetails,
-	buildEmbedsDiscussionDetails, buildEmbedDiscussionMovedFrench, buildEmbedDiscussionMoved,
+	buildEmbedsDiscussionDetails,
+	buildEmbedDiscussionMovedFrench, buildEmbedDiscussionMoved,
+	buildEmbedDiscussionPurgedOrSavedFrench, buildEmbedDiscussionPurgedOrSaved,
 	buildBadWordsLogEmbed};
