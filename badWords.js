@@ -37,8 +37,16 @@ const handleBadWords = async message => {
 	}
 };
 
+const handleBadWordsSoft = message => {
+	let badWords = containedBadWords(message);
+	if (badWords !== null) {
+		sendMessageToChannel(message.channel,
+			`${badWords.length === 1 ? "Le mot suivant est" : "Les mots suivants sont"} dans la liste des mots censurés : ${badWords.join(", ")}`);
+	}
+};
+
 const containedBadWords = message => {
 	return message.content.match(badWordsRegex);
 };
 
-module.exports = {handleBadWords};
+module.exports = {handleBadWords, handleBadWordsSoft};

@@ -5,7 +5,7 @@ const {saveCommand, purgeCommand, moveCommand} = require("./discussions.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
-const {handleBadWords} = require("./badWords");
+const {handleBadWords, handleBadWordsSoft} = require("./badWords");
 const {buildEmbedElementList} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
 
@@ -18,10 +18,15 @@ const onReady = PoliceBot => {
 };
 
 const onMessage = message => {
-	if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
+	if (message.author.id === "719973594029097040") { // message not sent by PoliceBot, work on the content
+		return;
+	}
+	if (message.channel.type === "dm") { // message is a private message sent to PoliceBot
+		handleBadWordsSoft(message);
+	} else if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
 		handlePoliceBotCommand(message);
-	} else if (message.author.id !== "719973594029097040") { // message not sent by PoliceBot, work on the content
+	} else {
 		handleBadWords(message);
 	}
 	let members = message.client.memberList;
