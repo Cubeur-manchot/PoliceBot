@@ -6,23 +6,21 @@ const {addInfoData, getAvailableId} = require("./dataManipulation.js");
 const {getReadableDate} = require("./date.js");
 
 const badWords = [
-	"b(i|1)tt?es?",
-	"teube?s?",
-	"ch(i|1)bre?s?",
-	"(c|k)ou(i|1)ll?es?",
-	"(e|a)n(c|k)ul(é|e)s?",
-	"(c|k)(o|0)nn?a(rd?|ss?e)s?",
-	"p(é|e)tass?es?",
-	"putt?(e|ain|1)s?",
-	"sal(o|0)pe?s?",
-	"br(a|e)nll?(é?e)s?"
+	{ word: "bite", regexString : "b(i|1)tt?es?" },
+	{ word: "teub", regexString : "teube?s?" },
+	{ word: "chibre", regexString : "ch(i|1)bre?s?" },
+	{ word: "couille", regexString : "(c|k)ou(i|1)ll?es?" },
+	{ word: "enculé", regexString : "(e|a)n(c|k)ul(é|e)s?" },
+	{ word: "connard/connasse", regexString : "(c|k)(o|0)nn?a(rd?|ss?e)s?" },
+	{ word: "pétasse", regexString : "p(é|e)tass?es?" },
+	{ word: "pute", regexString : "putt?(e|ain|1)s?" },
+	{ word: "salope", regexString : "sal(o|0)pe?s?" },
+	{ word: "branle", regexString : "br(a|e)nll?(é?e)s?" }
 ];
-
-const badWordsRegex = new RegExp("(^| |	)(" + badWords.join("|") + ")( |	|$)", "gi");
 
 const handleBadWords = async message => {
 	let badWords = containedBadWords(message);
-	if (badWords !== null) {
+	if (badWords.length) {
 		deleteMessage(message);
 		let infractionId = getAvailableId("infractions");
 		addInfoData({
@@ -39,14 +37,21 @@ const handleBadWords = async message => {
 
 const handleBadWordsSoft = message => {
 	let badWords = containedBadWords(message);
-	if (badWords !== null) {
+	if (badWords.length) {
 		sendMessageToChannel(message.channel,
-			`${badWords.length === 1 ? "Le mot suivant est" : "Les mots suivants sont"} dans la liste des mots censurés : ${badWords.join(", ")}`);
+			`:zipper_mouth: ${badWords.length === 1 ? "Le mot suivant est" : "Les mots suivants sont"}`
+			+ ` dans la liste des mots censurés : ${badWords.join(", ")}`);
 	}
 };
 
 const containedBadWords = message => {
-	return message.content.match(badWordsRegex);
+	let detectedBadWords = [];
+	for (let badWord of badWords) {
+		if (new RegExp("(^| |	)" + badWord.regexString + "( |	|$)", "gi").test(message.content)) {
+			detectedBadWords.push(badWord.word);
+		}
+	}
+	return detectedBadWords;
 };
 
 module.exports = {handleBadWords, handleBadWordsSoft};
