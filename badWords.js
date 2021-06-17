@@ -24,15 +24,16 @@ const handleBadWords = async message => {
 	let badWords = containedBadWords(message);
 	if (badWords !== null) {
 		deleteMessage(message);
+		let infractionId = getAvailableId("infractions");
 		addInfoData({
-			id: getAvailableId("infractions"),
+			id: infractionId,
 			memberId: message.author.id,
 			date: getReadableDate(message.createdAt),
 			type: "Bad word",
 			commentary: badWords.join(", ")
 		},"infractions");
 		let warningMessage = await sendMessageToChannel(message.channel, "Oh c'est pas bien de dire ça ! :eyes:");
-		sendLog(buildBadWordsLogEmbed(message, badWords, warningMessage), warningMessage);
+		sendLog(buildBadWordsLogEmbed(message, badWords, warningMessage, infractionId), warningMessage);
 	}
 };
 

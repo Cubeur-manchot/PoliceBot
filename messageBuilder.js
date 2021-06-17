@@ -167,10 +167,10 @@ const buildEmbedsDiscussionDetails = (discussion, mode) => {
 	return embedList;
 };
 
-const buildBadWordsLogEmbed = (message, badWords, warningMessage) => {
+const buildBadWordsLogEmbed = (message, badWords, warningMessage, infractionId) => {
 	return {
 		color: embedColorFromType["infractions"],
-		title: "__Bad words__",
+		title: `__Bad words (${infractionId})__`,
 		description: `:face_with_symbols_over_mouth: User <@!${message.author.id}> sent bad word(s) in <#${message.channel.id}> [Jump to discussion](${warningMessage.url}).`,
 		fields: [{
 			name: "Original message",
