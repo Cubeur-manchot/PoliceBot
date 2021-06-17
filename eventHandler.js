@@ -20,54 +20,7 @@ const onReady = PoliceBot => {
 const onMessage = message => {
 	if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
-		let messageContentLowerCase = message.content.toLowerCase();
-		if (messageContentLowerCase.startsWith("&help")) { // main &help command
-			sendMessageToChannel(message.channel, helpMessages.mainHelpMessage);
-		} else if (messageContentLowerCase === "&save") { // help for &save command
-			sendMessageToChannel(message.channel, helpMessages.saveHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&save ")) { // &save command
-			saveCommand(message);
-		} else if (messageContentLowerCase === "&purge") { // help for &purge command
-			sendMessageToChannel(message.channel, helpMessages.purgeHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&purge ")) { // &purge command
-			purgeCommand(message);
-		} else if (messageContentLowerCase === "&move") { // help for &move command
-			sendMessageToChannel(message.channel, helpMessages.moveHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&move ")) { // &move command
-			moveCommand(message);
-		} else if (messageContentLowerCase === "&infractions"
-			|| messageContentLowerCase === "&warns"
-			|| messageContentLowerCase === "&bans"
-			|| messageContentLowerCase === "&discussions") { // display all elements of a type
-			sendEmbedToChannel(message.channel, buildEmbedElementList(messageContentLowerCase.slice(1)));
-		} else if (messageContentLowerCase === "&addinfraction" || messageContentLowerCase === "&infraction") { // help for &addinfraction
-			sendMessageToChannel(message.channel, helpMessages.addInfractionHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&addinfraction ") || messageContentLowerCase.startsWith("&infraction ")) { // &addinfraction command
-			addInfractionCommand(message);
-		} else if (messageContentLowerCase === "&addwarn" || messageContentLowerCase === "&warn") { // help for &addwarn
-			sendMessageToChannel(message.channel, helpMessages.addWarnHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&addwarn ") || messageContentLowerCase.startsWith("&warn ")) { // &addwarn command
-			addWarnCommand(message);
-		} else if (messageContentLowerCase === "&addban" || messageContentLowerCase === "&ban") { // help for &ban
-			sendMessageToChannel(message.channel, helpMessages.addBanHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&ban ")) {
-			addBanCommand(message);
-		} else if (messageContentLowerCase === "&details") { // help for &details
-			sendMessageToChannel(message.channel, helpMessages.detailsHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&details ")) { // &details command
-			detailsCommand(message);
-		} else if (messageContentLowerCase === "&remove") { // help for &remove
-			sendMessageToChannel(message.channel, helpMessages.removeHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command
-			removeCommand(message);
-		} else if (messageContentLowerCase === "&unban") { // help for &unban
-			sendMessageToChannel(message.channel, helpMessages.unbanHelpMessage);
-		} else if (messageContentLowerCase.startsWith("&unban ")) { // &unban command
-			unbanCommand(message);
-		} else {
-			sendMessageToChannel(message.channel, "Désolé mais pour le moment je ne connais pas cette commande. "
-				+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
-		}
+		handlePoliceBotCommand(message);
 	} else if (message.author.id !== "719973594029097040") { // message not sent by PoliceBot, work on the content
 		handleBadWords(message);
 	}
@@ -82,6 +35,57 @@ const onMessage = message => {
 		};
 		writeInfoData(members, "members"); // save in data
 		message.client.memberList = members; // update cache
+	}
+};
+
+const handlePoliceBotCommand = message => {
+	let messageContentLowerCase = message.content.toLowerCase();
+	if (messageContentLowerCase.startsWith("&help")) { // main &help command
+		sendMessageToChannel(message.channel, helpMessages.mainHelpMessage);
+	} else if (messageContentLowerCase === "&save") { // help for &save command
+		sendMessageToChannel(message.channel, helpMessages.saveHelpMessage);
+	} else if (messageContentLowerCase.startsWith("&save ")) { // &save command
+		saveCommand(message);
+	} else if (messageContentLowerCase === "&purge") { // help for &purge command
+		sendMessageToChannel(message.channel, helpMessages.purgeHelpMessage);
+	} else if (messageContentLowerCase.startsWith("&purge ")) { // &purge command
+		purgeCommand(message);
+	} else if (messageContentLowerCase === "&move") { // help for &move command
+		sendMessageToChannel(message.channel, helpMessages.moveHelpMessage);
+	} else if (messageContentLowerCase.startsWith("&move ")) { // &move command
+		moveCommand(message);
+	} else if (messageContentLowerCase === "&infractions"
+		|| messageContentLowerCase === "&warns"
+		|| messageContentLowerCase === "&bans"
+		|| messageContentLowerCase === "&discussions") { // display all elements of a type
+		sendEmbedToChannel(message.channel, buildEmbedElementList(messageContentLowerCase.slice(1)));
+	} else if (messageContentLowerCase === "&addinfraction" || messageContentLowerCase === "&infraction") { // help for &addinfraction
+		sendMessageToChannel(message.channel, helpMessages.addInfractionHelpMessage);
+	} else if (messageContentLowerCase.startsWith("&addinfraction ") || messageContentLowerCase.startsWith("&infraction ")) { // &addinfraction command
+		addInfractionCommand(message);
+	} else if (messageContentLowerCase === "&addwarn" || messageContentLowerCase === "&warn") { // help for &addwarn
+		sendMessageToChannel(message.channel, helpMessages.addWarnHelpMessage);
+	} else if (messageContentLowerCase.startsWith("&addwarn ") || messageContentLowerCase.startsWith("&warn ")) { // &addwarn command
+		addWarnCommand(message);
+	} else if (messageContentLowerCase === "&addban" || messageContentLowerCase === "&ban") { // help for &ban
+		sendMessageToChannel(message.channel, helpMessages.addBanHelpMessage);
+	} else if (messageContentLowerCase.startsWith("&ban ")) {
+		addBanCommand(message);
+	} else if (messageContentLowerCase === "&details") { // help for &details
+		sendMessageToChannel(message.channel, helpMessages.detailsHelpMessage);
+	} else if (messageContentLowerCase.startsWith("&details ")) { // &details command
+		detailsCommand(message);
+	} else if (messageContentLowerCase === "&remove") { // help for &remove
+		sendMessageToChannel(message.channel, helpMessages.removeHelpMessage);
+	} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command
+		removeCommand(message);
+	} else if (messageContentLowerCase === "&unban") { // help for &unban
+		sendMessageToChannel(message.channel, helpMessages.unbanHelpMessage);
+	} else if (messageContentLowerCase.startsWith("&unban ")) { // &unban command
+		unbanCommand(message);
+	} else {
+		sendMessageToChannel(message.channel, "Désolé mais pour le moment je ne connais pas cette commande. "
+			+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
 	}
 };
 
