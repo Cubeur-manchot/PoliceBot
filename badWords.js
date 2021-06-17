@@ -18,7 +18,7 @@ const badWords = [
 	"br(a|e)nll?(é?e)s?"
 ];
 
-const badWordsRegex = new RegExp("(^| |	)" + badWords.join("|") + "( |	|$)", "gi");
+const badWordsRegex = new RegExp("(^| |	)(" + badWords.join("|") + ")( |	|$)", "gi");
 
 const handleBadWords = async message => {
 	let badWords = containedBadWords(message);
