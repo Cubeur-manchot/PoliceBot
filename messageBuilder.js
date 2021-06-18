@@ -183,8 +183,13 @@ const buildBadWordsLogEmbed = (message, badWords, warningMessage, infractionId) 
 	};
 };
 
+const buildBadWordPrivateMessage = badWords => {
+	return `:zipper_mouth: ${badWords.length === 1 ? "Le mot suivant est" : "Les mots suivants sont"}`
+		+ ` dans la liste des mots censurés : ${badWords.join(", ")}`;
+};
+
 module.exports = {buildEmbedElementList, buildEmbedElementDetails,
 	buildEmbedsDiscussionDetails,
 	buildEmbedDiscussionMovedFrench, buildEmbedDiscussionMoved,
 	buildEmbedDiscussionPurgedOrSavedFrench, buildEmbedDiscussionPurgedOrSaved,
-	buildBadWordsLogEmbed};
+	buildBadWordsLogEmbed, buildBadWordPrivateMessage};

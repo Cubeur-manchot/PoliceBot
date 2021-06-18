@@ -13,6 +13,10 @@ const sendMessageToChannel = (channel, message, options) =>
 	channel.send(message, options)
 		.catch(console.error);
 
+const sendPrivateMessage = (user, message) =>
+	user.send(message)
+		.catch(console.error);
+
 const sendLog = (messageInformation, anyMessage) => {
 	let logChannel = anyMessage.client.channels.cache.find(channel => {return channel.id === "795319669459648512"});
 	if (messageInformation.title || messageInformation.description) { // embed message
@@ -31,4 +35,4 @@ const deleteMessage = message => {
 	}
 };
 
-module.exports = {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel, sendLog, deleteMessage};
+module.exports = {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendPrivateMessage, sendEmbedToChannel, sendLog, deleteMessage};

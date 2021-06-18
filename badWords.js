@@ -1,7 +1,7 @@
 "use strict";
 
-const {sendMessageToChannel, sendLog, deleteMessage} = require("./messages.js");
-const {buildBadWordsLogEmbed} = require("./messageBuilder.js");
+const {sendMessageToChannel, sendPrivateMessage, sendLog, deleteMessage} = require("./messages.js");
+const {buildBadWordsLogEmbed, buildBadWordPrivateMessage} = require("./messageBuilder.js");
 const {addInfoData, getAvailableId} = require("./dataManipulation.js");
 const {getReadableDate} = require("./date.js");
 
@@ -32,15 +32,14 @@ const handleBadWords = async message => {
 		},"infractions");
 		let warningMessage = await sendMessageToChannel(message.channel, "Oh c'est pas bien de dire ça ! :eyes:");
 		sendLog(buildBadWordsLogEmbed(message, badWords, warningMessage, infractionId), warningMessage);
+		sendPrivateMessage(message.author, buildBadWordPrivateMessage(badWords));
 	}
 };
 
 const handleBadWordsSoft = message => {
 	let badWords = containedBadWords(message);
 	if (badWords.length) {
-		sendMessageToChannel(message.channel,
-			`:zipper_mouth: ${badWords.length === 1 ? "Le mot suivant est" : "Les mots suivants sont"}`
-			+ ` dans la liste des mots censurés : ${badWords.join(", ")}`);
+		sendMessageToChannel(message.channel, buildBadWordPrivateMessage(badWords));
 	}
 };
 
