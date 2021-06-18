@@ -6,16 +6,19 @@ const {addInfoData, getAvailableId} = require("./dataManipulation.js");
 const {getReadableDate} = require("./date.js");
 
 const badWords = [
-	{ word: "bite", regexString : "b(i|1)tt?es?" },
-	{ word: "teub", regexString : "teube?s?" },
-	{ word: "chibre", regexString : "ch(i|1)bre?s?" },
-	{ word: "couille", regexString : "(c|k)ou(i|1)ll?es?" },
-	{ word: "enculé", regexString : "(e|a)n(c|k)ul(é|e)s?" },
-	{ word: "connard/connasse", regexString : "(c|k)(o|0)nn?a(rd?|ss?e)s?" },
-	{ word: "pétasse", regexString : "p(é|e)tass?es?" },
-	{ word: "pute", regexString : "putt?(e|ain|1)s?" },
-	{ word: "salope", regexString : "sal(o|0)pe?s?" },
-	{ word: "branle", regexString : "br(a|e)nll?(é?e)s?" }
+	{ word : "bite", regexString : "b(i|1)tt?es?" },
+	{ word : "teub", regexString : "teube?s?" },
+	{ word : "chibre", regexString : "ch(i|1)bre?s?" },
+	{ word : "couille", regexString : "(c|k)ou(i|1)ll?es?" },
+	{ word : "enculé", regexString : "(e|a)n(c|k)ul(é|e)s?" },
+	{ word : "connard/connasse", regexString : "(c|k)(o|0)nn?a(rd?|ss?e)s?" },
+	{ word : "pétasse", regexString : "p(é|e)tass?es?" },
+	{ word : "pute", regexString : "putt?(e|ain|1)s?" },
+	{ word : "salope", regexString : "sal(o|0)pe?s?" },
+	{ word : "branle", regexString : "br(a|e)nll?((é?e?)s?|ett?e)" },
+	{ word : "biffle", regexString : "b(i|1)ff?l(er?|é)e?s?" },
+	{ word : "burne", regexString : "burnes?" },
+	{ word : "faire foutre", regexString : "faire? f(o|0)utt?re?s?" }
 ];
 
 const handleBadWords = async message => {
