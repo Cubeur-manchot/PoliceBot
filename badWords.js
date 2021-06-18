@@ -35,7 +35,7 @@ const handleBadWords = async message => {
 		},"infractions");
 		let warningMessage = await sendMessageToChannel(message.channel, "Oh c'est pas bien de dire ça ! :eyes:");
 		sendLog(buildBadWordsLogEmbed(message, badWords, warningMessage, infractionId), warningMessage);
-		sendPrivateMessage(message.author, buildBadWordPrivateMessage(badWords));
+		sendPrivateMessage(message.author, buildBadWordPrivateMessage(badWords) + "\n\nMessage original :\n" + message.content);
 	}
 };
 
