@@ -128,7 +128,7 @@ const buildEmbedDiscussionMoved = (nbMessages, originChannelId, destinationChann
 	return `${nbMessages} message${nbMessages > 1 ? "s were" : "was"} moved from <#${originChannelId}> to <#${destinationChannelId}> (${discussionId})`;
 };
 
-const buildEmbedsDiscussionDetails = (discussion, mode) => {
+const buildDiscussionDetailsEmbeds = (discussion, mode) => {
 	let embedList = [];
 	let currentDescription = mode === "moved french"
 		? `Le : ${discussion.savingDate}\nSalon d'origine : <#${discussion.channelId}>`
@@ -189,7 +189,7 @@ const buildBadWordPrivateMessage = badWords => {
 };
 
 module.exports = {buildEmbedElementList, buildEmbedElementDetails,
-	buildEmbedsDiscussionDetails,
+	buildDiscussionDetailsEmbeds,
 	buildMessageDiscussionMovedFrench, buildEmbedDiscussionMoved,
 	buildEmbedDiscussionPurgedOrSavedFrench, buildEmbedDiscussionPurgedOrSaved,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage};

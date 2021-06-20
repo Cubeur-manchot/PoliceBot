@@ -4,7 +4,7 @@ const {sendMessageToChannel, sendEmbedToChannel, sendLog, deleteMessage} = requi
 const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
-const {buildEmbedsDiscussionDetails,
+const {buildDiscussionDetailsEmbeds,
 	buildEmbedDiscussionMoved, buildMessageDiscussionMovedFrench,
 	buildEmbedDiscussionPurgedOrSaved, buildEmbedDiscussionPurgedOrSavedFrench} = require("./messageBuilder.js");
 
@@ -98,7 +98,7 @@ const moveCommand = commandMessage => {
 				}
 				addInfoData(discussion, "discussions");
 				// embed in destination channel
-				for (let embed of buildEmbedsDiscussionDetails(discussion, "moved french")) {
+				for (let embed of buildDiscussionDetailsEmbeds(discussion, "moved french")) {
 					sendEmbedToChannel(destinationChannel, embed);
 				}
 				// embed in origin channel
