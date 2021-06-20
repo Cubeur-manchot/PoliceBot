@@ -17,7 +17,7 @@ const emojiWhenNoElement = {
 	"discussions": ":zipper_mouth:"
 };
 
-const buildEmbedElementList = infoType => {
+const buildElementListEmbed = infoType => {
 	let embedObject = {
 		color: embedColorFromType[infoType],
 		title: `__${infoType[0].toUpperCase()}${infoType.slice(1)}__`
@@ -188,7 +188,7 @@ const buildBadWordPrivateMessage = badWords => {
 		+ ` dans la liste des mots censurés : ${badWords.join(", ")}`;
 };
 
-module.exports = {buildEmbedElementList, buildElementDetailsEmbed,
+module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionMovedFrenchMessage, buildDiscussionMovedMessage,
 	buildDiscussionPurgedOrSavedFrenchMessage, buildDiscussionPurgedOrSavedMessage,

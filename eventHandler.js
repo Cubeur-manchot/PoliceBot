@@ -6,7 +6,7 @@ const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
-const {buildEmbedElementList} = require("./messageBuilder.js");
+const {buildElementListEmbed} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
 
 const onReady = PoliceBot => {
@@ -63,7 +63,7 @@ const handlePoliceBotCommand = message => {
 		|| messageContentLowerCase === "&warns"
 		|| messageContentLowerCase === "&bans"
 		|| messageContentLowerCase === "&discussions") { // display all elements of a type
-		sendEmbedToChannel(message.channel, buildEmbedElementList(messageContentLowerCase.slice(1)));
+		sendEmbedToChannel(message.channel, buildElementListEmbed(messageContentLowerCase.slice(1)));
 	} else if (messageContentLowerCase === "&addinfraction" || messageContentLowerCase === "&infraction") { // help for &addinfraction
 		sendMessageToChannel(message.channel, helpMessages.addInfractionHelpMessage);
 	} else if (messageContentLowerCase.startsWith("&addinfraction ") || messageContentLowerCase.startsWith("&infraction ")) { // &addinfraction command

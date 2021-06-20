@@ -1,7 +1,7 @@
 "use strict";
 
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
-const {buildEmbedElementList, buildElementDetailsEmbed, buildDiscussionDetailsEmbeds} = require("./messageBuilder.js");
+const {buildElementListEmbed, buildElementDetailsEmbed, buildDiscussionDetailsEmbeds} = require("./messageBuilder.js");
 const {readPoliceBotData, removePoliceBotData, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {unbanMember} = require("./members.js");
 const {detailsHelpMessage} = require("./helpMessages.js");
@@ -10,7 +10,7 @@ const removeCommand = message => {
 	let argumentsString = message.content.replace(/^&remove */i,"");
 	let {typesElementsSuccessfullyRemoved, failed} = removeElements(argumentsString, message);
 	for (let infoType in typesElementsSuccessfullyRemoved) {
-		sendEmbedToChannel(message.channel, buildEmbedElementList(infoType));
+		sendEmbedToChannel(message.channel, buildElementListEmbed(infoType));
 	}
 	if (failed.length) {
 		sendMessageToChannel(message.channel, ":x: Failed to remove :\n- " + failed.join("\n- "));
