@@ -13,7 +13,7 @@ const badWords = [
 	{ word : "enculé", regexString : "(e|a)n(c|k)ul(é|e)s?" },
 	{ word : "connard/connasse", regexString : "(c|k)(o|0)nn?a(rd?|ss?e)s?" },
 	{ word : "pétasse", regexString : "p(é|e)tass?es?" },
-	{ word : "pute", regexString : "putt?(e|ain|1)s?" },
+	{ word : "pute", regexString : "putt?es?" },
 	{ word : "salope", regexString : "sal(o|0)pe?s?" },
 	{ word : "branle", regexString : "br(a|e)nll?((é?e?)s?|ett?e)" },
 	{ word : "biffle", regexString : "b(i|1)ff?l(er?|é)e?s?" },
