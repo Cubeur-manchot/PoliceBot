@@ -120,7 +120,7 @@ const buildEmbedDiscussionPurgedOrSaved = (nbMessages, channelId, discussionId, 
 	return `${nbMessages} message${nbMessages > 1 ? "s were" : " was"} ${purge ? "purged" : "saved"} in channel <#${channelId}> (${discussionId})`;
 };
 
-const buildMessageDiscussionMovedFrench = (nbMessages, destinationChannelId) => {
+const buildDiscussionMovedFrenchMessage = (nbMessages, destinationChannelId) => {
 	return `${nbMessages} message${nbMessages > 1 ? "s ont été déplacés" : " a été déplacé"} vers le salon <#${destinationChannelId}>`;
 };
 
@@ -190,6 +190,6 @@ const buildBadWordPrivateMessage = badWords => {
 
 module.exports = {buildEmbedElementList, buildEmbedElementDetails,
 	buildDiscussionDetailsEmbeds,
-	buildMessageDiscussionMovedFrench, buildDiscussionMovedMessage,
+	buildDiscussionMovedFrenchMessage, buildDiscussionMovedMessage,
 	buildEmbedDiscussionPurgedOrSavedFrench, buildEmbedDiscussionPurgedOrSaved,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage};
