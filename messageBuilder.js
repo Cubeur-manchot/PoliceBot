@@ -124,7 +124,7 @@ const buildMessageDiscussionMovedFrench = (nbMessages, destinationChannelId) => 
 	return `${nbMessages} message${nbMessages > 1 ? "s ont été déplacés" : " a été déplacé"} vers le salon <#${destinationChannelId}>`;
 };
 
-const buildEmbedDiscussionMoved = (nbMessages, originChannelId, destinationChannelId, discussionId) => {
+const buildDiscussionMovedMessage = (nbMessages, originChannelId, destinationChannelId, discussionId) => {
 	return `${nbMessages} message${nbMessages > 1 ? "s were" : "was"} moved from <#${originChannelId}> to <#${destinationChannelId}> (${discussionId})`;
 };
 
@@ -190,6 +190,6 @@ const buildBadWordPrivateMessage = badWords => {
 
 module.exports = {buildEmbedElementList, buildEmbedElementDetails,
 	buildDiscussionDetailsEmbeds,
-	buildMessageDiscussionMovedFrench, buildEmbedDiscussionMoved,
+	buildMessageDiscussionMovedFrench, buildDiscussionMovedMessage,
 	buildEmbedDiscussionPurgedOrSavedFrench, buildEmbedDiscussionPurgedOrSaved,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage};
