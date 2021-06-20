@@ -116,7 +116,7 @@ const buildEmbedDiscussionPurgedOrSavedFrench = (nbMessages, purge) => {
 	return `${nbMessages} message${nbMessages > 1 ? "s ont été" : " a été"} ${purge ? "supprimé" : "sauvegardé"}${nbMessages > 1 ? "s" : ""}`;
 };
 
-const buildEmbedDiscussionPurgedOrSaved = (nbMessages, channelId, discussionId, purge) => {
+const buildDiscussionPurgedOrSavedMessage = (nbMessages, channelId, discussionId, purge) => {
 	return `${nbMessages} message${nbMessages > 1 ? "s were" : " was"} ${purge ? "purged" : "saved"} in channel <#${channelId}> (${discussionId})`;
 };
 
@@ -191,5 +191,5 @@ const buildBadWordPrivateMessage = badWords => {
 module.exports = {buildEmbedElementList, buildEmbedElementDetails,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionMovedFrenchMessage, buildDiscussionMovedMessage,
-	buildEmbedDiscussionPurgedOrSavedFrench, buildEmbedDiscussionPurgedOrSaved,
+	buildEmbedDiscussionPurgedOrSavedFrench, buildDiscussionPurgedOrSavedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage};
