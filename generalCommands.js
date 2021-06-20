@@ -1,7 +1,7 @@
 "use strict";
 
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
-const {buildEmbedElementList, buildEmbedElementDetails, buildDiscussionDetailsEmbeds} = require("./messageBuilder.js");
+const {buildEmbedElementList, buildElementDetailsEmbed, buildDiscussionDetailsEmbeds} = require("./messageBuilder.js");
 const {readPoliceBotData, removePoliceBotData, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {unbanMember} = require("./members.js");
 const {detailsHelpMessage} = require("./helpMessages.js");
@@ -59,7 +59,7 @@ const detailsCommand = commandMessage => {
 						sendEmbedToChannel(commandMessage.channel, embed);
 					}
 				} else {
-					sendEmbedToChannel(commandMessage.channel, buildEmbedElementDetails(matchingElement));
+					sendEmbedToChannel(commandMessage.channel, buildElementDetailsEmbed(matchingElement));
 				}
 			} else { // unknown element
 				unknownElements.push(word);

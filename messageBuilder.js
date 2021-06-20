@@ -59,7 +59,7 @@ const buildEmbedElementList = infoType => {
 	return embedObject;
 };
 
-const buildEmbedElementDetails = element => {
+const buildElementDetailsEmbed = element => {
 	let infoType = infoTypeFromIdFirstLetter[element.id[0]];
 	let description = `**Member** : <@${element.memberId}>`; // member
 	let diffDate = getReadableDiffDate(new Date(), parseDate(element.date));
@@ -188,7 +188,7 @@ const buildBadWordPrivateMessage = badWords => {
 		+ ` dans la liste des mots censurés : ${badWords.join(", ")}`;
 };
 
-module.exports = {buildEmbedElementList, buildEmbedElementDetails,
+module.exports = {buildEmbedElementList, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionMovedFrenchMessage, buildDiscussionMovedMessage,
 	buildDiscussionPurgedOrSavedFrenchMessage, buildDiscussionPurgedOrSavedMessage,
