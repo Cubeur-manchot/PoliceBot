@@ -6,7 +6,7 @@ const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMess
 const {getReadableDate} = require("./date.js");
 const {buildDiscussionDetailsEmbeds,
 	buildDiscussionMovedMessage, buildDiscussionMovedFrenchMessage,
-	buildDiscussionPurgedOrSavedMessage, buildEmbedDiscussionPurgedOrSavedFrench} = require("./messageBuilder.js");
+	buildDiscussionPurgedOrSavedMessage, buildDiscussionPurgedOrSavedFrenchMessage} = require("./messageBuilder.js");
 
 const purgeCommand = commandMessage => purgeOrSaveCommand(commandMessage, true);
 
@@ -49,7 +49,7 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 			}
 			addInfoData(discussion, "discussions");
 			// embed in origin channel
-			let embedInfoOrigin = buildEmbedDiscussionPurgedOrSavedFrench(discussion.messages.length - 1, purge);
+			let embedInfoOrigin = buildDiscussionPurgedOrSavedFrenchMessage(discussion.messages.length - 1, purge);
 			sendMessageToChannel(commandMessage.channel, embedInfoOrigin);
 			// embed in log channel
 			let embedLog = buildDiscussionPurgedOrSavedMessage(discussion.messages.length - 1, commandMessage.channel.id, discussion.id, purge);

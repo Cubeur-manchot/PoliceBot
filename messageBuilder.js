@@ -112,7 +112,7 @@ const buildEmbedElementDetails = element => {
 	};
 };
 
-const buildEmbedDiscussionPurgedOrSavedFrench = (nbMessages, purge) => {
+const buildDiscussionPurgedOrSavedFrenchMessage = (nbMessages, purge) => {
 	return `${nbMessages} message${nbMessages > 1 ? "s ont été" : " a été"} ${purge ? "supprimé" : "sauvegardé"}${nbMessages > 1 ? "s" : ""}`;
 };
 
@@ -191,5 +191,5 @@ const buildBadWordPrivateMessage = badWords => {
 module.exports = {buildEmbedElementList, buildEmbedElementDetails,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionMovedFrenchMessage, buildDiscussionMovedMessage,
-	buildEmbedDiscussionPurgedOrSavedFrench, buildDiscussionPurgedOrSavedMessage,
+	buildDiscussionPurgedOrSavedFrenchMessage, buildDiscussionPurgedOrSavedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage};
