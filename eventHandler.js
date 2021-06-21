@@ -63,7 +63,9 @@ const handlePoliceBotCommand = message => {
 		|| messageContentLowerCase === "&warns"
 		|| messageContentLowerCase === "&bans"
 		|| messageContentLowerCase === "&discussions") { // display all elements of a type
-		sendEmbedToChannel(message.channel, buildElementListEmbed(messageContentLowerCase.slice(1)));
+		for (let embed of buildElementListEmbed(messageContentLowerCase.slice(1))) {
+			sendEmbedToChannel(message.channel, embed);
+		}
 	} else if (messageContentLowerCase === "&addinfraction" || messageContentLowerCase === "&infraction") { // help for &addinfraction
 		sendMessageToChannel(message.channel, helpMessages.addInfractionHelpMessage);
 	} else if (messageContentLowerCase.startsWith("&addinfraction ") || messageContentLowerCase.startsWith("&infraction ")) { // &addinfraction command
