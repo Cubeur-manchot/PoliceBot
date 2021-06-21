@@ -18,57 +18,70 @@ const emojiWhenNoElement = {
 };
 
 const buildElementListEmbed = infoType => {
-	let embedList = [];
-	let currentDescription;
 	let elements = readInfoData(infoType);
+	let descriptionChunks = [];
 	if (elements.length) {
-		currentDescription = `Here is the list of all ${infoType} :\n`;
+		descriptionChunks.push(`Here is the list of all ${infoType} :\n`);
 		if (infoType === "discussions") { // discussions : display simple list
 			for (let savedDiscussion of elements) {
-				let descriptionForDiscussion = "\n`"
+				descriptionChunks.push("\n`"
 					+ savedDiscussion.id + (savedDiscussion.id.length === 3 ? " " : "")
 					+ "` `" + savedDiscussion.savingDate.substring(0,10)
 					+ "` <#" + savedDiscussion.channelId
-					+ ">";
-				if (currentDescription.length + descriptionForDiscussion.length <= 2048) { // if the description would not be too long, add it
-					currentDescription += descriptionForDiscussion;
-				} else { // else start a new embed with a new description
-					embedList.push({
-						color: embedColorFromType["discussions"],
-						description: currentDescription
-					});
-					currentDescription = descriptionForDiscussion;
-				}
+					+ ">");
 			}
 		} else { // infractions, warns and bans : group by member
 			let typeOrReason = infoType === "infractions" ? "type" : "reason";
 			let elementsGroupedByMemberId = groupElementsByMemberId(elements);
 			for (let memberId in elementsGroupedByMemberId) {
 				let memberElements = elementsGroupedByMemberId[memberId];
-				currentDescription += `\n<@${memberId}> (${memberElements.length}) :\n`;
-				currentDescription += "`Id  ` `Date      ` `" + (infoType === "infractions" ? "Type  " : "Reason") + "        `";
+				descriptionChunks.push(`\n<@${memberId}> (${memberElements.length}) :\n`);
+				descriptionChunks.push("`Id  ` `Date      ` `" + (infoType === "infractions" ? "Type  " : "Reason") + "        `");
 				for (let element of memberElements) {
-					currentDescription += "\n`" + element.id + (element.id.length === 3 ? " " : "")
-						+ "` `" + element.date.substring(0, 10) + "` `";
+					descriptionChunks.push("\n`" + element.id + (element.id.length === 3 ? " " : "")
+						+ "` `" + element.date.substring(0, 10) + "` `");
 					let elementTypeOrReason = element[typeOrReason];
 					if (elementTypeOrReason.length > 14) {
-						currentDescription += elementTypeOrReason.substring(0, 11) + "..."; // cut before end, and add "..."
+						descriptionChunks.push(elementTypeOrReason.substring(0, 11) + "..."); // cut before end, and add "..."
 					} else {
-						currentDescription += elementTypeOrReason + " ".repeat(14 - elementTypeOrReason.length); // complete with spaces at the end
+						descriptionChunks.push(elementTypeOrReason + " ".repeat(14 - elementTypeOrReason.length)); // complete with spaces at the end
 					}
-					currentDescription += "`";
+					descriptionChunks.push("`");
 				}
 			}
 		}
 	} else {
-		currentDescription = `No current ${infoType.slice(0, -1)} ${emojiWhenNoElement[infoType]}`;
+		descriptionChunks.push(`No current ${infoType.slice(0, -1)} ${emojiWhenNoElement[infoType]}`);
 	}
-	embedList.push({
-		color: embedColorFromType["discussions"],
-		description: currentDescription
-	});
+	let embedList = buildEmbedsFromDescriptionChunks(descriptionChunks);
+	for (let embed of embedList) {
+		embed.color = embedColorFromType[infoType];
+	}
 	embedList[0].title = `__${infoType[0].toUpperCase()}${infoType.slice(1)}__`;
 	return embedList;
+};
+
+const buildEmbedsFromDescriptionChunks = descriptionChunks => {
+	if (descriptionChunks.length) {
+		let embedList = [];
+		let currentDescription = "";
+		for (let descriptionChunk of descriptionChunks) {
+			if (currentDescription.length + descriptionChunk.length <= 2048) {
+				currentDescription += descriptionChunk;
+			} else {
+				embedList.push({
+					description: currentDescription
+				});
+				currentDescription = descriptionChunk;
+			}
+		}
+		embedList.push({
+			description: currentDescription
+		});
+		return embedList;
+	} else {
+		return [];
+	}
 };
 
 const buildElementDetailsEmbed = element => {
