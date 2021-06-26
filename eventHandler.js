@@ -6,6 +6,7 @@ const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
+const {handleInviteLinks, handleInviteLinksSoft} = require("./inviteLinks.js");
 const {buildElementListEmbed} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
 
@@ -17,17 +18,21 @@ const onReady = PoliceBot => {
 	reloadTempBans(PoliceBot);
 };
 
-const onMessage = message => {
+const onMessage = async message => {
 	if (message.author.id === "719973594029097040") { // message not sent by PoliceBot, work on the content
 		return;
 	}
 	if (message.channel.type === "dm") { // message is a private message sent to PoliceBot
-		handleBadWordsSoft(message);
+		await handleBadWordsSoft(message);
+		await handleInviteLinksSoft(message);
 	} else if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
 		handlePoliceBotCommand(message);
 	} else {
-		handleBadWords(message);
+		await handleBadWords(message); // handle bad words for both moderators and non-moderators
+		if (!message.member.roles.cache.get("332427771286519808")) { // handle invite links only for non-moderators
+			await handleInviteLinks(message);
+		}
 	}
 	let members = message.client.memberList;
 	if (!members[message.author.id] // member is not already registered in the list

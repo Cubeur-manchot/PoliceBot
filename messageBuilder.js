@@ -213,8 +213,32 @@ const buildBadWordPrivateMessage = badWords => {
 		+ ` dans la liste des mots censurés : ${badWords.join(", ")}`;
 };
 
+const buildInviteLinkLogEmbed = (message, invitationsNotInWhiteListStringified, warningMessage, infractionId) => {
+	return {
+		color: embedColorFromType["infractions"],
+		title: `__Invitation link (${infractionId})__`,
+		description: `:rage: User <@!${message.author.id}> sent unauthorized invitation(s) in <#${message.channel.id}> [Jump to discussion](${warningMessage.url}).`,
+		fields: [{
+			name: "Original message",
+			value: message.content
+		}, {
+			name: "Unauthorized invitation(s) :",
+			value: "- " + invitationsNotInWhiteListStringified.join("\n- ")
+		}],
+		timestamp: new Date()
+	};
+};
+
+const buildInviteLinkPrivateMessage = invitationsNotInWhiteListStringified => {
+	return `:face_with_spiral_eyes: ${invitationsNotInWhiteListStringified.length === 1
+		? "Cette invitation n'est pas autorisée" : "Ces invitations ne sont pas autorisées"} sur le serveur : `
+		+ invitationsNotInWhiteListStringified.join(", ");
+};
+
 module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionMovedFrenchMessage, buildDiscussionMovedMessage,
 	buildDiscussionPurgedOrSavedFrenchMessage, buildDiscussionPurgedOrSavedMessage,
-	buildBadWordsLogEmbed, buildBadWordPrivateMessage};
+	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
+	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage
+};
