@@ -64,7 +64,6 @@ const moveCommand = commandMessage => {
 		sendMessageToChannel(commandMessage.channel,
 			":x: Error : please specify the number of messages to move and the destination channel.\n\n" + moveHelpMessage);
 	} else {
-		let numberOfMessages = parseInt(commandArguments[0]);
 		let destinationChannelMention = commandArguments[1];
 		if (!destinationChannelMention.startsWith("<#") || !destinationChannelMention.endsWith(">")) {
 			sendMessageToChannel(commandMessage.channel,
@@ -72,14 +71,24 @@ const moveCommand = commandMessage => {
 		} else {
 			let channelId = destinationChannelMention.substring(2, destinationChannelMention.length - 1);
 			let destinationChannel = commandMessage.guild.channels.cache.find(channel => {return channel.id === channelId;});
-			if (isNaN(numberOfMessages)) {
-				sendMessageToChannel(commandMessage.channel,
-					":x: Error : wrong format for the number of messages to move.\n\n" + moveHelpMessage);
-			} else if (numberOfMessages < 1) {
-				sendMessageToChannel(commandMessage.channel,
-					":x: Error : the number of messages to move must be strictly positive.\n\n" + moveHelpMessage);
-			} else {
-				let messagesId = getLastMessagesIdOfChannel(numberOfMessages + 1, commandMessage.channel);
+			let messagesId;
+			if (commandArguments[0].includes("/")) { // look for a date of the form dd/MM (ex: 19/06)
+				// todo
+			} else if (commandArguments[0].includes(":")) { // look for a time of the form hh:mm (ex: 23:58)
+				// todo
+			} else { // look for a number of messages
+				let numberOfMessages = parseInt(commandArguments[0]);
+				if (isNaN(numberOfMessages)) {
+					sendMessageToChannel(commandMessage.channel, ":x: Error : please specify either the number of messages to move"
+						+ " or the date from which the messages must be moved.\n\n" + moveHelpMessage);
+				} else if (numberOfMessages < 1) {
+					sendMessageToChannel(commandMessage.channel,
+						":x: Error : the number of messages to move must be strictly positive.\n\n" + moveHelpMessage);
+				} else {
+					messagesId = getLastMessagesIdOfChannel(numberOfMessages + 1, commandMessage.channel);
+				}
+			}
+			if (messagesId) {
 				let discussion = {
 					id: getAvailableId("discussions"),
 					savingDate: getReadableDate(commandMessage.createdAt),
