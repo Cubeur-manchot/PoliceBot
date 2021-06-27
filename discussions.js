@@ -27,24 +27,7 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 	} else {
 		let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSave);
 		if (messagesId) {
-			let discussion = {
-				id: getAvailableId("discussions"),
-				savingDate: getReadableDate(commandMessage.createdAt),
-				action: purge ? "purge" : "save",
-				channelId: commandMessage.channel.id,
-				messages: []
-			};
-			for (let messageId of messagesId) {
-				let message = commandMessage.channel.messages.cache.get(messageId);
-				discussion.messages.push({
-					authorId: message.author.id,
-					date: getReadableDate(message.createdAt),
-					content: message.content
-				});
-				if (purge) {
-					deleteMessage(message);
-				}
-			}
+			let discussion = buildDiscussion(commandMessage, purgeOrSave, messagesId);
 			addInfoData(discussion, "discussions");
 			// embed in origin channel
 			let embedInfoOrigin = buildDiscussionPurgedOrSavedFrenchMessage(discussion.messages.length - 1, purge);
@@ -71,22 +54,7 @@ const moveCommand = commandMessage => {
 			let destinationChannel = commandMessage.guild.channels.cache.find(channel => {return channel.id === channelId;});
 			let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, "move");
 			if (messagesId) {
-				let discussion = {
-					id: getAvailableId("discussions"),
-					savingDate: getReadableDate(commandMessage.createdAt),
-					action: "move",
-					channelId: commandMessage.channel.id,
-					messages: []
-				};
-				for (let messageId of messagesId) {
-					let message = commandMessage.channel.messages.cache.get(messageId);
-					discussion.messages.push({
-						authorId: message.author.id,
-						date: getReadableDate(message.createdAt),
-						content: message.content
-					});
-					deleteMessage(message);
-				}
+				let discussion = buildDiscussion(commandMessage, "move", messagesId);
 				addInfoData(discussion, "discussions");
 				// embed in destination channel
 				for (let embed of buildDiscussionDetailsEmbeds(discussion, "moved french")) {
@@ -101,6 +69,28 @@ const moveCommand = commandMessage => {
 			}
 		}
 	}
+};
+
+const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId) => {
+	let messages = [];
+	for (let messageId of messagesId) {
+		let message = commandMessage.channel.messages.cache.get(messageId);
+		messages.push({
+			authorId: message.author.id,
+			date: getReadableDate(message.createdAt),
+			content: message.content
+		});
+		if (purgeOrSaveOrMove !== "save") { // delete the message in case of purge or move
+			deleteMessage(message);
+		}
+	}
+	return {
+		id: getAvailableId("discussions"),
+		savingDate: getReadableDate(commandMessage.createdAt),
+		action: purgeOrSaveOrMove,
+		channelId: commandMessage.channel.id,
+		messages: messages
+	};
 };
 
 const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove) => {
