@@ -20,15 +20,24 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 		sendMessageToChannel(commandMessage.channel,
 			`:x: Error : please specify only the number of messages to ${purgeOrSave}.\n\n${helpMessage}`);
 	} else {
-		let numberOfMessages = parseInt(commandArguments[0]);
-		if (isNaN(numberOfMessages)) {
-			sendMessageToChannel(commandMessage.channel,
-				`:x: Error : wrong format for the number of messages to ${purgeOrSave}.\n\n${helpMessage}`);
-		} else if (numberOfMessages < 1) {
-			sendMessageToChannel(commandMessage.channel,
-				`:x: Error : the number of messages to ${purgeOrSave} must be strictly positive.\n\n${helpMessage}`);
-		} else {
-			let messagesId = getLastMessagesIdOfChannel(numberOfMessages + 1, commandMessage.channel);
+		let messagesId;
+		if (commandArguments[0].includes("/")) { // look for a date of the form dd/MM (ex: 19/06)
+			// todo
+		} else if (commandArguments[0].includes(":")) { // look for a time of the form hh:mm (ex: 23:58)
+			// todo
+		} else { // look for a number of messages
+			let numberOfMessages = parseInt(commandArguments[0]);
+			if (isNaN(numberOfMessages)) {
+				sendMessageToChannel(commandMessage.channel, `:x: Error : please specify either the number of messages to ${purgeOrSave}`
+					+ ` or the date from which the messages must be ${purgeOrSave}d.\n\n${helpMessage}`);
+			} else if (numberOfMessages < 1) {
+				sendMessageToChannel(commandMessage.channel,
+					`:x: Error : the number of messages to ${purgeOrSave} must be strictly positive.\n\n${helpMessage}`);
+			} else {
+				messagesId = getLastMessagesIdOfChannel(numberOfMessages + 1, commandMessage.channel);
+			}
+		}
+		if (messagesId) {
 			let discussion = {
 				id: getAvailableId("discussions"),
 				savingDate: getReadableDate(commandMessage.createdAt),
@@ -141,6 +150,15 @@ const getLastMessagesIdOfChannel = (nbMessages, channel) => {
 	}
 	let result = [];
 	for (let message of newestMessages) {
+		result.push(message.id);
+	}
+	return result;
+};
+
+const getAllMessagesAfterTimestamp = (timestamp, channel) => {
+	let channelMessages = channel.messages.cache.array().filter(message => message.createdAt >= timestamp);
+	let result = [];
+	for (let message of channelMessages) {
 		result.push(message.id);
 	}
 	return result;
