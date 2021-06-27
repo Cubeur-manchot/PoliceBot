@@ -13,10 +13,15 @@ const serversWhiteList = {
     "825396372412039228": "Annecy Cubing",
     "755919703817322618": "Brian Sun's Official Server",
     "693508715676041296": "CubeRoot",
+    "95625180205813760" : "Cubers",
     "329175643877015553": "Cubeurs Francophones",
+    "690084292323311720": "Cubing at Home",
+    "582676753512923136": "Cubing Nation",
+    "535587640926535710": "LaZer's Community Server",
     "769483322278805504": "Mehta",
     "422718228913979392": "Notifications du Manchot",
-    "416929203607568404": "Roux Method Speed Solvers"
+    "416929203607568404": "Roux Method Speed Solvers",
+    "569832276091731983": "SpeedSolving Chat"
 };
 
 const getInvitationsNotInWhiteList = async message => {
