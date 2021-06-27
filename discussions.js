@@ -8,19 +8,24 @@ const {buildDiscussionDetailsEmbeds,
 	buildDiscussionMovedMessage, buildDiscussionMovedFrenchMessage,
 	buildDiscussionPurgedOrSavedMessage, buildDiscussionPurgedOrSavedFrenchMessage} = require("./messageBuilder.js");
 
+const helpMessages = {
+	"purge": purgeHelpMessage,
+	"save": saveHelpMessage,
+	"move": moveHelpMessage
+};
+
 const purgeCommand = commandMessage => purgeOrSaveCommand(commandMessage, true);
 
 const saveCommand = commandMessage => purgeOrSaveCommand(commandMessage, false);
 
 const purgeOrSaveCommand = (commandMessage, purge) => {
 	let commandArguments = commandMessage.content.replace(/^&(purge|save) */i, "").split(" ");
-	let helpMessage = purge ? purgeHelpMessage : saveHelpMessage;
 	let purgeOrSave = purge ? "purge" : "save";
 	if (commandArguments.length > 1) {
 		sendMessageToChannel(commandMessage.channel,
-			`:x: Error : please specify only the number of messages to ${purgeOrSave}.\n\n${helpMessage}`);
+			`:x: Error : please specify only the number of messages to ${purgeOrSave}.\n\n${helpMessages[purgeOrSave]}`);
 	} else {
-		let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSave, helpMessage);
+		let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSave);
 		if (messagesId) {
 			let discussion = {
 				id: getAvailableId("discussions"),
@@ -98,7 +103,7 @@ const moveCommand = commandMessage => {
 	}
 };
 
-const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove, helpMessage) => {
+const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove) => {
 	if (commandArgument.includes("/")) { // look for a date of the form dd/MM (ex: 19/06)
 		// todo
 	} else if (commandArgument.includes(":")) { // look for a time of the form hh:mm (ex: 23:58)
@@ -107,10 +112,10 @@ const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove, helpMes
 		let numberOfMessages = parseInt(commandArgument);
 		if (isNaN(numberOfMessages)) {
 			sendMessageToChannel(channel, `:x: Error : please specify either the number of messages to ${purgeOrSaveOrMove}`
-				+ ` or the date from which the messages must be ${purgeOrSaveOrMove}d.\n\n${helpMessage}`);
+				+ ` or the date from which the messages must be ${purgeOrSaveOrMove}d.\n\n${helpMessages[purgeOrSaveOrMove]}`);
 		} else if (numberOfMessages < 1) {
 			sendMessageToChannel(channel,
-				`:x: Error : the number of messages to ${purgeOrSaveOrMove} must be strictly positive.\n\n${helpMessage}`);
+				`:x: Error : the number of messages to ${purgeOrSaveOrMove} must be strictly positive.\n\n${helpMessages[purgeOrSaveOrMove]}`);
 		} else {
 			return getLastMessagesIdOfChannel(numberOfMessages + 1, channel);
 		}
