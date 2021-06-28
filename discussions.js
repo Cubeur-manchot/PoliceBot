@@ -4,9 +4,7 @@ const {sendMessageToChannel, sendEmbedToChannel, sendLog, deleteMessage} = requi
 const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
-const {buildDiscussionDetailsEmbeds,
-	buildDiscussionMovedMessage,
-	buildDiscussionPurgedOrSavedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
+const {buildDiscussionDetailsEmbeds, buildDiscussionPurgedOrSavedOrMovedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
 
 const helpMessages = {
 	"purge": purgeHelpMessage,
@@ -32,9 +30,9 @@ const purgeOrSaveCommand = (commandMessage, purge) => {
 			// message in origin channel
 			sendMessageToChannel(commandMessage.channel,
 				buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, purgeOrSave));
-			// embed in log channel
-			let embedLog = buildDiscussionPurgedOrSavedMessage(discussion.messages.length - 1, commandMessage.channel.id, discussion.id, purge);
-			sendLog(embedLog, commandMessage);
+			// message in log channel
+			sendLog(buildDiscussionPurgedOrSavedOrMovedMessage(discussion.messages.length - 1, purgeOrSave, discussion.id,
+				commandMessage.channel.id), commandMessage);
 		}
 	}
 };
@@ -60,12 +58,12 @@ const moveCommand = commandMessage => {
 				for (let embed of buildDiscussionDetailsEmbeds(discussion, "moved french")) {
 					sendEmbedToChannel(destinationChannel, embed);
 				}
-				// embed in origin channel
+				// message in origin channel
 				sendMessageToChannel(commandMessage.channel,
 					buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, "move", destinationChannel.id));
-				// embed in log channel
-				let embedLog = buildDiscussionMovedMessage(discussion.messages.length - 1, commandMessage.channel.id, destinationChannel.id, discussion.id);
-				sendLog(embedLog, commandMessage);
+				// message in log channel
+				sendLog(buildDiscussionPurgedOrSavedOrMovedMessage(discussion.messages.length - 1, "move", discussion.id,
+					commandMessage.channel.id, destinationChannel.id), commandMessage);
 			}
 		}
 	}

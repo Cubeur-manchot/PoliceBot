@@ -140,15 +140,13 @@ const buildElementDetailsEmbed = element => {
 const buildDiscussionPurgedOrSavedOrMovedFrenchMessage = (nbMessages, purgeOrSaveOrMove, destinationChannelId) => {
 	return `${nbMessages} message${nbMessages > 1 ? "s ont" : " a"} été `
 		+ `${purgeOrSaveOrMove === "purge" ? "supprimé" : purgeOrSaveOrMove === "save" ? "sauvegardé" : "déplacé"}${nbMessages > 1 ? "s" : ""}`
-		+ (purgeOrSaveOrMove === "move" ? ` vers le salon <#${destinationChannelId}>` : "");
+		+ (purgeOrSaveOrMove === "move" ? ` vers <#${destinationChannelId}>` : "");
 };
 
-const buildDiscussionPurgedOrSavedMessage = (nbMessages, channelId, discussionId, purge) => {
-	return `${nbMessages} message${nbMessages > 1 ? "s were" : " was"} ${purge ? "purged" : "saved"} in channel <#${channelId}> (${discussionId})`;
-};
-
-const buildDiscussionMovedMessage = (nbMessages, originChannelId, destinationChannelId, discussionId) => {
-	return `${nbMessages} message${nbMessages > 1 ? "s were" : "was"} moved from <#${originChannelId}> to <#${destinationChannelId}> (${discussionId})`;
+const buildDiscussionPurgedOrSavedOrMovedMessage = (nbMessages, purgeOrSaveOrMove, discussionId, originChannelId, destinationChannelId) => {
+	return `${nbMessages} message${nbMessages > 1 ? "s were" : " was"} ${purgeOrSaveOrMove}d `
+		+ (purgeOrSaveOrMove === "move" ? `from <#${originChannelId}> to <#${destinationChannelId}>` : `in channel <#${originChannelId}>`)
+		+ ` (${discussionId})`;
 };
 
 const buildDiscussionDetailsEmbeds = (discussion, mode) => {
@@ -235,8 +233,7 @@ const buildInviteLinkPrivateMessage = invitationsNotInWhiteListStringified => {
 
 module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
-	buildDiscussionMovedMessage,
-	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedMessage,
+	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage
 };
