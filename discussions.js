@@ -6,7 +6,7 @@ const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMess
 const {getReadableDate} = require("./date.js");
 const {buildDiscussionDetailsEmbeds,
 	buildDiscussionMovedMessage, buildDiscussionMovedFrenchMessage,
-	buildDiscussionPurgedOrSavedMessage, buildDiscussionPurgedOrSavedFrenchMessage} = require("./messageBuilder.js");
+	buildDiscussionPurgedOrSavedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
 
 const helpMessages = {
 	"purge": purgeHelpMessage,
@@ -21,17 +21,17 @@ const saveCommand = commandMessage => purgeOrSaveCommand(commandMessage, false);
 const purgeOrSaveCommand = (commandMessage, purge) => {
 	let commandArguments = commandMessage.content.replace(/^&(purge|save) */i, "").split(" ");
 	let purgeOrSave = purge ? "purge" : "save";
-	if (commandArguments.length > 1) {
+	if (commandArguments.length !== 1) {
 		sendMessageToChannel(commandMessage.channel,
-			`:x: Error : please specify only the number of messages to ${purgeOrSave}.\n\n${helpMessages[purgeOrSave]}`);
+			`:x: Error : please specify the number of messages to ${purgeOrSave}.\n\n${helpMessages[purgeOrSave]}`);
 	} else {
 		let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSave);
 		if (messagesId) {
 			let discussion = buildDiscussion(commandMessage, purgeOrSave, messagesId);
 			addInfoData(discussion, "discussions");
-			// embed in origin channel
-			let embedInfoOrigin = buildDiscussionPurgedOrSavedFrenchMessage(discussion.messages.length - 1, purge);
-			sendMessageToChannel(commandMessage.channel, embedInfoOrigin);
+			// message in origin channel
+			sendMessageToChannel(commandMessage.channel,
+				buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, purgeOrSave));
 			// embed in log channel
 			let embedLog = buildDiscussionPurgedOrSavedMessage(discussion.messages.length - 1, commandMessage.channel.id, discussion.id, purge);
 			sendLog(embedLog, commandMessage);
@@ -61,8 +61,8 @@ const moveCommand = commandMessage => {
 					sendEmbedToChannel(destinationChannel, embed);
 				}
 				// embed in origin channel
-				let embedInfoOrigin = buildDiscussionMovedFrenchMessage(discussion.messages.length - 1, destinationChannel.id);
-				sendMessageToChannel(commandMessage.channel, embedInfoOrigin);
+				sendMessageToChannel(commandMessage.channel,
+					buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, "move", destinationChannel.id));
 				// embed in log channel
 				let embedLog = buildDiscussionMovedMessage(discussion.messages.length - 1, commandMessage.channel.id, destinationChannel.id, discussion.id);
 				sendLog(embedLog, commandMessage);

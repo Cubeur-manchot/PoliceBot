@@ -137,8 +137,10 @@ const buildElementDetailsEmbed = element => {
 	};
 };
 
-const buildDiscussionPurgedOrSavedFrenchMessage = (nbMessages, purge) => {
-	return `${nbMessages} message${nbMessages > 1 ? "s ont été" : " a été"} ${purge ? "supprimé" : "sauvegardé"}${nbMessages > 1 ? "s" : ""}`;
+const buildDiscussionPurgedOrSavedOrMovedFrenchMessage = (nbMessages, purgeOrSaveOrMove, destinationChannelId) => {
+	return `${nbMessages} message${nbMessages > 1 ? "s ont" : " a"} été `
+		+ `${purgeOrSaveOrMove === "purge" ? "supprimé" : purgeOrSaveOrMove === "save" ? "sauvegardé" : "déplacé"}${nbMessages > 1 ? "s" : ""}`
+		+ (purgeOrSaveOrMove === "move" ? ` vers le salon <#${destinationChannelId}>` : "");
 };
 
 const buildDiscussionPurgedOrSavedMessage = (nbMessages, channelId, discussionId, purge) => {
@@ -238,7 +240,7 @@ const buildInviteLinkPrivateMessage = invitationsNotInWhiteListStringified => {
 module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionMovedFrenchMessage, buildDiscussionMovedMessage,
-	buildDiscussionPurgedOrSavedFrenchMessage, buildDiscussionPurgedOrSavedMessage,
+	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage
 };
