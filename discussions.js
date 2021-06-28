@@ -12,61 +12,49 @@ const helpMessages = {
 	"move": moveHelpMessage
 };
 
-const purgeCommand = commandMessage => purgeOrSaveCommand(commandMessage, true);
+const purgeCommand = commandMessage => purgeOrSaveOrMoveCommand(commandMessage, "purge");
 
-const saveCommand = commandMessage => purgeOrSaveCommand(commandMessage, false);
+const saveCommand = commandMessage => purgeOrSaveOrMoveCommand(commandMessage, "save");
 
-const purgeOrSaveCommand = (commandMessage, purge) => {
-	let commandArguments = commandMessage.content.replace(/^&(purge|save) */i, "").split(" ");
-	let purgeOrSave = purge ? "purge" : "save";
-	if (commandArguments.length !== 1) {
+const moveCommand = commandMessage => purgeOrSaveOrMoveCommand(commandMessage, "move");
+
+const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
+	let commandArguments = commandMessage.content.replace(/^&(purge|save|move) */i, "").split(" ").filter(word => word !== "");
+	if (commandArguments.length === 0) {
 		sendMessageToChannel(commandMessage.channel,
-			`:x: Error : please specify the number of messages to ${purgeOrSave}.\n\n${helpMessages[purgeOrSave]}`);
-	} else {
-		let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSave);
-		if (messagesId) {
-			let discussion = buildDiscussion(commandMessage, purgeOrSave, messagesId);
-			addInfoData(discussion, "discussions");
-			// message in origin channel
-			sendMessageToChannel(commandMessage.channel,
-				buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, purgeOrSave));
-			// message in log channel
-			sendLog(buildDiscussionPurgedOrSavedOrMovedMessage(discussion.messages.length - 1, purgeOrSave, discussion.id,
-				commandMessage.channel.id), commandMessage);
-		}
+			`:x: Error : please specify the number of messages to ${purgeOrSaveOrMove}.\n\n${helpMessages[purgeOrSaveOrMove]}`);
+		return;
 	}
-};
-
-const moveCommand = commandMessage => {
-	let commandArguments = commandMessage.content.replace(/^&move */i, "").split(" ");
-	if (commandArguments.length !== 2) {
-		sendMessageToChannel(commandMessage.channel,
-			":x: Error : please specify the number of messages to move and the destination channel.\n\n" + moveHelpMessage);
-	} else {
+	let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSaveOrMove);
+	if (!messagesId) {
+		return;
+	}
+	let destinationChannelId;
+	if (purgeOrSaveOrMove === "move") {
 		let destinationChannelMention = commandArguments[1];
-		if (!destinationChannelMention.startsWith("<#") || !destinationChannelMention.endsWith(">")) {
+		if (!/<#\d+>/.test(destinationChannelMention)) {
 			sendMessageToChannel(commandMessage.channel,
-				":x: Error : please mention the channel (exemple : <#330348166799163393>).\n\n" + moveHelpMessage);
+				":x: Error : please mention the destination channel (example : <#330348166799163393>).\n\n" + moveHelpMessage);
+			return;
 		} else {
-			let channelId = destinationChannelMention.substring(2, destinationChannelMention.length - 1);
-			let destinationChannel = commandMessage.guild.channels.cache.find(channel => {return channel.id === channelId;});
-			let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, "move");
-			if (messagesId) {
-				let discussion = buildDiscussion(commandMessage, "move", messagesId);
-				addInfoData(discussion, "discussions");
-				// embed in destination channel
-				for (let embed of buildDiscussionDetailsEmbeds(discussion, "moved french")) {
-					sendEmbedToChannel(destinationChannel, embed);
-				}
-				// message in origin channel
-				sendMessageToChannel(commandMessage.channel,
-					buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, "move", destinationChannel.id));
-				// message in log channel
-				sendLog(buildDiscussionPurgedOrSavedOrMovedMessage(discussion.messages.length - 1, "move", discussion.id,
-					commandMessage.channel.id, destinationChannel.id), commandMessage);
-			}
+			destinationChannelId = destinationChannelMention.substring(2, destinationChannelMention.length - 1);
 		}
 	}
+	let destinationChannel = commandMessage.guild.channels.cache.find(channel => channel.id === destinationChannelId);
+	let discussion = buildDiscussion(commandMessage, purgeOrSaveOrMove, messagesId);
+	addInfoData(discussion, "discussions");
+	if (purgeOrSaveOrMove === "move") {
+		// embed in destination channel
+		for (let embed of buildDiscussionDetailsEmbeds(discussion, "moved french")) {
+			await sendEmbedToChannel(destinationChannel, embed);
+		}
+	}
+	// message in origin channel
+	await sendMessageToChannel(commandMessage.channel,
+		buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, purgeOrSaveOrMove, destinationChannelId));
+	// message in log channel
+	await sendLog(buildDiscussionPurgedOrSavedOrMovedMessage(discussion.messages.length - 1, purgeOrSaveOrMove, discussion.id,
+		commandMessage.channel.id, destinationChannelId), commandMessage);
 };
 
 const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId) => {
