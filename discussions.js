@@ -5,7 +5,7 @@ const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
 const {buildDiscussionDetailsEmbeds,
-	buildDiscussionMovedMessage, buildDiscussionMovedFrenchMessage,
+	buildDiscussionMovedMessage,
 	buildDiscussionPurgedOrSavedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
 
 const helpMessages = {

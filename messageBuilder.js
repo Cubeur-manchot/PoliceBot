@@ -147,10 +147,6 @@ const buildDiscussionPurgedOrSavedMessage = (nbMessages, channelId, discussionId
 	return `${nbMessages} message${nbMessages > 1 ? "s were" : " was"} ${purge ? "purged" : "saved"} in channel <#${channelId}> (${discussionId})`;
 };
 
-const buildDiscussionMovedFrenchMessage = (nbMessages, destinationChannelId) => {
-	return `${nbMessages} message${nbMessages > 1 ? "s ont été déplacés" : " a été déplacé"} vers le salon <#${destinationChannelId}>`;
-};
-
 const buildDiscussionMovedMessage = (nbMessages, originChannelId, destinationChannelId, discussionId) => {
 	return `${nbMessages} message${nbMessages > 1 ? "s were" : "was"} moved from <#${originChannelId}> to <#${destinationChannelId}> (${discussionId})`;
 };
@@ -239,7 +235,7 @@ const buildInviteLinkPrivateMessage = invitationsNotInWhiteListStringified => {
 
 module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
-	buildDiscussionMovedFrenchMessage, buildDiscussionMovedMessage,
+	buildDiscussionMovedMessage,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage
