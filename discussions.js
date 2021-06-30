@@ -1,7 +1,7 @@
 "use strict";
 
 const {sendMessageToChannel, sendEmbedToChannel, sendLog, deleteMessage} = require("./messages.js");
-const {getAvailableId, addInfoData} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate} = require("./date.js");
 const {buildDiscussionDetailsEmbeds, buildDiscussionPurgedOrSavedOrMovedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
@@ -25,7 +25,7 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 			`:x: Error : please specify the number of messages to ${purgeOrSaveOrMove}.\n\n${helpMessages[purgeOrSaveOrMove]}`);
 		return;
 	}
-	let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSaveOrMove);
+	let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSaveOrMove, commandMessage);
 	if (!messagesId) {
 		return;
 	}
@@ -79,22 +79,49 @@ const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId) => {
 	};
 };
 
-const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove) => {
-	if (commandArgument.includes("/")) { // look for a date of the form dd/MM (ex: 19/06)
-		// todo
-	} else if (commandArgument.includes(":")) { // look for a time of the form hh:mm (ex: 23:58)
-		// todo
-	} else { // look for a number of messages
+const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove, commandMessage) => {
+	if (/^\d+$/.test(commandArgument)) { // argument is a number of messages
 		let numberOfMessages = parseInt(commandArgument);
-		if (isNaN(numberOfMessages)) {
-			sendMessageToChannel(channel, `:x: Error : please specify either the number of messages to ${purgeOrSaveOrMove}`
-				+ ` or the date from which the messages must be ${purgeOrSaveOrMove}d.\n\n${helpMessages[purgeOrSaveOrMove]}`);
-		} else if (numberOfMessages < 1) {
+		if (numberOfMessages < 1) {
 			sendMessageToChannel(channel,
 				`:x: Error : the number of messages to ${purgeOrSaveOrMove} must be strictly positive.\n\n${helpMessages[purgeOrSaveOrMove]}`);
 		} else {
 			return getLastMessagesIdOfChannel(numberOfMessages + 1, channel);
 		}
+	} else if (commandArgument.includes("/")) { // look for a date of the form dd/MM
+		if (!/^\d\d\/\d\d$/.test(commandArgument)) {
+			sendMessageToChannel(channel, ":x: Error : please specify the date with the format dd/MM (example: 19/06).\n\n"
+			+ helpMessages[purgeOrSaveOrMove]);
+		} else {
+			let currentTimeStamp = new Date();
+			let timezoneOffset = readInfoData("timezoneOffset");
+			let timeStamp = new Date(currentTimeStamp.getFullYear(),
+				parseInt(commandArgument.substr(3, 2)) - 1,
+				parseInt(commandArgument.substr(0, 2)),
+				- timezoneOffset);
+			if (timeStamp > currentTimeStamp) { // if date is in the future, force it to be in the past
+				timeStamp.setFullYear(timeStamp.getFullYear() - 1);
+			}
+			return getAllMessagesIdAfterTimestamp(timeStamp, channel);
+		}
+	} else if (commandArgument.includes(":")) { // look for a time of the form hh:mm
+		if (!/^\d\d:\d\d$/.test(commandArgument)) {
+			sendMessageToChannel(channel, ":x: Error : please specify the time with the format hh:mm (example: 23:58).\n\n"
+				+ helpMessages[purgeOrSaveOrMove]);
+		} else {
+			let currentTimeStamp = new Date();
+			let timezoneOffset = readInfoData("timezoneOffset");
+			let timeStamp = new Date(currentTimeStamp.getFullYear(), currentTimeStamp.getMonth(), currentTimeStamp.getDate(),
+				parseInt(commandArgument.substr(0, 2)) - timezoneOffset,
+				parseInt(commandArgument.substr(3, 2)));
+			if (timeStamp > currentTimeStamp) { // if date is in the future, force it to be in the past
+				timeStamp.setDate(timeStamp.getDate() - 1);
+			}
+			return getAllMessagesIdAfterTimestamp(timeStamp, channel);
+		}
+	} else { // look for a number of messages
+		sendMessageToChannel(channel, `:x: Error : please specify either the number of messages to ${purgeOrSaveOrMove}`
+			+ ` or the date from which the messages must be ${purgeOrSaveOrMove}d.\n\n${helpMessages[purgeOrSaveOrMove]}`);
 	}
 	return undefined; // stands for all error cases
 };
@@ -124,7 +151,7 @@ const getLastMessagesIdOfChannel = (nbMessages, channel) => {
 	return result;
 };
 
-const getAllMessagesAfterTimestamp = (timestamp, channel) => {
+const getAllMessagesIdAfterTimestamp = (timestamp, channel) => {
 	let channelMessages = channel.messages.cache.array().filter(message => message.createdAt >= timestamp);
 	let result = [];
 	for (let message of channelMessages) {
