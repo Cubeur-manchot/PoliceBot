@@ -21,19 +21,32 @@ const mainHelpMessage = "Here is the list of commands I support. "
 
 // help messages for discussion commands
 
-const saveHelpMessage = "```&save <nbMessages>```"
-	+ "`<nbMessages>` : the number of messages to save."
-	+ "\nThe command message will be deleted."
-	+ "\n\nExample : ```\n&save 42```";
+const buildPurgeSaveMoveHelpMessage = purgeOrSaveOrMove => {
+	let helpMessage = "```";
+	for (let argument of ["<nbMessages>", "<hours>:<minutes>", "<day>/<month>"]) {
+		helpMessage += `\n&${purgeOrSaveOrMove} ${argument}${purgeOrSaveOrMove === "move" ? " #bots_poubelle" : ""}`;
+	}
+	helpMessage += "```";
+	helpMessage += "\n`<nbMessages>` : the number of messages to " + purgeOrSaveOrMove + "."
+		+ "\n`<hour>:<minute>` : the time from which messages must be " + purgeOrSaveOrMove + "d."
+		+ "\n`<day>/<month>` : the day from which messages must be " + purgeOrSaveOrMove + "d.";
+	if (purgeOrSaveOrMove === "move") {
+		helpMessage += "\n`<channel>` : the channel in which the messages should be moved.";
+	}
+	helpMessage += "\n\nExamples : ```";
+	for (let argument of ["42", "23:58", "19/06"]) {
+		helpMessage += `\n&${purgeOrSaveOrMove} ${argument}${purgeOrSaveOrMove === "move" ? " #bots_poubelle" : ""}`;
+	}
+	helpMessage += "```";
+	if (purgeOrSaveOrMove === "save") {
+		helpMessage += "\nThe command message will be deleted.";
+	}
+	return helpMessage;
+};
 
-const purgeHelpMessage = "```&purge <nbMessages>```"
-	+ "`<nbMessages>` : the number of messages to purge."
-	+ "\n\nExample : ```\n&purge 42```";
-
-const moveHelpMessage = "```&move <nbMessages> <channel>```"
-	+ "`<nbMessages>` : the number of messages to move."
-	+ "\n`<channel>` : the channel in which the messages should be moved."
-	+ "\n\nExample : ```\n&move 42 #bots_poubelle```";
+const purgeHelpMessage = buildPurgeSaveMoveHelpMessage("purge");
+const saveHelpMessage = buildPurgeSaveMoveHelpMessage("save");
+const moveHelpMessage = buildPurgeSaveMoveHelpMessage("move");
 
 // help messages for infractions, warns and bans commands
 
