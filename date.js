@@ -24,7 +24,7 @@ const parseDate = dateString => {
 	}
 };
 
-const getReadableDiffDate = (firstDate, secondDate) => { // todo : if < x seconds, return "just now"
+const getReadableDiffDate = (firstDate, secondDate) => {
 	let diffResultFirstLevel = getReadableDiffDateOneLevel(firstDate, secondDate);
 	if (diffResultFirstLevel.unit === "seconds") { // if only seconds, display only one level
 		if (Math.abs(diffResultFirstLevel.diffTime) <= 5) {

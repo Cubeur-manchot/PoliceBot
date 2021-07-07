@@ -49,6 +49,7 @@ const removeElements = (argumentsString, message) => {
 const detailsCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&details */i, "").split(" ").filter(word => word !== "");
 	let unknownElements = [];
+	let timezoneOffset = readInfoData("timezoneOffset");
 	for (let word of commandArguments) {
 		if (/^[iwbd]#[0-9]+$/.test(word)) { // match id format of infraction, warn, ban or discussion
 			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
@@ -59,7 +60,7 @@ const detailsCommand = commandMessage => {
 						sendEmbedToChannel(commandMessage.channel, embed);
 					}
 				} else {
-					sendEmbedToChannel(commandMessage.channel, buildElementDetailsEmbed(matchingElement));
+					sendEmbedToChannel(commandMessage.channel, buildElementDetailsEmbed(matchingElement, timezoneOffset));
 				}
 			} else { // unknown element
 				unknownElements.push(word);

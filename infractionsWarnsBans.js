@@ -2,13 +2,13 @@
 
 const {getAvailableId, readInfoData, addInfoData, writeInfoData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
-const {getReadableDate, parseDate} = require("./date.js");
+const {getReadableDate, parseDate, addHours} = require("./date.js");
 const {sendMessageToChannel, sendLog} = require("./messages.js");
 const {buildElementDetailsEmbed} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = commandMessage => {
-	let commandArguments = commandMessage.content.replace(/^&addinfraction */i, "");
+	let commandArguments = commandMessage.content.replace(/^&(add)?infraction */i, "");
 	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId and infractionType
 	if (!memberId) {
@@ -18,15 +18,16 @@ const addInfractionCommand = commandMessage => {
 	} else if (restOfCommand === "") {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified infraction type.\n\n" + addInfractionHelpMessage);
 	} else {
+		let timezoneOffset = readInfoData("timezoneOffset");
 		let infraction = {
 			id: getAvailableId("infractions"),
 			memberId: memberId,
-			date: getReadableDate(commandMessage.createdAt),
+			date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
 			type: restOfCommand,
 			commentary: commentary
 		};
 		addInfoData(infraction, "infractions");
-		sendLog(buildElementDetailsEmbed(infraction), commandMessage);
+		sendLog(buildElementDetailsEmbed(infraction, timezoneOffset), commandMessage);
 	}
 };
 
@@ -44,16 +45,17 @@ const addWarnCommand = commandMessage => {
 		} else if (reason === "") {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified warn reason.\n\n" + addWarnHelpMessage);
 		} else {
+			let timezoneOffset = readInfoData("timezoneOffset");
 			let warn = {
 				id: getAvailableId("warns"),
 				memberId: memberId,
-				date: getReadableDate(commandMessage.createdAt),
+				date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
 				reason: reason,
 				infractions: linkedInfractions,
 				commentary: commentary
 			};
 			addInfoData(warn, "warns");
-			sendLog(buildElementDetailsEmbed(warn), commandMessage);
+			sendLog(buildElementDetailsEmbed(warn, timezoneOffset), commandMessage);
 		}
 	}
 };
@@ -73,10 +75,11 @@ const addBanCommand = async commandMessage => {
 		} else if (reason === "") {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified ban reason.\n\n" + addBanHelpMessage);
 		} else {
+			let timezoneOffset = readInfoData("timezoneOffset");
 			let ban = {
 				id: getAvailableId("bans"),
 				memberId: memberId,
-				date: getReadableDate(commandMessage.createdAt),
+				date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
 				expirationDate: expirationDate,
 				reason: reason,
 				warns: linkedWarns,
@@ -87,7 +90,7 @@ const addBanCommand = async commandMessage => {
 				sendMessageToChannel(commandMessage.channel, ":x: Error : I don't have the permission to ban this member.");
 			} else {
 				addInfoData(ban, "bans");
-				sendLog(buildElementDetailsEmbed(ban), commandMessage);
+				sendLog(buildElementDetailsEmbed(ban, timezoneOffset), commandMessage);
 				if (expirationDate !== "") { // temp ban
 					setTimeout(() => {
 						unbanMember(memberId, commandMessage.guild.members);
