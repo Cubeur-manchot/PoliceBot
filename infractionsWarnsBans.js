@@ -136,12 +136,17 @@ const getMemberIdAndRestOfCommand = (argumentsString, memberList) => {
 			restOfCommand: ""
 		}
 	} else {
-		if (/^([0-9]{18})$/.test(listOfWords[0])) { // first word has the form of an id (18 digits)
+		if (/^<@!([0-9]{18})>$/.test(listOfWords[0])) { // user mention : <@! + 18 digits + >
+			return {
+				memberId: getMemberFromId(listOfWords[0].substr(3, 18), memberList),
+				restOfCommand: listOfWords.slice(1).join(" ")
+			}
+		} else if (/^([0-9]{18})$/.test(listOfWords[0])) { // user id : 18 digits
 			return {
 				memberId: getMemberFromId(listOfWords[0], memberList),
 				restOfCommand: listOfWords.slice(1).join(" ")
 			}
-		} else {
+		} else { // look for the name
 			let firstPart = "";
 			let secondPart = listOfWords;
 			while (secondPart.length !== 0) {
