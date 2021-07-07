@@ -104,4 +104,8 @@ const getReadableDiffDateOneLevel = (firstDate, secondDate) => {
 	}
 };
 
-module.exports = {getReadableDate, getReadableDiffDate, parseDate};
+const addHours = (date, hours) => {
+	return new Date(date.setHours(date.getHours() + hours));
+};
+
+module.exports = {getReadableDate, getReadableDiffDate, parseDate, addHours};

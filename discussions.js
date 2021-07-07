@@ -3,7 +3,7 @@
 const {sendMessageToChannel, sendEmbedToChannel, sendLog, deleteMessage} = require("./messages.js");
 const {getAvailableId, readInfoData, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
-const {getReadableDate} = require("./date.js");
+const {getReadableDate, addHours} = require("./date.js");
 const {buildDiscussionDetailsEmbeds, buildDiscussionPurgedOrSavedOrMovedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
 
 const helpMessages = {
@@ -25,6 +25,7 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 			`:x: Error : please specify the number of messages to ${purgeOrSaveOrMove}.\n\n${helpMessages[purgeOrSaveOrMove]}`);
 		return;
 	}
+	let timezoneOffset = readInfoData("timezoneOffset");
 	let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSaveOrMove, commandMessage);
 	if (!messagesId) {
 		return;
@@ -41,7 +42,7 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 		}
 	}
 	let destinationChannel = commandMessage.guild.channels.cache.find(channel => channel.id === destinationChannelId);
-	let discussion = buildDiscussion(commandMessage, purgeOrSaveOrMove, messagesId);
+	let discussion = buildDiscussion(commandMessage, purgeOrSaveOrMove, messagesId, timezoneOffset);
 	addInfoData(discussion, "discussions");
 	if (purgeOrSaveOrMove === "move") {
 		// embed in destination channel
@@ -57,13 +58,13 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 		commandMessage.channel.id, destinationChannelId), commandMessage);
 };
 
-const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId) => {
+const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId, timezoneOffset) => {
 	let messages = [];
 	for (let messageId of messagesId) {
 		let message = commandMessage.channel.messages.cache.get(messageId);
 		messages.push({
 			authorId: message.author.id,
-			date: getReadableDate(message.createdAt),
+			date: getReadableDate(addHours(message.createdAt, timezoneOffset)),
 			content: message.content
 		});
 		if (purgeOrSaveOrMove !== "save") { // delete the message in case of purge or move
@@ -72,14 +73,14 @@ const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId) => {
 	}
 	return {
 		id: getAvailableId("discussions"),
-		savingDate: getReadableDate(commandMessage.createdAt),
+		savingDate: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
 		action: purgeOrSaveOrMove,
 		channelId: commandMessage.channel.id,
 		messages: messages
 	};
 };
 
-const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove, commandMessage) => {
+const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove, timezoneOffset) => {
 	if (/^\d+$/.test(commandArgument)) { // argument is a number of messages
 		let numberOfMessages = parseInt(commandArgument);
 		if (numberOfMessages < 1) {
@@ -94,7 +95,6 @@ const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove, command
 			+ helpMessages[purgeOrSaveOrMove]);
 		} else {
 			let currentTimeStamp = new Date();
-			let timezoneOffset = readInfoData("timezoneOffset");
 			let timeStamp = new Date(currentTimeStamp.getFullYear(),
 				parseInt(commandArgument.substr(3, 2)) - 1,
 				parseInt(commandArgument.substr(0, 2)),
