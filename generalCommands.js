@@ -10,7 +10,9 @@ const removeCommand = message => {
 	let argumentsString = message.content.replace(/^&remove */i,"");
 	let {typesElementsSuccessfullyRemoved, failed} = removeElements(argumentsString, message);
 	for (let infoType in typesElementsSuccessfullyRemoved) {
-		sendEmbedToChannel(message.channel, buildElementListEmbed(infoType));
+		for (let embed of buildElementListEmbed(infoType)) {
+			sendEmbedToChannel(message.channel, embed);
+		}
 	}
 	if (failed.length) {
 		sendMessageToChannel(message.channel, ":x: Failed to remove :\n- " + failed.join("\n- "));
