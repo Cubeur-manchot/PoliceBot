@@ -4,7 +4,7 @@ const {getAvailableId, readInfoData, addInfoData, writeInfoData, groupElementsBy
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate} = require("./date.js");
 const {sendMessageToChannel, sendLog} = require("./messages.js");
-const {buildEmbedElementDetails} = require("./messageBuilder.js");
+const {buildElementDetailsEmbed} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = commandMessage => {
@@ -26,7 +26,7 @@ const addInfractionCommand = commandMessage => {
 			commentary: commentary
 		};
 		addInfoData(infraction, "infractions");
-		sendLog(buildEmbedElementDetails(infraction), commandMessage);
+		sendLog(buildElementDetailsEmbed(infraction), commandMessage);
 	}
 };
 
@@ -53,7 +53,7 @@ const addWarnCommand = commandMessage => {
 				commentary: commentary
 			};
 			addInfoData(warn, "warns");
-			sendLog(buildEmbedElementDetails(warn), commandMessage);
+			sendLog(buildElementDetailsEmbed(warn), commandMessage);
 		}
 	}
 };
@@ -87,7 +87,7 @@ const addBanCommand = async commandMessage => {
 				sendMessageToChannel(commandMessage.channel, ":x: Error : I don't have the permission to ban this member.");
 			} else {
 				addInfoData(ban, "bans");
-				sendLog(buildEmbedElementDetails(ban), commandMessage);
+				sendLog(buildElementDetailsEmbed(ban), commandMessage);
 				if (expirationDate !== "") { // temp ban
 					setTimeout(() => {
 						unbanMember(memberId, commandMessage.guild.members);
@@ -115,7 +115,7 @@ const unbanCommand = commandMessage => {
 			unbanMember(memberId, commandMessage.guild.members); // unban member
 			policeBotBanData[banIndex].expirationDate = getReadableDate(new Date()); // end the ban
 			writeInfoData(policeBotBanData, "bans"); // save modification
-			sendLog(buildEmbedElementDetails(policeBotBanData[banIndex]), commandMessage);
+			sendLog(buildElementDetailsEmbed(policeBotBanData[banIndex]), commandMessage);
 		}
 	}
 };
