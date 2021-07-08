@@ -22,6 +22,9 @@ const onMessage = async message => {
 	if (message.author.id === "719973594029097040") { // message not sent by PoliceBot, work on the content
 		return;
 	}
+	if (message.channel.id === "730742004476018739") { // temporary, ignore messages from Dyno#0000 in old #log channel // todo remove this chunk of code
+		return;
+	}
 	if (message.channel.type === "dm") { // message is a private message sent to PoliceBot
 		await handleBadWordsSoft(message);
 		await handleInviteLinksSoft(message);
