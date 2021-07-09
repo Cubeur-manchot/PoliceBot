@@ -1,6 +1,6 @@
 "use strict";
 
-const {sendMessageToChannel, sendEmbedToChannel, sendLog, deleteMessage} = require("./messages.js");
+const {sendMessageToChannel, sendEmbedToChannel, sendLogFromClient, deleteMessage} = require("./messages.js");
 const {getAvailableId, readInfoData, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate, addHours} = require("./date.js");
@@ -54,8 +54,8 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 	await sendMessageToChannel(commandMessage.channel,
 		buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, purgeOrSaveOrMove, destinationChannelId));
 	// message in log channel
-	await sendLog(buildDiscussionPurgedOrSavedOrMovedMessage(discussion.messages.length - 1, purgeOrSaveOrMove, discussion.id,
-		commandMessage.channel.id, destinationChannelId), commandMessage);
+	await sendLogFromClient(buildDiscussionPurgedOrSavedOrMovedMessage(discussion.messages.length - 1, purgeOrSaveOrMove, discussion.id,
+		commandMessage.channel.id, destinationChannelId), commandMessage.client);
 };
 
 const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId, timezoneOffset) => {
