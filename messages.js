@@ -17,7 +17,7 @@ const sendPrivateMessage = (user, message) =>
 	user.send(message)
 		.catch(console.error);
 
-const sendLogFromClient = (messageInformation, client) => {
+const sendLog = (messageInformation, client) => {
 	let logChannel = client.channels.cache.find(channel => {return channel.id === "795319669459648512"});
 	if (messageInformation.title || messageInformation.description) { // embed message
 		logChannel.send(new Discord.MessageEmbed(messageInformation))
@@ -35,4 +35,4 @@ const deleteMessage = message => {
 	}
 };
 
-module.exports = {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendPrivateMessage, sendEmbedToChannel, sendLogFromClient, deleteMessage};
+module.exports = {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendPrivateMessage, sendEmbedToChannel, sendLog, deleteMessage};
