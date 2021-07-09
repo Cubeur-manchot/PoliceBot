@@ -1,7 +1,7 @@
 "use strict";
 
 const https = require('https');
-const {sendMessageToChannel, sendPrivateMessage, sendLog, deleteMessage} = require("./messages.js");
+const {sendMessageToChannel, sendPrivateMessage, sendEmbedLog, deleteMessage} = require("./messages.js");
 const {buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage} = require("./messageBuilder.js");
 const {addInfoData, getAvailableId} = require("./dataManipulation.js");
 const {getReadableDate} = require("./date.js");
@@ -52,7 +52,7 @@ const handleInviteLinks = async message => {
             commentary: invitationsNotInWhiteList.join(", ")
         },"infractions");
         let warningMessage = await sendMessageToChannel(message.channel, "Les invitations vers d'autres serveurs sont interdites ! :no_entry: ");
-        sendLog(buildInviteLinkLogEmbed(message, invitationsNotInWhiteList, warningMessage, infractionId), warningMessage.client);
+        sendEmbedLog(buildInviteLinkLogEmbed(message, invitationsNotInWhiteList, warningMessage, infractionId), warningMessage.client);
         sendPrivateMessage(message.author, buildInviteLinkPrivateMessage(invitationsNotInWhiteList) + "\n\nMessage original :\n" + message.content);
     }
 };

@@ -3,7 +3,7 @@
 const {getAvailableId, readInfoData, addInfoData, writeInfoData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, addHours} = require("./date.js");
-const {sendMessageToChannel, sendLog} = require("./messages.js");
+const {sendMessageToChannel, sendEmbedLog} = require("./messages.js");
 const {buildElementDetailsEmbed} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
@@ -27,7 +27,7 @@ const addInfractionCommand = commandMessage => {
 			commentary: commentary
 		};
 		addInfoData(infraction, "infractions");
-		sendLog(buildElementDetailsEmbed(infraction, timezoneOffset), commandMessage.client);
+		sendEmbedLog(buildElementDetailsEmbed(infraction, timezoneOffset), commandMessage.client);
 	}
 };
 
@@ -55,7 +55,7 @@ const addWarnCommand = commandMessage => {
 				commentary: commentary
 			};
 			addInfoData(warn, "warns");
-			sendLog(buildElementDetailsEmbed(warn, timezoneOffset), commandMessage.client);
+			sendEmbedLog(buildElementDetailsEmbed(warn, timezoneOffset), commandMessage.client);
 		}
 	}
 };
@@ -90,7 +90,7 @@ const addBanCommand = async commandMessage => {
 				sendMessageToChannel(commandMessage.channel, ":x: Error : I don't have the permission to ban this member.");
 			} else {
 				addInfoData(ban, "bans");
-				sendLog(buildElementDetailsEmbed(ban, timezoneOffset), commandMessage.client);
+				sendEmbedLog(buildElementDetailsEmbed(ban, timezoneOffset), commandMessage.client);
 				if (expirationDate !== "") { // temp ban
 					setTimeout(() => {
 						unbanMember(memberId, commandMessage.guild.members);
@@ -118,7 +118,7 @@ const unbanCommand = commandMessage => {
 			unbanMember(memberId, commandMessage.guild.members); // unban member
 			policeBotBanData[banIndex].expirationDate = getReadableDate(new Date()); // end the ban
 			writeInfoData(policeBotBanData, "bans"); // save modification
-			sendLog(buildElementDetailsEmbed(policeBotBanData[banIndex]), commandMessage.client);
+			sendEmbedLog(buildElementDetailsEmbed(policeBotBanData[banIndex]), commandMessage.client);
 		}
 	}
 };
