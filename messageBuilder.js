@@ -232,11 +232,14 @@ const buildInviteLinkPrivateMessage = invitationsNotInWhiteListStringified => {
 		+ invitationsNotInWhiteListStringified.join(", ");
 };
 
-const buildNicknameChangeLogEmbed = (oldMemberPseudo, oldMemberTag, userId) => {
+const buildNicknameChangeLogEmbed = (oldMemberPseudo, oldMemberTag, userId, userAvatarUrl) => {
 	return {
 		color: embedColorFromType["nicknameChange"],
 		title: "__Nickname changed__",
 		description: `${oldMemberPseudo} (${oldMemberTag}) is now <@!${userId}>.`,
+		thumbnail: {
+			url: userAvatarUrl
+		},
 		timestamp: new Date()
 	};
 };

@@ -117,7 +117,7 @@ const onGuildMemberUpdate = (oldMember, newMember) => {
 	let oldPseudo = oldMember.nickname ? oldMember.nickname : oldMember.user.username;
 	let newPseudo = newMember.nickname ? newMember.nickname : newMember.user.username;
 	if (oldPseudo !== newPseudo) {
-		sendEmbedSoftLog(buildNicknameChangeLogEmbed(oldPseudo, oldMember.user.tag, newMember.id), newMember.client);
+		sendEmbedSoftLog(buildNicknameChangeLogEmbed(oldPseudo, oldMember.user.tag, newMember.id, newMember.user.avatarURL()), newMember.client);
 	}
 };
 
