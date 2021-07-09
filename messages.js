@@ -6,34 +6,23 @@ const messageIsPoliceBotCommandMessage = message => {
 	return message.content.startsWith("&");
 };
 
-const sendEmbedToChannel = (channel, embedObject) =>
-	sendMessageToChannel(channel, new Discord.MessageEmbed(embedObject));
-
 const sendMessageToChannel = (channel, message, options) =>
 	channel.send(message, options)
 		.catch(console.error);
 
+const sendEmbedToChannel = (channel, embedObject) =>
+	sendMessageToChannel(channel, new Discord.MessageEmbed(embedObject));
+
 const sendPrivateMessage = (user, message) =>
 	user.send(message)
 		.catch(console.error);
-
-const sendLog = (messageInformation, client) => {
-	let logChannel = client.channels.cache.find(channel => {return channel.id === "795319669459648512"});
-	if (messageInformation.title || messageInformation.description) { // embed message
-		logChannel.send(new Discord.MessageEmbed(messageInformation))
-			.catch(console.log);
-	} else { // simple message
-		logChannel.send(messageInformation)
-			.catch(console.log);
-	}
-};
 
 const sendMessageLog = (message, client) => {
 	sendMessageToChannel(client.channels.cache.find(channel => {return channel.id === "795319669459648512"}), message);
 };
 
 const sendEmbedLog = (embed, client) => {
-	sendMessageToChannel(client.channels.cache.find(channel => {return channel.id === "795319669459648512"}), new Discord.MessageEmbed(embed));
+	sendEmbedToChannel(client.channels.cache.find(channel => {return channel.id === "795319669459648512"}), embed);
 };
 
 const deleteMessage = message => {
@@ -45,5 +34,5 @@ const deleteMessage = message => {
 
 module.exports = {messageIsPoliceBotCommandMessage,
 	sendMessageToChannel, sendPrivateMessage, sendEmbedToChannel,
-	sendLog, sendMessageLog, sendEmbedLog,
+	sendMessageLog, sendEmbedLog,
 	deleteMessage};
