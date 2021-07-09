@@ -1,6 +1,6 @@
 "use strict";
 
-const {sendMessageToChannel, sendPrivateMessage, sendLog, deleteMessage} = require("./messages.js");
+const {sendMessageToChannel, sendPrivateMessage, sendLogFromClient, deleteMessage} = require("./messages.js");
 const {buildBadWordsLogEmbed, buildBadWordPrivateMessage} = require("./messageBuilder.js");
 const {addInfoData, getAvailableId} = require("./dataManipulation.js");
 const {getReadableDate} = require("./date.js");
@@ -34,7 +34,7 @@ const handleBadWords = async message => {
 			commentary: badWords.join(", ")
 		},"infractions");
 		let warningMessage = await sendMessageToChannel(message.channel, "Oh c'est pas bien de dire ça ! :eyes:");
-		sendLog(buildBadWordsLogEmbed(message, badWords, warningMessage, infractionId), warningMessage);
+		sendLogFromClient(buildBadWordsLogEmbed(message, badWords, warningMessage, infractionId), message.client);
 		sendPrivateMessage(message.author, buildBadWordPrivateMessage(badWords) + "\n\nMessage original :\n" + message.content);
 	}
 };
