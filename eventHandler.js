@@ -1,13 +1,13 @@
 "use strict";
 
-const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
+const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel, sendLogFromClient} = require("./messages.js");
 const {saveCommand, purgeCommand, moveCommand} = require("./discussions.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
 const {handleInviteLinks, handleInviteLinksSoft} = require("./inviteLinks.js");
-const {buildElementListEmbed} = require("./messageBuilder.js");
+const {buildElementListEmbed, buildNicknameChangeLogEmbed} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
 
 const onReady = PoliceBot => {
@@ -104,4 +104,21 @@ const handlePoliceBotCommand = message => {
 	}
 };
 
-module.exports = {onReady, onMessage};
+const onUserUpdate = (oldUser, newUser) => {
+	console.log("User has been changed");
+	console.log("Old user :");
+	console.log(oldUser);
+	console.log("New user :");
+	console.log(newUser);
+};
+
+const onGuildMemberUpdate = (oldMember, newMember) => {
+	let oldPseudo = oldMember.nickname ? oldMember.nickname : oldMember.user.username;
+	let newPseudo = newMember.nickname ? newMember.nickname : newMember.user.username;
+	if (oldPseudo !== newPseudo) {
+		sendLogFromClient(buildNicknameChangeLogEmbed(oldPseudo, oldMember.user.tag, newMember.id), newMember.client);
+	}
+};
+
+
+module.exports = {onReady, onMessage, onUserUpdate, onGuildMemberUpdate};

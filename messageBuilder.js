@@ -7,7 +7,8 @@ const embedColorFromType = {
 	"infractions": "#cccc00",
 	"warns": "#d56600",
 	"bans": "#fc0000",
-	"discussions": "#666666"
+	"discussions": "#666666",
+	"nicknameChange": "#1111ff"
 };
 
 const emojiWhenNoElement = {
@@ -231,9 +232,19 @@ const buildInviteLinkPrivateMessage = invitationsNotInWhiteListStringified => {
 		+ invitationsNotInWhiteListStringified.join(", ");
 };
 
+const buildNicknameChangeLogEmbed = (oldMemberPseudo, oldMemberTag, userId) => {
+	return {
+		color: embedColorFromType["nicknameChange"],
+		title: "__Nickname changed__",
+		description: `${oldMemberPseudo} (${oldMemberTag}) is now <@!${userId}>.`,
+		timestamp: new Date()
+	};
+};
+
 module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
-	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage
+	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
+	buildNicknameChangeLogEmbed
 };
