@@ -28,7 +28,6 @@ const deleteMessage = message => {
 	}
 };
 
-module.exports = {messageIsPoliceBotCommandMessage,
-	sendMessageToChannel, sendPrivateMessage, sendEmbedToChannel,
+module.exports = {sendMessageToChannel, sendPrivateMessage, sendEmbedToChannel,
 	sendMessageLog, sendEmbedLog,
 	deleteMessage};
