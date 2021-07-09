@@ -1,6 +1,6 @@
 "use strict";
 
-const {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendEmbedToChannel, sendEmbedLog} = require("./messages.js");
+const {sendMessageToChannel, sendEmbedToChannel, sendEmbedLog} = require("./messages.js");
 const {saveCommand, purgeCommand, moveCommand} = require("./discussions.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
@@ -46,6 +46,10 @@ const onMessage = async message => {
 		writeInfoData(members, "members"); // save in data
 		message.client.memberList = members; // update cache
 	}
+};
+
+const messageIsPoliceBotCommandMessage = message => {
+	return /^&[a-zA-Z]/.test(message.content);
 };
 
 const handlePoliceBotCommand = message => {

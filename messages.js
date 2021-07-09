@@ -2,10 +2,6 @@
 
 const Discord = require("discord.js");
 
-const messageIsPoliceBotCommandMessage = message => {
-	return message.content.startsWith("&");
-};
-
 const sendMessageToChannel = (channel, message, options) =>
 	channel.send(message, options)
 		.catch(console.error);
