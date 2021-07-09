@@ -15,6 +15,7 @@ const serversWhiteList = {
     "693508715676041296": "CubeRoot",
     "95625180205813760" : "Cubers",
     "329175643877015553": "Cubeurs Francophones",
+    "561202518185607168": "Cube Bot",
     "690084292323311720": "Cubing at Home",
     "582676753512923136": "Cubing Nation",
     "535587640926535710": "LaZer's Community Server",
