@@ -28,6 +28,14 @@ const sendLog = (messageInformation, client) => {
 	}
 };
 
+const sendMessageLog = (message, client) => {
+	sendMessageToChannel(client.channels.cache.find(channel => {return channel.id === "795319669459648512"}), message);
+};
+
+const sendEmbedLog = (embed, client) => {
+	sendMessageToChannel(client.channels.cache.find(channel => {return channel.id === "795319669459648512"}), new Discord.MessageEmbed(embed));
+};
+
 const deleteMessage = message => {
 	if (message && !message.deleted) {
 		message.delete()
@@ -35,4 +43,7 @@ const deleteMessage = message => {
 	}
 };
 
-module.exports = {messageIsPoliceBotCommandMessage, sendMessageToChannel, sendPrivateMessage, sendEmbedToChannel, sendLog, deleteMessage};
+module.exports = {messageIsPoliceBotCommandMessage,
+	sendMessageToChannel, sendPrivateMessage, sendEmbedToChannel,
+	sendLog, sendMessageLog, sendEmbedLog,
+	deleteMessage};
