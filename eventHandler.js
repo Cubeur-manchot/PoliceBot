@@ -1,6 +1,6 @@
 "use strict";
 
-const {sendMessageToChannel, sendEmbedToChannel, sendEmbedLog} = require("./messages.js");
+const {sendMessageToChannel, sendEmbedToChannel, sendEmbedSoftLog} = require("./messages.js");
 const {saveCommand, purgeCommand, moveCommand} = require("./discussions.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
@@ -117,7 +117,7 @@ const onGuildMemberUpdate = (oldMember, newMember) => {
 	let oldPseudo = oldMember.nickname ? oldMember.nickname : oldMember.user.username;
 	let newPseudo = newMember.nickname ? newMember.nickname : newMember.user.username;
 	if (oldPseudo !== newPseudo) {
-		sendEmbedLog(buildNicknameChangeLogEmbed(oldPseudo, oldMember.user.tag, newMember.id), newMember.client);
+		sendEmbedSoftLog(buildNicknameChangeLogEmbed(oldPseudo, oldMember.user.tag, newMember.id), newMember.client);
 	}
 };
 
