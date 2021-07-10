@@ -7,7 +7,7 @@ const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
 const {handleInviteLinks, handleInviteLinksSoft} = require("./inviteLinks.js");
-const {buildElementListEmbed, buildNicknameChangeLogEmbed} = require("./messageBuilder.js");
+const {buildElementListEmbed, buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
 
 const onReady = PoliceBot => {
@@ -102,11 +102,16 @@ const handlePoliceBotCommand = message => {
 		unbanCommand(message);
 	} else {
 		sendMessageToChannel(message.channel, "Désolé mais pour le moment je ne connais pas cette commande. "
-			+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à Cubeur-manchot");
+			+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à <@!217709941081767937>");
 	}
 };
 
 const onUserUpdate = (oldUser, newUser) => {
+	let oldAvatarUrl = oldUser.avatarURL();
+	let newAvatarUrl = newUser.avatarURL();
+	if (newAvatarUrl !== oldAvatarUrl) {
+		sendEmbedSoftLog(buildAvatarChangeLogEmbed(newUser.id, oldAvatarUrl, newAvatarUrl), newUser.client);
+	}
 	console.log("User has been changed");
 	console.log("Old user :");
 	console.log(oldUser);

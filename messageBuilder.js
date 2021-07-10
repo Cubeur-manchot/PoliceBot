@@ -244,10 +244,24 @@ const buildNicknameChangeLogEmbed = (oldMemberPseudo, oldMemberTag, userId, user
 	};
 };
 
+const buildAvatarChangeLogEmbed = (userId, oldAvatarUrl, newAvatarUrl) => {
+	return {
+		color: embedColorFromType["avatarChange"],
+		title: "__Avatar changed__",
+		description: `<@!${userId}>'s avatar was : \n\n\nIt's now :`,
+		thumbnail: {
+			url: oldAvatarUrl
+		},
+		image: {
+			url: newAvatarUrl
+		}
+	}
+};
+
 module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
-	buildNicknameChangeLogEmbed
+	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed
 };
