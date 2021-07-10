@@ -30,7 +30,8 @@ const onMessage = async message => {
 		handlePoliceBotCommand(message);
 	} else {
 		await handleBadWords(message); // handle bad words for both moderators and non-moderators
-		if (!message.member.roles.cache.get("332427771286519808")) { // handle invite links only for non-moderators
+		if (!message.member.roles.cache.get("332427771286519808") // handle invite links only for non-moderators
+			&& !message.member.roles.cache.get("329903067283718147")) { // and non-founder
 			await handleInviteLinks(message);
 		}
 	}
