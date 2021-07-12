@@ -51,8 +51,8 @@ const onMessage = async message => {
 
 const onMessageUpdate = async (oldMessage, newMessage) => {
 	if (!newMessage.author.bot) {
-		let oldMessageContent = oldMessage.content;
-		let newMessageContent = newMessage.content;
+		let oldMessageContent = oldMessage.content.replace(/\*/g,"\*");
+		let newMessageContent = newMessage.content.replace(/\*/g,"\*");
 		if (newMessageContent !== oldMessageContent) {
 			let embeds = buildMessageChangeLogEmbeds(oldMessageContent, newMessageContent, newMessage.author.id,
 				newMessage.url, newMessage.channel.id, newMessage.author.avatarURL());
