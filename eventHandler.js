@@ -53,10 +53,12 @@ const onMessageUpdate = async (oldMessage, newMessage) => {
 	if (!newMessage.author.bot) {
 		let oldMessageContent = oldMessage.content;
 		let newMessageContent = newMessage.content;
-		let embeds = buildMessageChangeLogEmbeds(oldMessageContent, newMessageContent, newMessage.author.id,
-			newMessage.url, newMessage.channel.id, newMessage.author.avatarURL());
-		for (let embed of embeds) {
-			sendEmbedSoftLog(embed, newMessage.client);
+		if (newMessageContent !== oldMessageContent) {
+			let embeds = buildMessageChangeLogEmbeds(oldMessageContent, newMessageContent, newMessage.author.id,
+				newMessage.url, newMessage.channel.id, newMessage.author.avatarURL());
+			for (let embed of embeds) {
+				sendEmbedSoftLog(embed, newMessage.client);
+			}
 		}
 	}
 	await onMessage(newMessage);
