@@ -7,7 +7,7 @@ const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
 const {handleInviteLinks, handleInviteLinksSoft} = require("./inviteLinks.js");
-const {buildElementListEmbed, buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed} = require("./messageBuilder.js");
+const {buildElementListEmbed, buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed, buildMessageChangeLogEmbeds} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
 
 const onReady = PoliceBot => {
@@ -47,6 +47,19 @@ const onMessage = async message => {
 		writeInfoData(members, "members"); // save in data
 		message.client.memberList = members; // update cache
 	}
+};
+
+const onMessageUpdate = async (oldMessage, newMessage) => {
+	if (!newMessage.author.bot) {
+		let oldMessageContent = oldMessage.content;
+		let newMessageContent = newMessage.content;
+		let embeds = buildMessageChangeLogEmbeds(oldMessageContent, newMessageContent, newMessage.author.id,
+			newMessage.url, newMessage.channel.id, newMessage.author.avatarURL());
+		for (let embed of embeds) {
+			sendEmbedSoftLog(embed, newMessage.client);
+		}
+	}
+	await onMessage(newMessage);
 };
 
 const messageIsPoliceBotCommandMessage = message => {
@@ -130,5 +143,4 @@ const onGuildMemberUpdate = (oldMember, newMember) => {
 	}
 };
 
-
-module.exports = {onReady, onMessage, onUserUpdate, onGuildMemberUpdate};
+module.exports = {onReady, onMessage, onMessageUpdate, onUserUpdate, onGuildMemberUpdate};

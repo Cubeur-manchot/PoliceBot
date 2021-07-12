@@ -8,7 +8,8 @@ const embedColorFromType = {
 	"warns": "#d56600",
 	"bans": "#fc0000",
 	"discussions": "#666666",
-	"nicknameChange": "#1111ff"
+	"nicknameChange": "#1111ff",
+	"messageChange": "#550055"
 };
 
 const emojiWhenNoElement = {
@@ -193,7 +194,7 @@ const buildBadWordsLogEmbed = (message, badWords, warningMessage, infractionId) 
 	return {
 		color: embedColorFromType["infractions"],
 		title: `__Bad words (${infractionId})__`,
-		description: `:face_with_symbols_over_mouth: User <@!${message.author.id}> sent bad word(s) in <#${message.channel.id}> [Jump to discussion](${warningMessage.url}).`,
+		description: `:face_with_symbols_over_mouth: User <@!${message.author.id}> sent bad word(s) in <#${message.channel.id}>. [Jump to discussion](${warningMessage.url})`,
 		fields: [{
 			name: "Original message",
 			value: message.content
@@ -254,7 +255,37 @@ const buildAvatarChangeLogEmbed = (userId, oldAvatarUrl, newAvatarUrl) => {
 		},
 		image: {
 			url: newAvatarUrl
-		}
+		},
+		timestamp: new Date()
+	}
+};
+
+const buildMessageChangeLogEmbeds = (oldMessageContent, newMessageContent, userId, messageUrl, channelId, avatarUrl) => {
+	let descriptionBegin = `Message send by <@!${userId}> in <#${channelId}> was edited. [Jump to discussion](${messageUrl})`;
+	let descriptionOldMessage = `\n\n**Old message** :\n${oldMessageContent}`;
+	let descriptionNewMessage = `\n\n**New message** :\n${newMessageContent}`;
+	let fullDescription = descriptionBegin + descriptionOldMessage + descriptionNewMessage;
+	if (fullDescription.length <= 4096) { // all fits in one single embed
+		return [{
+			color: embedColorFromType["messageChange"],
+			title: "__Message edited__",
+			description: fullDescription,
+			thumbnail: {
+				url: avatarUrl
+			}
+		}];
+	} else { // have to split into two separate embeds
+		return [{
+			color: embedColorFromType["messageChange"],
+			title: "__Message edited__",
+			description: descriptionBegin + descriptionOldMessage,
+			thumbnail: {
+				url: avatarUrl
+			}
+		}, {
+			color: embedColorFromType["messageChange"],
+			description: descriptionNewMessage.substring(2) // remove the two newlines
+		}];
 	}
 };
 
@@ -263,5 +294,5 @@ module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
-	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed
+	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed, buildMessageChangeLogEmbeds
 };

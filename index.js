@@ -2,13 +2,13 @@
 
 const Discord = require("discord.js");
 
-const {onReady, onMessage, onUserUpdate, onGuildMemberUpdate} = require("./eventHandler.js");
+const {onReady, onMessage, onMessageUpdate, onUserUpdate, onGuildMemberUpdate} = require("./eventHandler.js");
 
 const PoliceBot = new Discord.Client();
 
 PoliceBot.on("ready", () => onReady(PoliceBot));
 PoliceBot.on("message", onMessage);
-PoliceBot.on("messageUpdate", (oldMessage, newMessage) => onMessage(newMessage));
+PoliceBot.on("messageUpdate", onMessageUpdate);
 PoliceBot.on("userUpdate", onUserUpdate);
 PoliceBot.on("guildMemberUpdate", onGuildMemberUpdate);
 
