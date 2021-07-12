@@ -112,18 +112,23 @@ const onUserUpdate = (oldUser, newUser) => {
 	if (newAvatarUrl !== oldAvatarUrl) {
 		sendEmbedSoftLog(buildAvatarChangeLogEmbed(newUser.id, oldAvatarUrl, newAvatarUrl), newUser.client);
 	}
-	console.log("User has been changed");
-	console.log("Old user :");
-	console.log(oldUser);
-	console.log("New user :");
-	console.log(newUser);
+	let oldUsername = oldUser.username;
+	let newUsername = newUser.username;
+	if (oldUsername !== newUsername) {
+		let member = newUser.client.guilds.cache.get("329175643877015553").members.cache.get(newUser.id);
+		if (member) {
+			if (!member.nickname) { // visible pseudo in the server changes if and only if it is not overwritten by the member nickname
+				sendEmbedSoftLog(buildNicknameChangeLogEmbed(oldUsername, oldUser.tag, newUser.id, newUser.avatarURL(), "Username"), newUser.client);
+			}
+		}
+	}
 };
 
 const onGuildMemberUpdate = (oldMember, newMember) => {
 	let oldPseudo = oldMember.nickname ? oldMember.nickname : oldMember.user.username;
 	let newPseudo = newMember.nickname ? newMember.nickname : newMember.user.username;
 	if (oldPseudo !== newPseudo) {
-		sendEmbedSoftLog(buildNicknameChangeLogEmbed(oldPseudo, oldMember.user.tag, newMember.id, newMember.user.avatarURL()), newMember.client);
+		sendEmbedSoftLog(buildNicknameChangeLogEmbed(oldPseudo, oldMember.user.tag, newMember.id, newMember.user.avatarURL(), "Nickname"), newMember.client);
 	}
 };
 
