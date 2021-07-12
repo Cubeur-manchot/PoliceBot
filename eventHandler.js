@@ -116,10 +116,8 @@ const onUserUpdate = (oldUser, newUser) => {
 	let newUsername = newUser.username;
 	if (oldUsername !== newUsername) {
 		let member = newUser.client.guilds.cache.get("329175643877015553").members.cache.get(newUser.id);
-		if (member) {
-			if (!member.nickname) { // visible pseudo in the server changes if and only if it is not overwritten by the member nickname
-				sendEmbedSoftLog(buildNicknameChangeLogEmbed(oldUsername, oldUser.tag, newUser.id, newUser.avatarURL(), "Username"), newUser.client);
-			}
+		if (member && !member.nickname) { // visible pseudo in the server changes if and only if it is not overwritten by the member nickname
+			sendEmbedSoftLog(buildNicknameChangeLogEmbed(oldUsername, oldUser.tag, newUser.id, newUser.avatarURL(), "Username"), newUser.client);
 		}
 	}
 };
