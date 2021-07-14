@@ -289,10 +289,22 @@ const buildMessageChangeLogEmbeds = (oldMessageContent, newMessageContent, userI
 	}
 };
 
+const buildMemberBanOrUnbanLogEmbed = (userId, avatarUrl, banId, banOrUnban) => {
+	return {
+		color: embedColorFromType["bans"],
+		title: `__Member ${banOrUnban}ned__`,
+		description: `${banOrUnban === "ban" ? ":smiling_imp:" : ":eyes:"} User <@!${userId}> was ${banOrUnban}ed${banId ? ` (${banId})` : ""}.`,
+		thumbnail: {
+			url: avatarUrl
+		},
+		timestamp: new Date()
+	}
+};
+
 module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
-	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed, buildMessageChangeLogEmbeds
+	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed, buildMessageChangeLogEmbeds, buildMemberBanOrUnbanLogEmbed
 };
