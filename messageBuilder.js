@@ -272,7 +272,8 @@ const buildMessageChangeLogEmbeds = (oldMessageContent, newMessageContent, userI
 			description: fullDescription,
 			thumbnail: {
 				url: avatarUrl
-			}
+			},
+			timestamp: new Date()
 		}];
 	} else { // have to split into two separate embeds
 		return [{
@@ -284,7 +285,8 @@ const buildMessageChangeLogEmbeds = (oldMessageContent, newMessageContent, userI
 			}
 		}, {
 			color: embedColorFromType["messageChange"],
-			description: descriptionNewMessage.substring(2) // remove the two newlines
+			description: descriptionNewMessage.substring(2), // remove the two newlines
+			timestamp: new Date()
 		}];
 	}
 };
