@@ -76,10 +76,11 @@ const addBanCommand = async commandMessage => {
 			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified ban reason.\n\n" + addBanHelpMessage);
 		} else {
 			let timezoneOffset = readInfoData("timezoneOffset");
+			let banDate = addHours(commandMessage.createdAt, timezoneOffset);
 			let ban = {
 				id: getAvailableId("bans"),
 				memberId: memberId,
-				date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
+				date: getReadableDate(banDate),
 				expirationDate: expirationDate,
 				reason: reason,
 				warns: linkedWarns,
@@ -94,13 +95,12 @@ const addBanCommand = async commandMessage => {
 				if (expirationDate !== "") { // temp ban
 					setTimeout(() => {
 						unbanMember(memberId, commandMessage.guild.members);
-					}, parseDate(expirationDate).getTime() - commandMessage.createdAt.getTime());
+					}, parseDate(expirationDate).getTime() - banDate.getTime());
 				}
 			}
 		}
 	}
 };
-
 
 const unbanCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&unban */i, "");
@@ -237,7 +237,8 @@ const reloadTempBans = PoliceBot => {
 		}
 	}
 	let relaunchedTempBansCount = 0;
-	let currentDate = new Date();
+	let timezoneOffset = readInfoData("timezoneOffset");
+	let currentDate = addHours(new Date(), timezoneOffset);
 	for (let memberId in bansExpirationDate) {
 		let expirationDate = bansExpirationDate[memberId];
 		if (expirationDate) { // check if date is not undefined
