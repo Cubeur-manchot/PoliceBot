@@ -2,13 +2,14 @@
 
 const Discord = require("discord.js");
 
-const {onReady, onMessage, onMessageUpdate, onUserUpdate, onGuildMemberUpdate, onGuildBanAdd, onGuildBanRemove} = require("./eventHandler.js");
+const {onReady, onMessage, onMessageUpdate, onMessageDelete, onUserUpdate, onGuildMemberUpdate, onGuildBanAdd, onGuildBanRemove} = require("./eventHandler.js");
 
 const PoliceBot = new Discord.Client();
 
 PoliceBot.on("ready", () => onReady(PoliceBot));
 PoliceBot.on("message", onMessage);
 PoliceBot.on("messageUpdate", onMessageUpdate);
+PoliceBot.on("messageDelete", onMessageDelete);
 PoliceBot.on("userUpdate", onUserUpdate);
 PoliceBot.on("guildMemberUpdate", onGuildMemberUpdate);
 PoliceBot.on("guildBanAdd", (guild, user) => onGuildBanAdd(user));

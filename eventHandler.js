@@ -8,7 +8,7 @@ const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reload
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
 const {handleInviteLinks, handleInviteLinksSoft} = require("./inviteLinks.js");
 const {buildElementListEmbed, buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed,
-	buildMessageChangeLogEmbeds, buildMemberBanOrUnbanLogEmbed} = require("./messageBuilder.js");
+	buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed, buildMemberBanOrUnbanLogEmbed} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
 
 const onReady = PoliceBot => {
@@ -63,6 +63,10 @@ const onMessageUpdate = async (oldMessage, newMessage) => {
 		}
 	}
 	await onMessage(newMessage);
+};
+
+const onMessageDelete = message => {
+	sendEmbedSoftLog(buildMessageDeleteLogEmbed(message.content, message.author.id, message.channel.id, message.author.avatarURL()), message.client)
 };
 
 const messageIsPoliceBotCommandMessage = message => {
@@ -154,4 +158,4 @@ const onGuildBanRemove = user => { // todo link to banId
 	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, user.avatarURL(), undefined, "unban"), user.client);
 };
 
-module.exports = {onReady, onMessage, onMessageUpdate, onUserUpdate, onGuildMemberUpdate, onGuildBanAdd, onGuildBanRemove};
+module.exports = {onReady, onMessage, onMessageUpdate, onMessageDelete, onUserUpdate, onGuildMemberUpdate, onGuildBanAdd, onGuildBanRemove};

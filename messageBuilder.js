@@ -9,7 +9,8 @@ const embedColorFromType = {
 	"bans": "#fc0000",
 	"discussions": "#666666",
 	"nicknameChange": "#1111ff",
-	"messageChange": "#550055"
+	"messageChange": "#550055",
+	"messageDelete": "#3300aa"
 };
 
 const emojiWhenNoElement = {
@@ -291,6 +292,18 @@ const buildMessageChangeLogEmbeds = (oldMessageContent, newMessageContent, userI
 	}
 };
 
+const buildMessageDeleteLogEmbed = (messageContent, userId, channelId, avatarUrl) => {
+	return {
+		color: embedColorFromType["messageDelete"],
+		title: "__Message deleted__",
+		description: `Message sent by <@!${userId}> in <#${channelId}> was deleted.\n\n**Original message** :\n${messageContent}`,
+		thumbnail: {
+			url: avatarUrl
+		},
+		timestamp: new Date()
+	};
+};
+
 const buildMemberBanOrUnbanLogEmbed = (userId, avatarUrl, banId, banOrUnban) => {
 	return {
 		color: embedColorFromType["bans"],
@@ -308,5 +321,5 @@ module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
-	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed, buildMessageChangeLogEmbeds, buildMemberBanOrUnbanLogEmbed
+	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed, buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed, buildMemberBanOrUnbanLogEmbed
 };
