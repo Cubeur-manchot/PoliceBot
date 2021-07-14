@@ -292,13 +292,17 @@ const buildMessageChangeLogEmbeds = (oldMessageContent, newMessageContent, userI
 	}
 };
 
-const buildMessageDeleteLogEmbed = (messageContent, userId, channelId, avatarUrl) => {
+const buildMessageDeleteLogEmbed = (messageContent, userId, channelId, avatarUrl, imageUrl) => {
 	return {
 		color: embedColorFromType["messageDelete"],
 		title: "__Message deleted__",
-		description: `Message sent by <@!${userId}> in <#${channelId}> was deleted.\n\n**Original message** :\n${messageContent}`,
+		description: `Message sent by <@!${userId}> in <#${channelId}> was deleted.\n\n**Original message** :\n${messageContent}`
+			+ (imageUrl ? "\n\n**Image** :" : ""),
 		thumbnail: {
 			url: avatarUrl
+		},
+		image: {
+			url: imageUrl
 		},
 		timestamp: new Date()
 	};

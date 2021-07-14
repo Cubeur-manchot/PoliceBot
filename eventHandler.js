@@ -66,7 +66,21 @@ const onMessageUpdate = async (oldMessage, newMessage) => {
 };
 
 const onMessageDelete = message => {
-	sendEmbedSoftLog(buildMessageDeleteLogEmbed(message.content, message.author.id, message.channel.id, message.author.avatarURL()), message.client)
+	let attachmentsUrlByType = {images : [], others: []};
+	for (let attachment of message.attachments.array()) {
+		attachmentsUrlByType[/\.(png|jpe?g|gif)$/.test(attachment.url) ? "images" : "others"].push(attachment.url);
+	}
+	if (attachmentsUrlByType.images.length === 1) { // one image, include it inside the embed
+		sendEmbedSoftLog(buildMessageDeleteLogEmbed(message.content, message.author.id, message.channel.id, message.author.avatarURL(),
+			attachmentsUrlByType.images[0]), message.client);
+	} else if (attachmentsUrlByType.images.length === 0 && attachmentsUrlByType.others.length === 0) { // no attachment
+		sendEmbedSoftLog(buildMessageDeleteLogEmbed(message.content, message.author.id, message.channel.id, message.author.avatarURL(),
+			undefined), message.client);
+	} else { // many or non-image attachments, attach them to the embed message
+		sendEmbedSoftLog(buildMessageDeleteLogEmbed(message.content, message.author.id, message.channel.id, message.author.avatarURL(),
+			undefined), message.client, [...attachmentsUrlByType.images, ...attachmentsUrlByType.others]);
+	}
+
 };
 
 const messageIsPoliceBotCommandMessage = message => {

@@ -6,8 +6,8 @@ const sendMessageToChannel = (channel, message, options) =>
 	channel.send(message, options)
 		.catch(console.error);
 
-const sendEmbedToChannel = (channel, embedObject) =>
-	sendMessageToChannel(channel, new Discord.MessageEmbed(embedObject));
+const sendEmbedToChannel = (channel, embedObject, attachments) =>
+	sendMessageToChannel(channel, {embed: new Discord.MessageEmbed(embedObject), files: attachments},);
 
 const sendPrivateMessage = (user, message) =>
 	user.send(message)
@@ -25,8 +25,8 @@ const sendMessageSoftLog = (message, client) => {
 	sendMessageToChannel(client.channels.cache.find(channel => {return channel.id === "861357829357043752"}), message);
 };
 
-const sendEmbedSoftLog = (embed, client) => {
-	sendEmbedToChannel(client.channels.cache.find(channel => {return channel.id === "861357829357043752"}), embed);
+const sendEmbedSoftLog = (embed, client, attachments) => {
+	sendEmbedToChannel(client.channels.cache.find(channel => {return channel.id === "861357829357043752"}), embed, attachments);
 };
 
 const deleteMessage = message => {
