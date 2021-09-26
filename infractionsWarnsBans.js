@@ -8,27 +8,30 @@ const {buildElementDetailsEmbed, buildMemberInfractionFrenchMessage, buildMember
 	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
-const addInfractionCommand = commandMessage => {
-	let commandArguments = commandMessage.content.replace(/^&(add)?infraction */i, "");
-	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
+const addInfractionCommand = async commandMessage => {
+	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandMessage.content.replace(/^&(add)?infraction */i, ""));
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId and infractionType
+	let type = restOfCommand.trim();
 	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : membre non spécifié ou non reconnu.\n\n" + addInfractionHelpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + addInfractionHelpMessage);
-	} else if (restOfCommand === "") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified infraction type.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : plusieurs membres correspondant.\n\n" + addInfractionHelpMessage);
+	} else if (type === "") {
+		sendMessageToChannel(commandMessage.channel, ":x: Error : raison non spécifiée.\n\n" + addInfractionHelpMessage);
 	} else {
 		let timezoneOffset = readInfoData("timezoneOffset");
+		let infractionId = getAvailableId("infractions");
 		let infraction = {
-			id: getAvailableId("infractions"),
+			id: infractionId,
 			memberId: memberId,
 			date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
-			type: restOfCommand,
+			type: type,
 			commentary: commentary
 		};
 		addInfoData(infraction, "infractions");
-		sendEmbedLog(buildElementDetailsEmbed(infraction, timezoneOffset), commandMessage.client);
+		await sendMessageToChannel(commandMessage.channel,
+			buildMemberInfractionFrenchMessage(memberId, infractionId, type));
+		await sendMessageLog(buildMemberInfractionMessage(memberId, infractionId, type), commandMessage.client);
 	}
 };
 
@@ -39,7 +42,7 @@ const addWarnCommand = async commandMessage => {
 	if (!memberId) {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : membre non spécifié ou non reconnu.\n\n" + addWarnHelpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : plusieurs membres correspondent.\n\n" + addWarnHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : plusieurs membres correspondant.\n\n" + addWarnHelpMessage);
 	} else if (reason === "") {
 		sendMessageToChannel(commandMessage.channel, ":x: Error : raison non spécifiée.\n\n" + addWarnHelpMessage);
 	} else {
@@ -172,27 +175,6 @@ const getMemberIdAndRestOfCommand = (argumentsString, memberList) => {
 			}
 		}
 	}
-};
-
-const getReasonAndLinkedInfractions = argumentsString => {
-	let reasonArray = [], existingInfractions = [], nonExistingInfractions = [];
-	let allInfractions = readInfoData("infractions");
-	for (let word of argumentsString.split(" ").filter(word => word !== "")) {
-		if (/^i#[0-9]+$/i.test(word)) { // word matches an infraction id
-			if (allInfractions.find(infraction => infraction.id === word)) { // infraction id exists
-				existingInfractions.push(word);
-			} else { // infractions id doesn't exist
-				nonExistingInfractions.push(word);
-			}
-		} else { // normal word
-			reasonArray.push(word);
-		}
-	}
-	return {
-		reason: reasonArray.join(" "),
-		linkedInfractions: existingInfractions.join(" "),
-		notLinkedInfractions: nonExistingInfractions
-	};
 };
 
 const getReasonLinkedWarnsAndExpirationDate = argumentsString => {

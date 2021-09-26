@@ -234,6 +234,14 @@ const buildInviteLinkPrivateMessage = invitationsNotInWhiteListStringified => {
 		+ invitationsNotInWhiteListStringified.join(", ");
 };
 
+const buildMemberInfractionFrenchMessage = (memberId, infractionId, type) => {
+	return `<@!${memberId}> a commis une infraction (${infractionId}).\nType : ${type}`;
+};
+
+const buildMemberInfractionMessage = (memberId, infractionId, type) => {
+	return `<@!${memberId}> has commited an infraction (${infractionId}).\nType : ${type}`;
+};
+
 const buildMemberWarnedFrenchMessage = (memberId, warnId, reason) => {
 	return `<@!${memberId}> a reçu un avertissement (${warnId}).\nMotif : ${reason}`;
 };
@@ -333,6 +341,7 @@ module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
+	buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
 	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage,
 	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed, buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed, buildMemberBanOrUnbanLogEmbed
 };
