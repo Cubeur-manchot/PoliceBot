@@ -7,7 +7,7 @@ const sendMessageToChannel = (channel, message, options) =>
 		.catch(console.error);
 
 const sendEmbedToChannel = (channel, embedObject, attachments) =>
-	sendMessageToChannel(channel, {embed: new Discord.MessageEmbed(embedObject), files: attachments},);
+	sendMessageToChannel(channel, {embed: new Discord.MessageEmbed(embedObject), files: attachments});
 
 const sendPrivateMessage = (user, message) =>
 	user.send(message)

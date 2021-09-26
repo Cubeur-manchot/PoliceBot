@@ -3,8 +3,9 @@
 const {getAvailableId, readInfoData, addInfoData, writeInfoData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, addHours} = require("./date.js");
-const {sendMessageToChannel, sendEmbedLog} = require("./messages.js");
-const {buildElementDetailsEmbed} = require("./messageBuilder.js");
+const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
+const {buildElementDetailsEmbed, buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
+	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = commandMessage => {
@@ -31,32 +32,30 @@ const addInfractionCommand = commandMessage => {
 	}
 };
 
-const addWarnCommand = commandMessage => {
+const addWarnCommand = async commandMessage => {
 	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandMessage.content.replace(/^&(add)?warn */i, ""));
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId
+	let reason = restOfCommand.trim();
 	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addWarnHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : membre non spécifié ou non reconnu.\n\n" + addWarnHelpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + addWarnHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Error : plusieurs membres correspondent.\n\n" + addWarnHelpMessage);
+	} else if (reason === "") {
+		sendMessageToChannel(commandMessage.channel, ":x: Error : raison non spécifiée.\n\n" + addWarnHelpMessage);
 	} else {
-		let {reason, linkedInfractions, notLinkedInfractions} = getReasonAndLinkedInfractions(restOfCommand);
-		if (notLinkedInfractions.length) {
-			sendMessageToChannel(commandMessage.channel, `:x: Error : failed to link infraction(s) : ${notLinkedInfractions.join(", ")}.`);
-		} else if (reason === "") {
-			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified warn reason.\n\n" + addWarnHelpMessage);
-		} else {
-			let timezoneOffset = readInfoData("timezoneOffset");
-			let warn = {
-				id: getAvailableId("warns"),
-				memberId: memberId,
-				date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
-				reason: reason,
-				infractions: linkedInfractions,
-				commentary: commentary
-			};
-			addInfoData(warn, "warns");
-			sendEmbedLog(buildElementDetailsEmbed(warn, timezoneOffset), commandMessage.client);
-		}
+		let timezoneOffset = readInfoData("timezoneOffset");
+		let warnId = getAvailableId("warns");
+		let warn = {
+			id: warnId,
+			memberId: memberId,
+			date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
+			reason: reason,
+			commentary: commentary
+		};
+		addInfoData(warn, "warns");
+		await sendMessageToChannel(commandMessage.channel,
+			buildMemberWarnedFrenchMessage(memberId, warnId, reason));
+		await sendMessageLog(buildMemberWarnedMessage(memberId, warnId, reason), commandMessage.client);
 	}
 };
 
