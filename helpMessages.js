@@ -50,27 +50,30 @@ const moveHelpMessage = buildPurgeSaveMoveHelpMessage("move");
 
 // help messages for infractions, warns and bans commands
 
+let memberHelpMessageChunk = "`<membre>` : identifie le membre. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937.";
+let commentaryHelpMessageChunk = "\n`<commentaire>` (optionnel) : donne des informations complémentaires.";
+
 const addInfractionHelpMessage = "```\n&infraction <membre> <type> // <commentaire>```"
-	+ "`<membre>` : identifie le membre. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
+	+ memberHelpMessageChunk
 	+ "\n`<type>` : type d'infraction. Ex: HS, Bad words, ..."
-	+ "\n`<commentaire>` (optionnel) : donne des informations complémentaires."
+	+ commentaryHelpMessageChunk
 	+ "\n\nExemple : ```\n&infraction Cubeur-manchot#7706 HS répétitifs // c'est relou```";
 
 const addWarnHelpMessage = "```\n&warn <membre> <raison> // <commentaire>```"
-	+ "`<membre>` : identifie le membre. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
+	+ memberHelpMessageChunk
 	+ "\n`<raison>` : la raison du warn. Ex: HS répétitifs, Non respect d'un membre, ..."
-	+ "\n`<commentaire>` (optionnel) : donne des informations complémentaires."
-	+ "\n\nExemple : ```\n&warn Cubeur-manchot#7706 HS répétitifs // impertinent```";
+	+ commentaryHelpMessageChunk
+	+ "\n\nExemple : ```\n&warn Cubeur-manchot#7706 Non respect d'un membre // impertinent```";
 
 const addBanHelpMessage = "```\n&ban <membre> <raison> <date d'expiration> // <commentaire>```"
-	+ "`<membre>` : identifie le membre. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
+	+ memberHelpMessageChunk
 	+ "\n`<raison>` : la raison du ban. Ex: 3 warns."
 	+ "\n`<date d'expiration>` (optionnel) : date à laquelle le ban sera révoqué. Si non spécifié, le ban est définitif. Ex: 18/04/2021."
-	+ "\n`<commentaire>` (optionnel) : donne des informations complémentaires."
+	+ commentaryHelpMessageChunk
 	+ "\n\nExemple ```\n&ban Cubeur-manchot#7706 3 warns 18/04/2021 // ça dégage```";
 
 const unbanHelpMessage = "```\n&unban <membre>```"
-	+ "`<membre>` : identifie le membre. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
+	+ memberHelpMessageChunk
 	+ "\n\nExemple ```\n&unban Cubeur-manchot#7706```";
 
 // help messages for general commands
