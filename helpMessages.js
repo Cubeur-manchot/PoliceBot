@@ -22,24 +22,26 @@ const mainHelpMessage = "Here is the list of commands I support. "
 // help messages for discussion commands
 
 const buildPurgeSaveMoveHelpMessage = purgeOrSaveOrMove => {
+	let purgeOrSaveOrMoveInFrench =	purgeOrSaveOrMove === "purge" ? "supprimer" :
+		purgeOrSaveOrMove === "save" ? "sauvegarder" : "déplacer";
 	let helpMessage = "```";
 	for (let argument of ["<nbMessages>", "<hours>:<minutes>", "<day>/<month>"]) {
 		helpMessage += `\n&${purgeOrSaveOrMove} ${argument}${purgeOrSaveOrMove === "move" ? " #bots_poubelle" : ""}`;
 	}
 	helpMessage += "```";
-	helpMessage += "\n`<nbMessages>` : the number of messages to " + purgeOrSaveOrMove + "."
-		+ "\n`<hour>:<minute>` : the time from which messages must be " + purgeOrSaveOrMove + "d."
-		+ "\n`<day>/<month>` : the day from which messages must be " + purgeOrSaveOrMove + "d.";
+	helpMessage += "\n`<nbMessages>` : le nombre de messages à " + purgeOrSaveOrMoveInFrench + "."
+		+ "\n`<hour>:<minute>` : le moment à partir duquel " + purgeOrSaveOrMoveInFrench + " les messages."
+		+ "\n`<day>/<month>` : le jour à partir duquel " + purgeOrSaveOrMoveInFrench + " les messages.";
 	if (purgeOrSaveOrMove === "move") {
-		helpMessage += "\n`<channel>` : the channel in which the messages should be moved.";
+		helpMessage += "\n`<channel>` : the channel dans lequel les messages doivent être déplacés.";
 	}
-	helpMessage += "\n\nExamples : ```";
+	helpMessage += "\n\nExemples : ```";
 	for (let argument of ["42", "23:58", "19/06"]) {
 		helpMessage += `\n&${purgeOrSaveOrMove} ${argument}${purgeOrSaveOrMove === "move" ? " #bots_poubelle" : ""}`;
 	}
 	helpMessage += "```";
 	if (purgeOrSaveOrMove === "save") {
-		helpMessage += "\nThe command message will be deleted.";
+		helpMessage += "\nLe message de commande sera supprimé.";
 	}
 	return helpMessage;
 };
