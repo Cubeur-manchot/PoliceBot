@@ -2,22 +2,22 @@
 
 // main help message
 
-const mainHelpMessage = "Here is the list of commands I support. "
-	+ "To get specific help for one of them, simply type the command without any argument."
-	+ "\n`&help` : display this help."
-	+ "\n`&save` : saves some messages."
-	+ "\n`&purge` : delete some messages."
-	+ "\n`&move` : move some messages to another channel."
-	+ "\n`&discussions` : display the list of all saved discussions."
-	+ "\n`&infraction`/`&addInfraction` : add an infraction to a member."
-	+ "\n`&infractions` : display the list of all infractions."
-	+ "\n`&warn`/`&addWarn` : add a warn to a member."
-	+ "\n`&infractions` : display the list of all warns."
-	+ "\n`&ban`/`&addBan` : ban a member."
-	+ "\n`&unban` : unban a member."
-	+ "\n`&bans` : display the list of all bans."
-	+ "\n`&details` : display the detailed information of an infractions, a warn or a ban."
-	+ "\n`&remove` : remove an infractions, a warn or a ban.";
+const mainHelpMessage = "Voici la liste des commandes supportées. "
+	+ "Pour avoir l'aide spécifique d'une commande, envoyer la commande sans aucun argument."
+	+ "\n`&help` : affiche cette aide."
+	+ "\n`&save` : sauvegarde des messages."
+	+ "\n`&purge` : supprime des messages."
+	+ "\n`&move` : déplace des messages dans un autre channel."
+	+ "\n`&discussions` : affiche toutes les discussions sauvegardées."
+	+ "\n`&infraction`/`&addInfraction` : ajoute une infraction à un membre."
+	+ "\n`&infractions` : affiche toutes les infractions."
+	+ "\n`&warn`/`&addWarn` : ajoute un warn à un membre."
+	+ "\n`&infractions` : affiche tous les warns."
+	+ "\n`&ban`/`&addBan` : bannit un membre."
+	+ "\n`&unban` : débannit un membre."
+	+ "\n`&bans` : affiche tous les bans."
+	+ "\n`&details` : affiche les détails d'une infraction, un warn ou un ban."
+	+ "\n`&remove` : supprime une infraction, un warn ou un ban.";
 
 // help messages for discussion commands
 
