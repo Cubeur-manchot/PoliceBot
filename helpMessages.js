@@ -50,29 +50,28 @@ const moveHelpMessage = buildPurgeSaveMoveHelpMessage("move");
 
 // help messages for infractions, warns and bans commands
 
-const addInfractionHelpMessage = "```\n&addInfraction <member> <type> // <commentary>```"
-	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
-	+ "\n`<type>` : the type of infraction. Ex: HS, Bad words, ..."
-	+ "\n`<commentary>` (optional) : gives more information about the infraction."
-	+ "\n\nExample : ```\n&addInfraction Cubeur-manchot#7706 HS répétitifs // c'est relou```";
+const addInfractionHelpMessage = "```\n&infraction <membre> <type> // <commentaire>```"
+	+ "`<membre>` : identifie le membre. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
+	+ "\n`<type>` : type d'infraction. Ex: HS, Bad words, ..."
+	+ "\n`<commentaire>` (optionnel) : donne des informations complémentaires."
+	+ "\n\nExemple : ```\n&infraction Cubeur-manchot#7706 HS répétitifs // c'est relou```";
 
-const addWarnHelpMessage = "```\n&warn <member> <reason> <infractionsId> // <commentary>```"
-	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
-	+ "\n`<reason>` : the reason of the warn. Ex: HS répétitifs, Bad words, ..."
-	+ "\n`<infractionsId>` (optional) : the infraction(s) to be attached to the warn. Ex: i#1 i#3."
-	+ "\n`<commentary>` (optional) : gives more information about the warn."
-	+ "\n\nExample : ```\n&warn Cubeur-manchot#7706 HS répétitifs i#1 i#3 // c'est relou```";
+const addWarnHelpMessage = "```\n&warn <membre> <raison> // <commentaire>```"
+	+ "`<membre>` : identifie le membre. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
+	+ "\n`<raison>` : la raison du warn. Ex: HS répétitifs, Non respect d'un membre, ..."
+	+ "\n`<commentaire>` (optionnel) : donne des informations complémentaires."
+	+ "\n\nExemple : ```\n&warn Cubeur-manchot#7706 HS répétitifs // impertinent```";
 
-const addBanHelpMessage = "```\n&ban <member> <reason> <expirationDate> <warnsId> // commentary```"
-	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
-	+ "\n`<reason>` : the reason of the ban. Ex: 3 warns."
-	+ "\n`<expirationDate>` (optional) : the date when the ban will be revoked. If not specified, the ban is definitive. Ex: 18/04/2021."
-	+ "\n`<warnsId>` (optional) : the warn(s) to be attached to the ban. Ex: w#1 w#3."
-	+ "\n`<commentary>` (optional) : gives more information about the warn."
-	+ "\n\nExample: ```\n&ban Cubeur-manchot#7706 3 warns 18/04/2021 w#1 w#3 w#4 // c'est relou```";
+const addBanHelpMessage = "```\n&ban <membre> <raison> <date d'expiration> // <commentaire>```"
+	+ "`<membre>` : identifie le membre. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
+	+ "\n`<raison>` : la raison du ban. Ex: 3 warns."
+	+ "\n`<date d'expiration>` (optionnel) : date à laquelle le ban sera révoqué. Si non spécifié, le ban est définitif. Ex: 18/04/2021."
+	+ "\n`<commentaire>` (optionnel) : donne des informations complémentaires."
+	+ "\n\nExemple ```\n&ban Cubeur-manchot#7706 3 warns 18/04/2021 // ça dégage```";
 
-const unbanHelpMessage = "```\n&unban <member>```"
-	+ "`<member>` : identifies the member. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937.";
+const unbanHelpMessage = "```\n&unban <membre>```"
+	+ "`<membre>` : identifie le membre. Ex: Cubeur-manchot#7706, Cubeur-manchot, 217709941081767937."
+	+ "\n\nExemple ```\n&unban Cubeur-manchot#7706```";
 
 // help messages for general commands
 
