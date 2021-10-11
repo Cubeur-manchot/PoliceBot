@@ -20,12 +20,13 @@ const onReady = PoliceBot => {
 };
 
 const onMessage = async message => {
-	if (message.author.id === "719973594029097040" || !message.member) { // message sent by PoliceBot or by not a member (webhook for example)
+	if (message.author.id === "719973594029097040") { // message sent by PoliceBot
 		return;
-	}
-	if (message.channel.type === "dm") { // message is a private message sent to PoliceBot
+	} else if (message.channel.type === "dm") { // message is a private message sent to PoliceBot
 		await handleBadWordsSoft(message);
 		await handleInviteLinksSoft(message);
+	} else if (!message.member) { // message sent by not a member (webhook for example)
+		return;
 	} else if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
 		handlePoliceBotCommand(message);
