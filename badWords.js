@@ -18,7 +18,8 @@ const badWords = [
 	{ word : "branle", regexString : "br(a|e)nll?((é?e?)s?|ett?e)" },
 	{ word : "biffle", regexString : "b(i|1)ff?l(er?|é)e?s?" },
 	{ word : "burne", regexString : "burnes?" },
-	{ word : "faire foutre", regexString : "faire? f(o|0)utt?re?s?" }
+	{ word : "faire foutre", regexString : "faire? f(o|0)utt?re?s?" },
+	{ word : "nique sa mère", regexString : "n(s|t)m"}
 ];
 
 const handleBadWords = async message => {
