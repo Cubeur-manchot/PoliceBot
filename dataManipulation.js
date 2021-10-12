@@ -33,10 +33,18 @@ const getAvailableId = infoType => {
 	}
 };
 
-const removePoliceBotData = (infoType, indexOfElement) => {
-	let dataOfThisType = readInfoData(infoType);
-	dataOfThisType.splice(indexOfElement, 1);
-	writeInfoData(dataOfThisType, infoType);
+const removePoliceBotData = elementsIdList => {
+	if (elementsIdList.length) {
+		let policeBotData = readPoliceBotData();
+		for (let elementId of elementsIdList) {
+			let elementType = infoTypeFromIdFirstLetter[elementId[0]];
+			let index = policeBotData[elementType].findIndex(element => element.id === elementId);
+			if (index !== -1) {
+				policeBotData[elementType].splice(index, 1);
+			}
+		}
+		writePoliceBotData(policeBotData);
+	}
 };
 
 const infoTypeFromIdFirstLetter = {
