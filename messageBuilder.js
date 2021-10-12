@@ -89,53 +89,48 @@ const buildEmbedsFromDescriptionChunks = descriptionChunks => {
 
 const buildElementDetailsEmbed = (element, timezoneOffset) => {
 	let infoType = infoTypeFromIdFirstLetter[element.id[0]];
-	let description = `**Member** : <@${element.memberId}>`; // member
+	let description = `**Membre** : <@${element.memberId}>`; // member
 	let diffDate = getReadableDiffDate(addHours(new Date(), timezoneOffset), parseDate(element.date));
 	description += `\n**Date** : ${element.date} `;
-	if (diffDate === "equals") {
-		description += "(just now)";
+	if (diffDate === "égal") {
+		description += "(à l'instant)";
 	} else {
-		description += `(${diffDate} ago)`;
+		description += `(il y a ${diffDate})`;
 	}
 	if (infoType === "infractions") {
 		description += `\n**Type** : ${element.type}`; // infraction type
 	} else {
 		if (infoType === "bans") {
-			description += "\n**Expiration date** : "; // expiration date
+			description += "\n**Date d'expiration** : "; // expiration date
 			if (element.expirationDate === "") {
-				description += "None (definitive ban)";
+				description += "Aucune (ban définitif)";
 			} else {
 				let currentDate = addHours(new Date(), timezoneOffset);
 				let expirationDate = parseDate(element.expirationDate);
 				description += element.expirationDate;
 				if (currentDate < expirationDate) {
 					let banExpirationDiffDate = getReadableDiffDate(expirationDate, currentDate);
-					if (banExpirationDiffDate === "equals") {
-						description += " (just now)";
+					if (banExpirationDiffDate === "égal") {
+						description += " (à l'instant)";
 					} else {
-						description += ` (${banExpirationDiffDate} remaining)`;
+						description += ` (reste ${banExpirationDiffDate})`;
 					}
 				} else {
 					let banExpiredDiffDate = getReadableDiffDate(currentDate, expirationDate);
-					if (banExpiredDiffDate === "equals") {
-						description += " (just now)";
+					if (banExpiredDiffDate === "égal") {
+						description += " (à l'instant)";
 					} else {
-						description += ` (finished ${banExpiredDiffDate} ago)`;
+						description += ` (terminé il y a ${banExpiredDiffDate})`;
 					}
 				}
 			}
 		}
-		description += `\n**Reason** : ${element.reason}`; // warn or ban reason
-		if (infoType === "warns") {
-			description += `\n**Linked infractions** : ${element.infractions === "" ? "none" : element.infractions.replace(/ /g, ", ")}`; // linked infractions for warns
-		} else {
-			description += `\n**Linked warns** : ${element.warns === "" ? "none" : element.warns.replace(/ /g, ", ")}`; // linked warns for bans
-		}
+		description += `\n**Raison** : ${element.reason}`; // warn or ban reason
 	}
-	description += `\n**Commentary** : ${element.commentary === "" ? "none" : element.commentary}`;
+	description += `\n**Commentaire** : ${element.commentary === "" ? "aucun" : element.commentary}`;
 	return {
 		color: embedColorFromType[infoType], // color
-		title: `__Details of ${infoType.slice(0, -1)} ${element.id}__`, // id
+		title: `__Détails ${infoType === "infractions" ? "de l'" : "du "}${infoType.slice(0, -1)} ${element.id}__`, // id
 		description: description // description
 	};
 };

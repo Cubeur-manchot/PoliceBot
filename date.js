@@ -26,15 +26,15 @@ const parseDate = dateString => {
 
 const getReadableDiffDate = (firstDate, secondDate) => {
 	let diffResultFirstLevel = getReadableDiffDateOneLevel(firstDate, secondDate);
-	if (diffResultFirstLevel.unit === "seconds") { // if only seconds, display only one level
+	if (diffResultFirstLevel.unit === "secondes") { // if only seconds, display only one level
 		if (Math.abs(diffResultFirstLevel.diffTime) <= 5) {
-			return "equals";
+			return "égal";
 		} else {
-			return `${diffResultFirstLevel.diffTime} second${diffResultFirstLevel.diffTime === 1 ? "" : "s"}`;
+			return `${diffResultFirstLevel.diffTime} seconde${diffResultFirstLevel.diffTime === 1 ? "" : "s"}`;
 		}
 	} else { // else, display two levels
 		let diffResultSecondLevel = getReadableDiffDateOneLevel(firstDate, diffResultFirstLevel.approximatedDate);
-		return `${diffResultFirstLevel.diffTime} ${diffResultFirstLevel.unit} and ${diffResultSecondLevel.diffTime} ${diffResultSecondLevel.unit}`;
+		return `${diffResultFirstLevel.diffTime} ${diffResultFirstLevel.unit} et ${diffResultSecondLevel.diffTime} ${diffResultSecondLevel.unit}`;
 	}
 };
 
@@ -43,7 +43,7 @@ const getReadableDiffDateOneLevel = (firstDate, secondDate) => {
 	if (diffTimeInSeconds < 60) {
 		return {
 			diffTime: diffTimeInSeconds,
-			unit: `second${diffTimeInSeconds === 1 ? "" : "s"}`,
+			unit: `seconde${diffTimeInSeconds === 1 ? "" : "s"}`,
 			approximatedDate: new Date(secondDate.getTime() + diffTimeInSeconds*1000) // add seconds
 		};
 	} else if (diffTimeInSeconds < 3600) {
@@ -57,7 +57,7 @@ const getReadableDiffDateOneLevel = (firstDate, secondDate) => {
 		let diffTimeInHours = Math.floor(diffTimeInSeconds/3600);
 		return {
 			diffTime: diffTimeInHours,
-			unit: `hour${diffTimeInHours === 1 ? "" : "s"}`,
+			unit: `heure${diffTimeInHours === 1 ? "" : "s"}`,
 			approximatedDate: new Date(secondDate.getTime() + diffTimeInHours*3600000) // add hours
 		};
 	} else {
@@ -67,7 +67,7 @@ const getReadableDiffDateOneLevel = (firstDate, secondDate) => {
 			let diffTimeInDays = Math.floor(diffTimeInSeconds/86400);
 			return {
 				diffTime: diffTimeInDays,
-				unit: `day${diffTimeInDays === 1 ? "" : "s"}`,
+				unit: `jour${diffTimeInDays === 1 ? "" : "s"}`,
 				approximatedDate: new Date(secondDate.getTime() + diffTimeInDays*86400000) // add days
 			};
 		} else {
@@ -83,7 +83,7 @@ const getReadableDiffDateOneLevel = (firstDate, secondDate) => {
 				secondDatePlusSomeMonths.setMonth(secondDatePlusSomeMonths.getMonth() - 1);
 				return {
 					diffTime: monthCount,
-					unit: `month${monthCount === 1 ? "" : "s"}`,
+					unit: `mois`,
 					approximatedDate: secondDatePlusSomeMonths // add months
 				};
 			} else {
@@ -96,7 +96,7 @@ const getReadableDiffDateOneLevel = (firstDate, secondDate) => {
 				secondDatePlusSomeYears.setFullYear(secondDatePlusSomeYears.getFullYear() - 1);
 				return {
 					diffTime: yearCount,
-					unit: `year${yearCount === 1 ? "" : "s"}`,
+					unit: `année${yearCount === 1 ? "" : "s"}`,
 					approximatedDate: secondDatePlusSomeYears
 				};
 			}
