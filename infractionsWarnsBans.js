@@ -1,11 +1,11 @@
 "use strict";
 
-const {getAvailableId, readInfoData, addInfoData, writeInfoData, groupElementsByMemberId} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, addInfoData, writeInfoData, removePoliceBotData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, addHours} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
 const {buildElementDetailsEmbed, buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
-	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage} = require("./messageBuilder.js");
+	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage, buildMemberBannedFrenchMessage} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = async commandMessage => {
@@ -13,11 +13,11 @@ const addInfractionCommand = async commandMessage => {
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId and infractionType
 	let type = restOfCommand.trim();
 	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : membre non spécifié ou non reconnu.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + addInfractionHelpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : plusieurs membres correspondant.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + addInfractionHelpMessage);
 	} else if (type === "") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : raison non spécifiée.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : type non spécifié.\n\n" + addInfractionHelpMessage);
 	} else {
 		let timezoneOffset = readInfoData("timezoneOffset");
 		let infractionId = getAvailableId("infractions");
@@ -40,11 +40,11 @@ const addWarnCommand = async commandMessage => {
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId
 	let reason = restOfCommand.trim();
 	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : membre non spécifié ou non reconnu.\n\n" + addWarnHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + addWarnHelpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : plusieurs membres correspondant.\n\n" + addWarnHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + addWarnHelpMessage);
 	} else if (reason === "") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : raison non spécifiée.\n\n" + addWarnHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : raison non spécifiée.\n\n" + addWarnHelpMessage);
 	} else {
 		let timezoneOffset = readInfoData("timezoneOffset");
 		let warnId = getAvailableId("warns");
@@ -67,37 +67,52 @@ const addBanCommand = async commandMessage => {
 	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId
 	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + addBanHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + addBanHelpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + addBanHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + addBanHelpMessage);
 	} else {
-		let {reason, linkedWarns, notLinkedWarns, expirationDate} = getReasonLinkedWarnsAndExpirationDate(restOfCommand);
-		if (notLinkedWarns.length) {
-			sendMessageToChannel(commandMessage.channel, `:x: Error : failed to link warn(s) : ${notLinkedWarns.join(", ")}.`);
-		} else if (reason === "") {
-			sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified ban reason.\n\n" + addBanHelpMessage);
+		let {reason, expirationDate} = getReasonAndExpirationDate(restOfCommand);
+		if (reason === "") {
+			sendMessageToChannel(commandMessage.channel, ":x: Erreur : raison du ban non spécifiée.\n\n" + addBanHelpMessage);
 		} else {
+			let member = await commandMessage.guild.members.fetch(memberId).catch(() => {});
 			let timezoneOffset = readInfoData("timezoneOffset");
 			let banDate = addHours(commandMessage.createdAt, timezoneOffset);
-			let ban = {
-				id: getAvailableId("bans"),
-				memberId: memberId,
-				date: getReadableDate(banDate),
-				expirationDate: expirationDate,
-				reason: reason,
-				warns: linkedWarns,
-				commentary: commentary
-			};
-			let banStatus = await banMember(memberId, commandMessage.guild.members);
-			if(banStatus === "Missing Permissions") { // check if ban was successful or not
-				sendMessageToChannel(commandMessage.channel, ":x: Error : I don't have the permission to ban this member.");
+			if (!member) { // user is not on the server anymore
+				let bans = readInfoData("bans");
+				let correspondingBan = bans.find(ban => {
+					return ban.memberId === memberId && (ban.expirationDate === "" || parseDate(ban.expirationDate) > banDate);
+				});
+				if (correspondingBan) {
+					sendMessageToChannel(commandMessage.channel, ":x: Erreur : ce membre est déjà banni.");
+				} else {
+					sendMessageToChannel(commandMessage.channel, ":x: Erreur : impossible de bannir ce membre.");
+				}
+			} else if (!member.bannable) {
+				sendMessageToChannel(commandMessage.channel, ":x: Erreur : je n'ai pas l'autorisation de bannir ce membre.");
 			} else {
+				let banId = getAvailableId("bans");
+				let ban = {
+					id: banId,
+					memberId: memberId,
+					date: getReadableDate(banDate),
+					expirationDate: expirationDate,
+					reason: reason,
+					commentary: commentary
+				};
 				addInfoData(ban, "bans");
-				sendEmbedLog(buildElementDetailsEmbed(ban, timezoneOffset), commandMessage.client);
-				if (expirationDate !== "") { // temp ban
-					setTimeout(() => {
-						unbanMember(memberId, commandMessage.guild.members);
-					}, parseDate(expirationDate).getTime() - banDate.getTime());
+				let banStatus = await banMember(memberId, commandMessage.guild.members);
+				if (banStatus === "Error") {
+					removePoliceBotData([banId]);
+					sendMessageToChannel(commandMessage.channel, ":x: Erreur lors du bannissement du membre.");
+				} else {
+					await sendMessageToChannel(commandMessage.channel,
+						buildMemberBannedFrenchMessage(memberId, banId, reason));
+					if (expirationDate !== "") { // temporary ban
+						setTimeout(() => {
+							unbanMember(memberId, commandMessage.guild.members);
+						}, parseDate(expirationDate).getTime() - banDate.getTime());
+					}
 				}
 			}
 		}
@@ -177,17 +192,10 @@ const getMemberIdAndRestOfCommand = (argumentsString, memberList) => {
 	}
 };
 
-const getReasonLinkedWarnsAndExpirationDate = argumentsString => {
-	let reasonArray = [], existingWarns = [], nonExistingWarns = [], expirationDate = "";
-	let allWarns = readInfoData("warns");
+const getReasonAndExpirationDate = argumentsString => {
+	let reasonArray = [], expirationDate = "";
 	for (let word of argumentsString.split(" ").filter(word => word !== "")) {
-		if (/^w#[0-9]+$/i.test(word)) { // word matches a warn id
-			if (allWarns.find(warn => warn.id === word)) { // warn id exists
-				existingWarns.push(word);
-			} else { // warn id doesn't exist
-				nonExistingWarns.push(word);
-			}
-		} else if (/^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/.test(word)) { // word matches a date
+		if (/^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/.test(word)) { // word matches a date
 			expirationDate = (getReadableDate(parseDate(word)) + "").substring(0, 10); // clean date before saving it
 		} else { // normal word
 			reasonArray.push(word);
@@ -195,8 +203,6 @@ const getReasonLinkedWarnsAndExpirationDate = argumentsString => {
 	}
 	return {
 		reason: reasonArray.join(" "),
-		linkedWarns: existingWarns.join(" "),
-		notLinkedWarns: nonExistingWarns,
 		expirationDate: expirationDate
 	}
 };

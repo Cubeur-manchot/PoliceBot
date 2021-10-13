@@ -245,6 +245,22 @@ const buildMemberWarnedMessage = (memberId, warnId, reason) => {
 	return `<@!${memberId}> has been warned (${warnId}).\nReason : ${reason}`;
 };
 
+const buildMemberBannedFrenchMessage = (memberId, banId, reason) => {
+	return `<@!${memberId}> a été banni (${banId}).\nMotif : ${reason}`;
+};
+
+const buildMemberBanOrUnbanLogEmbed = (userId, avatarUrl, banId, banOrUnban) => {
+	return {
+		color: embedColorFromType["bans"],
+		title: `__Member ${banOrUnban}ned__`,
+		description: `${banOrUnban === "ban" ? ":smiling_imp:" : ":eyes:"} User <@!${userId}> was ${banOrUnban}ed${banId ? ` (${banId})` : ""}.`,
+		thumbnail: {
+			url: avatarUrl
+		},
+		timestamp: new Date()
+	}
+};
+
 const buildNicknameChangeLogEmbed = (oldMemberPseudo, oldMemberTag, userId, userAvatarUrl, nicknameOrUsername) => {
 	return {
 		color: embedColorFromType["nicknameChange"],
@@ -319,18 +335,6 @@ const buildMessageDeleteLogEmbed = (messageContent, userId, channelId, avatarUrl
 	};
 };
 
-const buildMemberBanOrUnbanLogEmbed = (userId, avatarUrl, banId, banOrUnban) => {
-	return {
-		color: embedColorFromType["bans"],
-		title: `__Member ${banOrUnban}ned__`,
-		description: `${banOrUnban === "ban" ? ":smiling_imp:" : ":eyes:"} User <@!${userId}> was ${banOrUnban}ed${banId ? ` (${banId})` : ""}.`,
-		thumbnail: {
-			url: avatarUrl
-		},
-		timestamp: new Date()
-	}
-};
-
 module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionDetailsEmbeds,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
@@ -338,5 +342,7 @@ module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
 	buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
 	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage,
-	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed, buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed, buildMemberBanOrUnbanLogEmbed
+	buildMemberBannedFrenchMessage, buildMemberBanOrUnbanLogEmbed,
+	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed,
+	buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed
 };

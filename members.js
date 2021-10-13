@@ -23,11 +23,8 @@ const banMember = async (memberId, memberList) => {
 	let status = "Success";
 	await memberList.ban(memberId)
 		.catch(error => {
-			if (("" + error).includes("Missing Permissions")) {
-				status = "Missing Permissions";
-			} else {
-				status = "Error";
-			}
+			status = "Error";
+			console.error(error);
 		});
 	return status;
 };
