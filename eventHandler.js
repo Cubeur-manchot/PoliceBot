@@ -29,7 +29,7 @@ const onMessage = async message => {
 		return;
 	} else if (messageIsPoliceBotCommandMessage(message) // message is a PoliceBot command
 		&& message.member.roles.cache.get("332427771286519808")) { // message is sent by a moderator
-		handlePoliceBotCommand(message);
+		await handlePoliceBotCommand(message);
 	} else {
 		await handleBadWords(message); // handle bad words for both moderators and non-moderators
 		if (!message.member.roles.cache.get("332427771286519808") // handle invite links only for non-moderators
