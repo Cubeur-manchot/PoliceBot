@@ -1,14 +1,14 @@
 "use strict";
 
-const {sendMessageToChannel, sendEmbedToChannel, sendEmbedLog, sendEmbedSoftLog} = require("./messages.js");
+const {sendMessageToChannel, sendEmbedToChannel, sendEmbedSoftLog} = require("./messages.js");
 const {saveCommand, purgeCommand, moveCommand} = require("./discussions.js");
 const {readInfoData, writeInfoData} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
-const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans} = require("./infractionsWarnsBans.js");
+const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, handleBanAdd, handleBanRemove, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
 const {handleInviteLinks, handleInviteLinksSoft} = require("./inviteLinks.js");
 const {buildElementListEmbed, buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed,
-	buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed, buildMemberBanOrUnbanLogEmbed} = require("./messageBuilder.js");
+	buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
 
 const onReady = PoliceBot => {
@@ -165,12 +165,12 @@ const onGuildMemberUpdate = (oldMember, newMember) => {
 	}
 };
 
-const onGuildBanAdd = user => { // todo link to banId
-	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, user.avatarURL(), undefined, "ban"), user.client);
+const onGuildBanAdd = user => {
+	handleBanAdd(user);
 };
 
-const onGuildBanRemove = user => { // todo link to banId
-	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, user.avatarURL(), undefined, "unban"), user.client);
+const onGuildBanRemove = user => {
+	handleBanRemove(user);
 };
 
 module.exports = {onReady, onMessage, onMessageUpdate, onMessageDelete, onUserUpdate, onGuildMemberUpdate, onGuildBanAdd, onGuildBanRemove};

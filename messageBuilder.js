@@ -253,7 +253,7 @@ const buildMemberUnbannedFrenchMessage = (memberId, banId) => {
 	return `<@!${memberId}> a été débanni (${banId}).`;
 };
 
-const buildMemberBanOrUnbanLogEmbed = (userId, avatarUrl, banId, banOrUnban) => {
+const buildMemberBanOrUnbanLogEmbed = (userId, banId, avatarUrl, banOrUnban) => {
 	return {
 		color: embedColorFromType["bans"],
 		title: `__Member ${banOrUnban}ned__`,

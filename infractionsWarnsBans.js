@@ -4,10 +4,9 @@ const {getAvailableId, readInfoData, addInfoData, writeInfoData, removePoliceBot
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, addHours} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
-const {buildElementDetailsEmbed,
-	buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
+const {buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
 	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage,
-	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage} = require("./messageBuilder.js");
+	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage, buildMemberBanOrUnbanLogEmbed} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = async commandMessage => {
@@ -81,13 +80,10 @@ const addBanCommand = async commandMessage => {
 			let timezoneOffset = readInfoData("timezoneOffset");
 			let banDate = addHours(commandMessage.createdAt, timezoneOffset);
 			if (!member) { // user is not on the server anymore
-				let bans = readInfoData("bans");
-				let correspondingBan = bans.find(ban => {
-					return ban.memberId === memberId && (ban.expirationDate === "" || parseDate(ban.expirationDate) > banDate);
-				});
-				if (correspondingBan) {
+				if (getActiveBan(memberId, banDate)) {
 					sendMessageToChannel(commandMessage.channel, ":x: Erreur : ce membre est déjà banni.");
 				} else {
+					// todo also ban in this case
 					sendMessageToChannel(commandMessage.channel, ":x: Erreur : impossible de bannir ce membre.");
 				}
 			} else if (!member.bannable) {
@@ -129,20 +125,17 @@ const unbanCommand = async commandMessage => {
 	} else if (memberId === "many") {
 		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + unbanHelpMessage);
 	} else {
-		let bans = readInfoData("bans");
-		let timezoneOffset = readInfoData("timezoneOffset");
-		let unbanDate = addHours(commandMessage.createdAt, timezoneOffset);
-		let correspondingBanIndex = bans.findIndex(ban => {
-			return ban.memberId === memberId && (ban.expirationDate === "" || parseDate(ban.expirationDate) > unbanDate);
-		});
-		if (correspondingBanIndex === -1) {
-			sendMessageToChannel(commandMessage.channel, ":x: Erreur : le membre n'est pas banni.\n\n");
-		} else {
+		let unbanDate = addHours(commandMessage.createdAt, readInfoData("timezoneOffset"));
+		let activeBan = getActiveBan(memberId, unbanDate);
+		if (activeBan) {
 			unbanMember(memberId, commandMessage.guild.members); // unban member
-			bans[correspondingBanIndex].expirationDate = getReadableDate(unbanDate); // end the ban
+			let bans = readInfoData("bans");
+			bans[activeBan.banIndex].expirationDate = getReadableDate(unbanDate); // end the ban
 			writeInfoData(bans, "bans"); // save modification
 			await sendMessageToChannel(commandMessage.channel,
-				buildMemberUnbannedFrenchMessage(memberId, bans[correspondingBanIndex].id));
+				buildMemberUnbannedFrenchMessage(memberId, activeBan.ban.id));
+		} else {
+			sendMessageToChannel(commandMessage.channel, ":x: Erreur : le membre n'est pas banni.\n\n");
 		}
 	}
 };
@@ -214,6 +207,40 @@ const getReasonAndExpirationDate = argumentsString => {
 	}
 };
 
+const handleBanAdd = user => {
+	let correspondingBan = getActiveBan(user.id, addHours(new Date(), readInfoData("timezoneOffset")));
+	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, correspondingBan ? correspondingBan.ban.id : undefined, user.avatarURL(), "ban"), user.client);
+};
+
+const handleBanRemove = user => {
+	let correspondingBan = getLastFinishedBan(user.id, addHours(new Date(), readInfoData("timezoneOffset")));
+	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, correspondingBan ? correspondingBan.id : undefined, user.avatarURL(), "unban"), user.client);
+};
+
+const getActiveBan = (userId, date) => {
+	let bans = readInfoData("bans");
+	let correspondingBanIndex = bans.findIndex(ban => {
+		return ban.memberId === userId && (ban.expirationDate === "" || parseDate(ban.expirationDate) > date);
+	});
+	if (correspondingBanIndex === -1) {
+		return undefined;
+	} else {
+		return {
+			banIndex: correspondingBanIndex,
+			ban: bans[correspondingBanIndex]
+		}
+	}
+};
+
+const getLastFinishedBan = (userId, date) => {
+	let matchingBans = readInfoData("bans").filter(ban => ban.expirationDate !== "" && parseDate(ban.expirationDate) < date);
+	if (matchingBans.length) {
+		return matchingBans.sort((firstBan, secondBan) => parseDate(secondBan.expirationDate) - parseDate(firstBan.expirationDate))[0];
+	} else {
+		return undefined;
+	}
+} ;
+
 const reloadTempBans = PoliceBot => {
 	let cubeursFrancophonesServer = PoliceBot.guilds.cache.get("329175643877015553");
 	let bansGroupedByMemberId = groupElementsByMemberId(readInfoData("bans"));
@@ -251,4 +278,4 @@ const reloadTempBans = PoliceBot => {
 	}
 };
 
-module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, reloadTempBans};
+module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, handleBanAdd, handleBanRemove, reloadTempBans};
