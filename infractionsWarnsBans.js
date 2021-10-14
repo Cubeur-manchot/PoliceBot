@@ -4,8 +4,10 @@ const {getAvailableId, readInfoData, addInfoData, writeInfoData, removePoliceBot
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, addHours} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
-const {buildElementDetailsEmbed, buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
-	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage, buildMemberBannedFrenchMessage} = require("./messageBuilder.js");
+const {buildElementDetailsEmbed,
+	buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
+	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage,
+	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
 const addInfractionCommand = async commandMessage => {
@@ -119,23 +121,28 @@ const addBanCommand = async commandMessage => {
 	}
 };
 
-const unbanCommand = commandMessage => {
+const unbanCommand = async commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&unban */i, "");
 	let {memberId} = getMemberIdAndRestOfCommand(commandArguments, commandMessage.client.memberList); // parse memberId
 	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : unspecified or unrecognized member.\n\n" + unbanHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + unbanHelpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Error : many matching members.\n\n" + unbanHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + unbanHelpMessage);
 	} else {
-		let policeBotBanData = readInfoData("bans");
-		let banIndex = policeBotBanData.findIndex(ban => ban.memberId === memberId); // find the ban corresponding to the memberId
-		if (banIndex === -1) {
-			sendMessageToChannel(commandMessage.channel, ":x: Error : member is not banned.\n\n" + unbanHelpMessage);
+		let bans = readInfoData("bans");
+		let timezoneOffset = readInfoData("timezoneOffset");
+		let unbanDate = addHours(commandMessage.createdAt, timezoneOffset);
+		let correspondingBanIndex = bans.findIndex(ban => {
+			return ban.memberId === memberId && (ban.expirationDate === "" || parseDate(ban.expirationDate) > unbanDate);
+		});
+		if (correspondingBanIndex === -1) {
+			sendMessageToChannel(commandMessage.channel, ":x: Erreur : le membre n'est pas banni.\n\n");
 		} else {
 			unbanMember(memberId, commandMessage.guild.members); // unban member
-			policeBotBanData[banIndex].expirationDate = getReadableDate(new Date()); // end the ban
-			writeInfoData(policeBotBanData, "bans"); // save modification
-			sendEmbedLog(buildElementDetailsEmbed(policeBotBanData[banIndex]), commandMessage.client);
+			bans[correspondingBanIndex].expirationDate = getReadableDate(unbanDate); // end the ban
+			writeInfoData(bans, "bans"); // save modification
+			await sendMessageToChannel(commandMessage.channel,
+				buildMemberUnbannedFrenchMessage(memberId, bans[correspondingBanIndex].id));
 		}
 	}
 };

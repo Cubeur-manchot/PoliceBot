@@ -249,11 +249,15 @@ const buildMemberBannedFrenchMessage = (memberId, banId, reason) => {
 	return `<@!${memberId}> a été banni (${banId}).\nMotif : ${reason}`;
 };
 
+const buildMemberUnbannedFrenchMessage = (memberId, banId) => {
+	return `<@!${memberId}> a été débanni (${banId}).`;
+};
+
 const buildMemberBanOrUnbanLogEmbed = (userId, avatarUrl, banId, banOrUnban) => {
 	return {
 		color: embedColorFromType["bans"],
 		title: `__Member ${banOrUnban}ned__`,
-		description: `${banOrUnban === "ban" ? ":smiling_imp:" : ":eyes:"} User <@!${userId}> was ${banOrUnban}ed${banId ? ` (${banId})` : ""}.`,
+		description: `${banOrUnban === "ban" ? ":smiling_imp:" : ":eyes:"} User <@!${userId}> was ${banOrUnban}ned${banId ? ` (${banId})` : ""}.`,
 		thumbnail: {
 			url: avatarUrl
 		},
@@ -342,7 +346,7 @@ module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
 	buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
 	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage,
-	buildMemberBannedFrenchMessage, buildMemberBanOrUnbanLogEmbed,
+	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage, buildMemberBanOrUnbanLogEmbed,
 	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed,
 	buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed
 };

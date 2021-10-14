@@ -134,7 +134,7 @@ const handlePoliceBotCommand = async message => {
 	} else if (messageContentLowerCase === "&unban") { // help for &unban
 		sendMessageToChannel(message.channel, helpMessages.unbanHelpMessage);
 	} else if (messageContentLowerCase.startsWith("&unban ")) { // &unban command
-		unbanCommand(message);
+		await unbanCommand(message);
 	} else {
 		sendMessageToChannel(message.channel, "Désolé mais pour le moment je ne connais pas cette commande. "
 			+ "Si tu trouves que je n'apprends pas assez vite, jette des :tomato: à <@!217709941081767937>");
