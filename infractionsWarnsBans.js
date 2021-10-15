@@ -239,7 +239,7 @@ const getLastFinishedBan = (userId, date) => {
 	} else {
 		return undefined;
 	}
-} ;
+};
 
 const reloadTempBans = PoliceBot => {
 	let cubeursFrancophonesServer = PoliceBot.guilds.cache.get("329175643877015553");

@@ -24,7 +24,7 @@ const buildElementListEmbed = infoType => {
 	let elements = readInfoData(infoType);
 	let descriptionChunks = [];
 	if (elements.length) {
-		descriptionChunks.push(`Here is the list of all ${infoType} :\n`);
+		descriptionChunks.push(`Voici la liste de tou${infoType === "infractions" || infoType === "discussions" ? "te" : ""}s les ${infoType} :\n`);
 		if (infoType === "discussions") { // discussions : display simple list
 			for (let savedDiscussion of elements) {
 				descriptionChunks.push("\n`"
@@ -39,7 +39,7 @@ const buildElementListEmbed = infoType => {
 			for (let memberId in elementsGroupedByMemberId) {
 				let memberElements = elementsGroupedByMemberId[memberId];
 				descriptionChunks.push(`\n<@${memberId}> (${memberElements.length}) :\n`);
-				descriptionChunks.push("`Id  ` `Date      ` `" + (infoType === "infractions" ? "Type  " : "Reason") + "        `");
+				descriptionChunks.push("`Id  ` `Date      ` `" + (infoType === "infractions" ? "Type " : "Motif") + "         `");
 				for (let element of memberElements) {
 					descriptionChunks.push("\n`" + element.id + (element.id.length === 3 ? " " : "")
 						+ "` `" + element.date.substring(0, 10) + "` `");
@@ -54,7 +54,7 @@ const buildElementListEmbed = infoType => {
 			}
 		}
 	} else {
-		descriptionChunks.push(`No current ${infoType.slice(0, -1)} ${emojiWhenNoElement[infoType]}`);
+		descriptionChunks.push(`Aucun${infoType === "infractions" || infoType === "discussions" ? "e" : ""} ${infoType.slice(0, -1)} ${emojiWhenNoElement[infoType]}`);
 	}
 	let embedList = buildEmbedsFromDescriptionChunks(descriptionChunks);
 	for (let embed of embedList) {
