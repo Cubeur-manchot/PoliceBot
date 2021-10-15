@@ -46,14 +46,8 @@ const addWarnCommand = async commandMessage => {
 };
 
 const addBanCommand = async commandMessage => {
-	let commandArguments = commandMessage.content.replace(/^&(add)?ban */i, "");
-	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
-	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList);
-	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + addBanHelpMessage);
-	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + addBanHelpMessage);
-	} else {
+	let {parseCheck, memberId, commentary, restOfCommand} = parseAndCheckMemberIdAndCommentary(commandMessage, "ban");
+	if (parseCheck) {
 		let {reason, expirationDate} = getReasonAndExpirationDate(restOfCommand);
 		if (reason === "") {
 			sendMessageToChannel(commandMessage.channel, ":x: Erreur : motif non spécifié.\n\n" + addBanHelpMessage);
@@ -123,7 +117,7 @@ const unbanCommand = async commandMessage => {
 };
 
 let parseAndCheckMemberIdAndCommentary = (commandMessage, infoType) => {
-	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandMessage.content.replace(new RegExp(`^&(add)${infoType} *`,"i"), ""));
+	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandMessage.content.replace(new RegExp(`^&(add)?${infoType} *`,"i"), ""));
 	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList);
 	let parseCheck = false;
 	if (!memberId) {
