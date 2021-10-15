@@ -229,6 +229,16 @@ const buildInviteLinkPrivateMessage = invitationsNotInWhiteListStringified => {
 		+ invitationsNotInWhiteListStringified.join(", ");
 };
 
+const buildMemberInfractionOrWarnedMessage = (language, infoType, memberId, id, typeOrReason) => {
+	return `<@${memberId}> `
+		+ (infoType === "infraction"
+			? (language === "french" ? "a commis une infraction" : "has committed an infraction")
+			: (language === "french" ? "a reçu un avertissement" : "has been warned"))
+		+ ` (${id}).\n`
+		+ (infoType === "infraction" ? "Type" : (language === "french" ? "Motif" : "Reason"))
+		+ ` : ${typeOrReason}`;
+};
+
 const buildMemberInfractionFrenchMessage = (memberId, infractionId, type) => {
 	return `<@!${memberId}> a commis une infraction (${infractionId}).\nType : ${type}`;
 };
@@ -344,6 +354,7 @@ module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
+	buildMemberInfractionOrWarnedMessage,
 	buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
 	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage,
 	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage, buildMemberBanOrUnbanLogEmbed,

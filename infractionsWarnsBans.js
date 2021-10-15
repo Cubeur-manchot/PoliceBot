@@ -4,69 +4,48 @@ const {getAvailableId, readInfoData, addInfoData, writeInfoData, removePoliceBot
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, addHours} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
-const {buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
-	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage,
+const {buildMemberInfractionOrWarnedMessage,
 	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage, buildMemberBanOrUnbanLogEmbed} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
-const addInfractionCommand = async commandMessage => {
-	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandMessage.content.replace(/^&(add)?infraction */i, ""));
-	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId and infractionType
-	let type = restOfCommand.trim();
+const addInfractionOrWarnCommand = async (commandMessage, infoType) => {
+	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandMessage.content.replace(new RegExp(`^&(add)${infoType} *`,"i"), ""));
+	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList);
+	let helpMessage = infoType === "infraction" ? addInfractionHelpMessage : addWarnHelpMessage;
 	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + helpMessage);
 	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + addInfractionHelpMessage);
-	} else if (type === "") {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : type non spécifié.\n\n" + addInfractionHelpMessage);
+		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + helpMessage);
+	} else if (restOfCommand === "") {
+		sendMessageToChannel(commandMessage.channel, `:x: Erreur : ${infoType === "infraction" ? "type" : "motif"} non spécifié.\n\n` + helpMessage);
 	} else {
 		let timezoneOffset = readInfoData("timezoneOffset");
-		let infractionId = getAvailableId("infractions");
-		let infraction = {
-			id: infractionId,
+		let id = getAvailableId(infoType + "s");
+		let infractionOrWarn = {
+			id: id,
 			memberId: memberId,
 			date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
-			type: type,
 			commentary: commentary
 		};
-		addInfoData(infraction, "infractions");
-		await sendMessageToChannel(commandMessage.channel,
-			buildMemberInfractionFrenchMessage(memberId, infractionId, type));
-		await sendMessageLog(buildMemberInfractionMessage(memberId, infractionId, type), commandMessage.client);
+		infractionOrWarn[infoType === "infraction" ? "type" : "reason"] = restOfCommand;
+		addInfoData(infractionOrWarn, infoType + "s");
+		await sendMessageToChannel(commandMessage.channel, buildMemberInfractionOrWarnedMessage("french", infoType, memberId, id, restOfCommand));
+		await sendMessageLog(buildMemberInfractionOrWarnedMessage("english", infoType, memberId, id, restOfCommand), commandMessage.client);
 	}
 };
 
+const addInfractionCommand = async commandMessage => {
+	await addInfractionOrWarnCommand(commandMessage, "infraction");
+};
+
 const addWarnCommand = async commandMessage => {
-	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandMessage.content.replace(/^&(add)?warn */i, ""));
-	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId
-	let reason = restOfCommand.trim();
-	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + addWarnHelpMessage);
-	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + addWarnHelpMessage);
-	} else if (reason === "") {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : raison non spécifiée.\n\n" + addWarnHelpMessage);
-	} else {
-		let timezoneOffset = readInfoData("timezoneOffset");
-		let warnId = getAvailableId("warns");
-		let warn = {
-			id: warnId,
-			memberId: memberId,
-			date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
-			reason: reason,
-			commentary: commentary
-		};
-		addInfoData(warn, "warns");
-		await sendMessageToChannel(commandMessage.channel,
-			buildMemberWarnedFrenchMessage(memberId, warnId, reason));
-		await sendMessageLog(buildMemberWarnedMessage(memberId, warnId, reason), commandMessage.client);
-	}
+	await addInfractionOrWarnCommand(commandMessage, "warn");
 };
 
 const addBanCommand = async commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&(add)?ban */i, "");
 	let {beginCommand, commentary} = getCommentaryAndRestOfCommand(commandArguments);
-	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList); // parse memberId
+	let {memberId, restOfCommand} = getMemberIdAndRestOfCommand(beginCommand, commandMessage.client.memberList);
 	if (!memberId) {
 		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + addBanHelpMessage);
 	} else if (memberId === "many") {
@@ -74,7 +53,7 @@ const addBanCommand = async commandMessage => {
 	} else {
 		let {reason, expirationDate} = getReasonAndExpirationDate(restOfCommand);
 		if (reason === "") {
-			sendMessageToChannel(commandMessage.channel, ":x: Erreur : raison du ban non spécifiée.\n\n" + addBanHelpMessage);
+			sendMessageToChannel(commandMessage.channel, ":x: Erreur : motif non spécifié.\n\n" + addBanHelpMessage);
 		} else {
 			let member = await commandMessage.guild.members.fetch(memberId).catch(() => {});
 			let timezoneOffset = readInfoData("timezoneOffset");
