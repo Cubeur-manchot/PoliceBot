@@ -94,13 +94,8 @@ const addBanCommand = async commandMessage => {
 };
 
 const unbanCommand = async commandMessage => {
-	let commandArguments = commandMessage.content.replace(/^&unban */i, "");
-	let {memberId} = getMemberIdAndRestOfCommand(commandArguments, commandMessage.client.memberList); // parse memberId
-	if (!memberId) {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : membre non spécifié ou non reconnu.\n\n" + unbanHelpMessage);
-	} else if (memberId === "many") {
-		sendMessageToChannel(commandMessage.channel, ":x: Erreur : plusieurs membres correspondant.\n\n" + unbanHelpMessage);
-	} else {
+	let {parseCheck, memberId} = parseAndCheckMemberIdAndCommentary(commandMessage, "unban");
+	if (parseCheck) {
 		let unbanDate = addHours(commandMessage.createdAt, readInfoData("timezoneOffset"));
 		let activeBan = getActiveBan(memberId, unbanDate);
 		if (activeBan) {
