@@ -291,7 +291,8 @@ const buildAvatarChangeLogEmbed = (userId, oldAvatarUrl, newAvatarUrl) => {
 	return {
 		color: embedColorFromType["avatarChange"],
 		title: "__Avatar changed__",
-		description: `<@!${userId}>'s avatar was : \n\n\nIt's now :`,
+		description: `<@!${userId}>` + (oldAvatarUrl ? "'s avatar was :" : " had no avatar.")
+			+ "\n\n\n" + (newAvatarUrl ? "New avatar is :" : "Avatar has been removed."),
 		thumbnail: {
 			url: oldAvatarUrl
 		},
