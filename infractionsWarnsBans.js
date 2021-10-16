@@ -53,39 +53,37 @@ const addBanCommand = async commandMessage => {
 			sendMessageToChannel(commandMessage.channel, ":x: Erreur : motif non spécifié.\n\n" + addBanHelpMessage);
 		} else {
 			let member = await commandMessage.guild.members.fetch(memberId).catch(() => {});
-			let timezoneOffset = readInfoData("timezoneOffset");
-			let banDate = addHours(commandMessage.createdAt, timezoneOffset);
-			if (!member) { // user is not on the server anymore
-				if (getActiveBan(memberId, banDate)) {
-					sendMessageToChannel(commandMessage.channel, ":x: Erreur : ce membre est déjà banni.");
-				} else {
-					// todo also ban in this case
-					sendMessageToChannel(commandMessage.channel, ":x: Erreur : impossible de bannir ce membre.");
-				}
-			} else if (!member.bannable) {
+			if (member && !member.bannable) {
 				sendMessageToChannel(commandMessage.channel, ":x: Erreur : je n'ai pas l'autorisation de bannir ce membre.");
 			} else {
-				let banId = getAvailableId("bans");
-				let ban = {
-					id: banId,
-					memberId: memberId,
-					date: getReadableDate(banDate),
-					expirationDate: expirationDate,
-					reason: reason,
-					commentary: commentary
-				};
-				addInfoData(ban, "bans");
-				let banStatus = await banMember(memberId, commandMessage.guild.members);
-				if (banStatus === "Error") {
-					removePoliceBotData([banId]);
-					sendMessageToChannel(commandMessage.channel, ":x: Erreur lors du bannissement du membre.");
+				let timezoneOffset = readInfoData("timezoneOffset");
+				let banDate = addHours(commandMessage.createdAt, timezoneOffset);
+				let activeBan = getActiveBan(memberId, banDate);
+				if (activeBan) {
+					sendMessageToChannel(commandMessage.channel, `:x: Erreur : ce membre est déjà banni (${activeBan.ban.id}).`);
 				} else {
-					await sendMessageToChannel(commandMessage.channel,
-						buildMemberBannedFrenchMessage(memberId, banId, reason));
-					if (expirationDate !== "") { // temporary ban
-						setTimeout(() => {
-							unbanMember(memberId, commandMessage.guild.members);
-						}, parseDate(expirationDate).getTime() - banDate.getTime());
+					let banId = getAvailableId("bans");
+					let ban = {
+						id: banId,
+						memberId: memberId,
+						date: getReadableDate(banDate),
+						expirationDate: expirationDate,
+						reason: reason,
+						commentary: commentary
+					};
+					addInfoData(ban, "bans");
+					let banStatus = await banMember(memberId, commandMessage.guild.members);
+					if (banStatus === "Error") {
+						removePoliceBotData([banId]);
+						sendMessageToChannel(commandMessage.channel, ":x: Erreur lors du bannissement du membre.");
+					} else {
+						await sendMessageToChannel(commandMessage.channel,
+							buildMemberBannedFrenchMessage(memberId, banId, reason));
+						if (expirationDate !== "") { // temporary ban
+							setTimeout(() => {
+								unbanMember(memberId, commandMessage.guild.members);
+							}, parseDate(expirationDate).getTime() - banDate.getTime());
+						}
 					}
 				}
 			}
