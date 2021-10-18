@@ -4,6 +4,7 @@ const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
 const {buildElementDetailsEmbed, buildDiscussionDetailsEmbeds} = require("./messageBuilder.js");
 const {readPoliceBotData, removePoliceBotData, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {unbanMember} = require("./members.js");
+const {getCurrentDate} = require("./date.js");
 const {detailsHelpMessage, removeHelpMessage} = require("./helpMessages.js");
 
 const removeCommand = async message => {
@@ -87,7 +88,6 @@ const logRemovedElements = async (commandMessage, successfullyRemovedElements, f
 const detailsCommand = commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&details */i, "").split(" ").filter(word => word !== "");
 	let unknownElements = [];
-	let timezoneOffset = readInfoData("timezoneOffset");
 	for (let word of commandArguments) {
 		if (/^[iwbd]#[0-9]+$/.test(word)) { // match id format of infraction, warn, ban or discussion
 			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
@@ -98,7 +98,7 @@ const detailsCommand = commandMessage => {
 						sendEmbedToChannel(commandMessage.channel, embed);
 					}
 				} else {
-					sendEmbedToChannel(commandMessage.channel, buildElementDetailsEmbed(matchingElement, timezoneOffset));
+					sendEmbedToChannel(commandMessage.channel, buildElementDetailsEmbed(matchingElement));
 				}
 			} else { // unknown element
 				unknownElements.push(word);

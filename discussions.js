@@ -3,7 +3,7 @@
 const {sendMessageToChannel, sendEmbedToChannel, sendMessageLog, deleteMessage} = require("./messages.js");
 const {getAvailableId, readInfoData, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
-const {getReadableDate, addHours} = require("./date.js");
+const {getReadableDate, convertDateUtcToLocal} = require("./date.js");
 const {buildDiscussionDetailsEmbeds, buildDiscussionPurgedOrSavedOrMovedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
 
 const helpMessages = {
@@ -25,8 +25,7 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 			`:x: Error : please specify the number of messages to ${purgeOrSaveOrMove}.\n\n${helpMessages[purgeOrSaveOrMove]}`);
 		return;
 	}
-	let timezoneOffset = readInfoData("timezoneOffset");
-	let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSaveOrMove, commandMessage);
+	let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSaveOrMove);
 	if (!messagesId) {
 		return;
 	}
@@ -42,7 +41,7 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 		}
 	}
 	let destinationChannel = commandMessage.guild.channels.cache.find(channel => channel.id === destinationChannelId);
-	let discussion = buildDiscussion(commandMessage, purgeOrSaveOrMove, messagesId, timezoneOffset);
+	let discussion = buildDiscussion(commandMessage, purgeOrSaveOrMove, messagesId);
 	addInfoData(discussion, "discussions");
 	if (purgeOrSaveOrMove === "move") {
 		// embed in destination channel
@@ -58,13 +57,13 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 		commandMessage.channel.id, destinationChannelId), commandMessage.client);
 };
 
-const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId, timezoneOffset) => {
+const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId) => {
 	let messages = [];
 	for (let messageId of messagesId) {
 		let message = commandMessage.channel.messages.cache.get(messageId);
 		messages.push({
 			authorId: message.author.id,
-			date: getReadableDate(addHours(message.createdAt, timezoneOffset)),
+			date: getReadableDate(convertDateUtcToLocal(message.createdAt)),
 			content: message.content
 		});
 		if (purgeOrSaveOrMove !== "save") { // delete the message in case of purge or move
@@ -73,14 +72,14 @@ const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId, timezone
 	}
 	return {
 		id: getAvailableId("discussions"),
-		savingDate: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
+		savingDate: getReadableDate(convertDateUtcToLocal(commandMessage.createdAt)),
 		action: purgeOrSaveOrMove,
 		channelId: commandMessage.channel.id,
 		messages: messages
 	};
 };
 
-const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove, timezoneOffset) => {
+const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove) => {
 	if (/^\d+$/.test(commandArgument)) { // argument is a number of messages
 		let numberOfMessages = parseInt(commandArgument);
 		if (numberOfMessages < 1) {
@@ -95,7 +94,8 @@ const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove, timezon
 			+ helpMessages[purgeOrSaveOrMove]);
 		} else {
 			let currentTimeStamp = new Date();
-			let timeStamp = new Date(currentTimeStamp.getFullYear(),
+			let timezoneOffset = readInfoData("timezoneOffset");
+			let timeStamp = new Date(currentTimeStamp.getFullYear(), // todo parse in date.js
 				parseInt(commandArgument.substr(3, 2)) - 1,
 				parseInt(commandArgument.substr(0, 2)),
 				- timezoneOffset);
@@ -111,7 +111,7 @@ const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove, timezon
 		} else {
 			let currentTimeStamp = new Date();
 			let timezoneOffset = readInfoData("timezoneOffset");
-			let timeStamp = new Date(currentTimeStamp.getFullYear(), currentTimeStamp.getMonth(), currentTimeStamp.getDate(),
+			let timeStamp = new Date(currentTimeStamp.getFullYear(), currentTimeStamp.getMonth(), currentTimeStamp.getDate(), // todo parse in date.js
 				parseInt(commandArgument.substr(0, 2)) - timezoneOffset,
 				parseInt(commandArgument.substr(3, 2)));
 			if (timeStamp > currentTimeStamp) { // if date is in the future, force it to be in the past

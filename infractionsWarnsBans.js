@@ -2,7 +2,7 @@
 
 const {getAvailableId, readInfoData, addInfoData, writeInfoData, removePoliceBotData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
-const {getReadableDate, parseDate, addHours} = require("./date.js");
+const {getReadableDate, parseDate, convertDateUtcToLocal, getCurrentDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
 const {buildMemberInfractionOrWarnedMessage,
 	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage, buildMemberBanOrUnbanLogEmbed} = require("./messageBuilder.js");
@@ -21,12 +21,11 @@ const addInfractionOrWarnCommand = async (commandMessage, infoType) => {
 		if (restOfCommand === "") {
 			sendMessageToChannel(commandMessage.channel, `:x: Erreur : ${infoType === "infraction" ? "type" : "motif"} non spécifié.\n\n` + helpMessages[infoType]);
 		} else {
-			let timezoneOffset = readInfoData("timezoneOffset");
 			let id = getAvailableId(infoType + "s");
 			let infractionOrWarn = {
 				id: id,
 				memberId: memberId,
-				date: getReadableDate(addHours(commandMessage.createdAt, timezoneOffset)),
+				date: getReadableDate(convertDateUtcToLocal(commandMessage.createdAt)),
 				commentary: commentary
 			};
 			infractionOrWarn[infoType === "infraction" ? "type" : "reason"] = restOfCommand;
@@ -56,8 +55,7 @@ const addBanCommand = async commandMessage => {
 			if (member && !member.bannable) {
 				sendMessageToChannel(commandMessage.channel, ":x: Erreur : je n'ai pas l'autorisation de bannir ce membre.");
 			} else {
-				let timezoneOffset = readInfoData("timezoneOffset");
-				let banDate = addHours(commandMessage.createdAt, timezoneOffset);
+				let banDate = convertDateUtcToLocal(commandMessage.createdAt);
 				let activeBan = getActiveBan(memberId, banDate);
 				if (activeBan) {
 					sendMessageToChannel(commandMessage.channel, `:x: Erreur : ce membre est déjà banni (${activeBan.ban.id}).`);
@@ -94,7 +92,7 @@ const addBanCommand = async commandMessage => {
 const unbanCommand = async commandMessage => {
 	let {parseCheck, memberId} = parseAndCheckMemberIdAndCommentary(commandMessage, "unban");
 	if (parseCheck) {
-		let unbanDate = addHours(commandMessage.createdAt, readInfoData("timezoneOffset"));
+		let unbanDate = convertDateUtcToLocal(commandMessage.createdAt);
 		let activeBan = getActiveBan(memberId, unbanDate);
 		if (activeBan) {
 			unbanMember(memberId, commandMessage.guild.members); // unban member
@@ -191,12 +189,12 @@ const getReasonAndExpirationDate = argumentsString => {
 };
 
 const handleBanAdd = user => {
-	let correspondingBan = getActiveBan(user.id, addHours(new Date(), readInfoData("timezoneOffset")));
+	let correspondingBan = getActiveBan(user.id, getCurrentDate());
 	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, correspondingBan ? correspondingBan.ban.id : undefined, user.avatarURL(), "ban"), user.client);
 };
 
 const handleBanRemove = user => {
-	let correspondingBan = getLastFinishedBan(user.id, addHours(new Date(), readInfoData("timezoneOffset")));
+	let correspondingBan = getLastFinishedBan(user.id, getCurrentDate());
 	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, correspondingBan ? correspondingBan.id : undefined, user.avatarURL(), "unban"), user.client);
 };
 
@@ -241,8 +239,7 @@ const reloadTempBans = PoliceBot => {
 		}
 	}
 	let relaunchedTempBansCount = 0;
-	let timezoneOffset = readInfoData("timezoneOffset");
-	let currentDate = addHours(new Date(), timezoneOffset);
+	let currentDate = getCurrentDate();
 	for (let memberId in bansExpirationDate) {
 		let expirationDate = bansExpirationDate[memberId];
 		if (expirationDate) { // check if date is not undefined

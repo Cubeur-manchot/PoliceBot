@@ -1,5 +1,7 @@
 "use strict";
 
+const {readInfoData} = require("./dataManipulation.js");
+
 const getReadableDate = date => {
 	return (date.getDate() < 10 ? "0" : "") + date.getDate()
 		+ "/" + (date.getMonth() < 9 ? "0" : "") + (date.getMonth() + 1)
@@ -104,8 +106,17 @@ const getReadableDiffDateOneLevel = (firstDate, secondDate) => {
 	}
 };
 
+const getCurrentDate = () => {
+	return convertDateUtcToLocal(new Date());
+};
+
+const convertDateUtcToLocal = date => {
+	let timezoneOffset = readInfoData("timezoneOffset");
+	return addHours(date, timezoneOffset);
+};
+
 const addHours = (date, hours) => {
 	return new Date(date.setHours(date.getHours() + hours));
 };
 
-module.exports = {getReadableDate, getReadableDiffDate, parseDate, addHours};
+module.exports = {getReadableDate, getReadableDiffDate, parseDate, getCurrentDate, convertDateUtcToLocal};

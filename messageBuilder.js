@@ -1,7 +1,7 @@
 "use strict";
 
 const {groupElementsByMemberId, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
-const {parseDate, getReadableDiffDate, addHours} = require("./date.js");
+const {parseDate, getReadableDiffDate, getCurrentDate} = require("./date.js");
 
 const embedColorFromType = {
 	"infractions": "#cccc00",
@@ -87,10 +87,11 @@ const buildEmbedsFromDescriptionChunks = descriptionChunks => {
 	}
 };
 
-const buildElementDetailsEmbed = (element, timezoneOffset) => {
+const buildElementDetailsEmbed = (element) => {
 	let infoType = infoTypeFromIdFirstLetter[element.id[0]];
 	let description = `**Membre** : <@${element.memberId}>`; // member
-	let diffDate = getReadableDiffDate(addHours(new Date(), timezoneOffset), parseDate(element.date));
+	let currentDate = getCurrentDate();
+	let diffDate = getReadableDiffDate(currentDate, parseDate(element.date));
 	description += `\n**Date** : ${element.date} `;
 	if (diffDate === "égal") {
 		description += "(à l'instant)";
@@ -105,7 +106,6 @@ const buildElementDetailsEmbed = (element, timezoneOffset) => {
 			if (element.expirationDate === "") {
 				description += "Aucune (ban définitif)";
 			} else {
-				let currentDate = addHours(new Date(), timezoneOffset);
 				let expirationDate = parseDate(element.expirationDate);
 				description += element.expirationDate;
 				if (currentDate < expirationDate) {
