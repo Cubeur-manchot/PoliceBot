@@ -3,6 +3,7 @@
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
 const {buildElementDetailsEmbed, buildDiscussionDetailsEmbeds} = require("./messageBuilder.js");
 const {readPoliceBotData, removePoliceBotData, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {banIsActive} = require("./infractionsWarnsBans.js");
 const {unbanMember} = require("./members.js");
 const {getCurrentDate} = require("./date.js");
 const {detailsHelpMessage, removeHelpMessage} = require("./helpMessages.js");
@@ -25,8 +26,10 @@ const removeCommand = async message => {
 				failedElements.notFound.push(elementId);
 			} else {
 				if (elementType === "bans") {
-					let memberId = policeBotData["bans"][indexToRemove].memberId;
-					unbanMember(memberId, message.guild.members); // unban the member
+					let ban = policeBotData["bans"][indexToRemove];
+					if (banIsActive(ban, getCurrentDate())) {
+						unbanMember(ban.memberId, message.guild.members); // unban the member
+					}
 				}
 				elementsToBeRemoved.push(elementId);
 				successfullyRemovedElements[elementType].push(elementId);

@@ -201,7 +201,7 @@ const handleBanRemove = user => {
 const getActiveBan = (userId, date) => {
 	let bans = readInfoData("bans");
 	let correspondingBanIndex = bans.findIndex(ban => {
-		return ban.memberId === userId && (ban.expirationDate === "" || parseDate(ban.expirationDate) > date);
+		return ban.memberId === userId && banIsActive(ban, date);
 	});
 	if (correspondingBanIndex === -1) {
 		return undefined;
@@ -213,8 +213,12 @@ const getActiveBan = (userId, date) => {
 	}
 };
 
+const banIsActive = (ban, date) => {
+	return ban.expirationDate === "" || parseDate(ban.expirationDate) > date;
+};
+
 const getLastFinishedBan = (userId, date) => {
-	let matchingBans = readInfoData("bans").filter(ban => ban.expirationDate !== "" && parseDate(ban.expirationDate) < date);
+	let matchingBans = readInfoData("bans").filter(ban => !banIsActive(ban, date));
 	if (matchingBans.length) {
 		return matchingBans.sort((firstBan, secondBan) => parseDate(secondBan.expirationDate) - parseDate(firstBan.expirationDate))[0];
 	} else {
@@ -258,4 +262,4 @@ const reloadTempBans = PoliceBot => {
 	}
 };
 
-module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, handleBanAdd, handleBanRemove, reloadTempBans};
+module.exports = {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, handleBanAdd, handleBanRemove, reloadTempBans, banIsActive};
