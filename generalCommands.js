@@ -56,8 +56,8 @@ const logRemovedElements = async (commandMessage, successfullyRemovedElements, f
 	if (successfullyRemovedElements.bans.length) {
 		await sendMessageToChannel(commandMessage.channel,
 			(successfullyRemovedElements.bans.length === 1
-				? "Le ban suivant a été supprimé, et le membre a été débanni : "
-				: "Les bans suivants ont été supprimés, et les membres ont été débannis : ")
+				? "Le ban suivant a été supprimé, et le membre à débannir a été débanni : "
+				: "Les bans suivants ont été supprimés, et les membres à débannir ont été débannis : ")
 			+ successfullyRemovedElements.bans.join(", ")
 		);
 	}
