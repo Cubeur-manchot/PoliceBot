@@ -20,11 +20,6 @@ const moveCommand = commandMessage => purgeOrSaveOrMoveCommand(commandMessage, "
 
 const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 	let commandArguments = commandMessage.content.replace(/^&(purge|save|move) */i, "").split(" ").filter(word => word !== "");
-	if (commandArguments.length === 0) {
-		sendMessageToChannel(commandMessage.channel,
-			`:x: Error : please specify the number of messages to ${purgeOrSaveOrMove}.\n\n${helpMessages[purgeOrSaveOrMove]}`);
-		return;
-	}
 	let messagesId = getMessagesToTreat(commandArguments[0], commandMessage.channel, purgeOrSaveOrMove);
 	if (!messagesId) {
 		return;
