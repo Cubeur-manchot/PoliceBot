@@ -1,7 +1,7 @@
 "use strict";
 
 const {sendMessageToChannel, sendEmbedToChannel, sendMessageLog, deleteMessage} = require("./messages.js");
-const {getAvailableId, readInfoData, addInfoData} = require("./dataManipulation.js");
+const {getAvailableId, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate, convertDateUtcToLocal, getLastTimeStampFromHoursAndMinutes, getLastTimeStampFromMonthAndDay} = require("./date.js");
 const {buildDiscussionDetailsEmbeds, buildDiscussionPurgedOrSavedOrMovedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
