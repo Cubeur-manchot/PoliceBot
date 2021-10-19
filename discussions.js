@@ -3,7 +3,7 @@
 const {sendMessageToChannel, sendEmbedToChannel, sendMessageLog, deleteMessage} = require("./messages.js");
 const {getAvailableId, readInfoData, addInfoData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
-const {getReadableDate, convertDateUtcToLocal, getLastTimeStampFromHoursAndMinutes} = require("./date.js");
+const {getReadableDate, convertDateUtcToLocal, getLastTimeStampFromHoursAndMinutes, getLastTimeStampFromMonthAndDay} = require("./date.js");
 const {buildDiscussionDetailsEmbeds, buildDiscussionPurgedOrSavedOrMovedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
 
 const helpMessages = {
@@ -93,15 +93,7 @@ const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove) => {
 			sendMessageToChannel(channel, ":x: Error : please specify the date with the format dd/MM (example: 19/06).\n\n"
 			+ helpMessages[purgeOrSaveOrMove]);
 		} else {
-			let currentTimeStamp = new Date();
-			let timezoneOffset = readInfoData("timezoneOffset");
-			let timeStamp = new Date(currentTimeStamp.getFullYear(), // todo parse in date.js
-				parseInt(commandArgument.substr(3, 2)) - 1,
-				parseInt(commandArgument.substr(0, 2)),
-				- timezoneOffset);
-			if (timeStamp > currentTimeStamp) { // if date is in the future, force it to be in the past
-				timeStamp.setFullYear(timeStamp.getFullYear() - 1);
-			}
+			let timeStamp = getLastTimeStampFromMonthAndDay(commandArgument);
 			return getAllMessagesIdAfterTimestamp(timeStamp, channel);
 		}
 	} else if (commandArgument.includes(":")) { // look for a time of the form hh:mm

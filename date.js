@@ -124,7 +124,7 @@ const addHours = (date, hours) => {
 	return new Date(date.setHours(date.getHours() + hours));
 };
 
-const getLastTimeStampFromHoursAndMinutes = (hoursAndMinutes) => {
+const getLastTimeStampFromHoursAndMinutes = hoursAndMinutes => {
 	let currentDate = getCurrentDate();
 	let date = convertDateLocalToUtc(new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(),
 		parseInt(hoursAndMinutes.substr(0, 2)),
@@ -135,4 +135,16 @@ const getLastTimeStampFromHoursAndMinutes = (hoursAndMinutes) => {
 	return date;
 };
 
-module.exports = {getReadableDate, getReadableDiffDate, parseDate, getLastTimeStampFromHoursAndMinutes, getCurrentDate, convertDateUtcToLocal};
+const getLastTimeStampFromMonthAndDay = monthAndDay => {
+	let currentDate = getCurrentDate();
+	let date = convertDateLocalToUtc(new Date(currentDate.getFullYear(),
+		parseInt(monthAndDay.substr(3, 2)) - 1,
+		parseInt(monthAndDay.substr(0, 2))));
+	if (date > currentDate) { // if resulting date is in the future, force it to be in the past
+		date.setFullYear(date.getFullYear() - 1);
+	}
+	return date;
+};
+
+module.exports = {getReadableDate, getReadableDiffDate, parseDate,
+	getLastTimeStampFromHoursAndMinutes, getLastTimeStampFromMonthAndDay, getCurrentDate, convertDateUtcToLocal};
