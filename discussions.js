@@ -34,7 +34,7 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 		let destinationChannelMention = commandArguments[1];
 		if (!/<#\d+>/.test(destinationChannelMention)) {
 			sendMessageToChannel(commandMessage.channel,
-				":x: Error : please mention the destination channel (example : <#330348166799163393>).\n\n" + moveHelpMessage);
+				":x: Erreur : veuillez mentionner le salon de destination (exemple : <#330348166799163393>).\n\n" + moveHelpMessage);
 			return;
 		} else {
 			destinationChannelId = destinationChannelMention.substring(2, destinationChannelMention.length - 1);
@@ -90,7 +90,7 @@ const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove) => {
 		}
 	} else if (commandArgument.includes("/")) { // look for a date of the form dd/MM
 		if (!/^\d\d\/\d\d$/.test(commandArgument)) {
-			sendMessageToChannel(channel, ":x: Error : please specify the date with the format dd/MM (example: 19/06).\n\n"
+			sendMessageToChannel(channel, ":x: Erreur : veuillez spécifier la date au format jj/MM (exemple: 19/06).\n\n"
 			+ helpMessages[purgeOrSaveOrMove]);
 		} else {
 			let timeStamp = getLastTimeStampFromMonthAndDay(commandArgument);
@@ -98,7 +98,7 @@ const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove) => {
 		}
 	} else if (commandArgument.includes(":")) { // look for a time of the form hh:mm
 		if (!/^\d\d:\d\d$/.test(commandArgument)) {
-			sendMessageToChannel(channel, ":x: Error : please specify the time with the format hh:mm (example: 23:58).\n\n"
+			sendMessageToChannel(channel, ":x: Erreur : veuillez spécifier l'heure au format hh:mm (exemple: 23:58).\n\n"
 				+ helpMessages[purgeOrSaveOrMove]);
 		} else {
 			let timeStamp = getLastTimeStampFromHoursAndMinutes(commandArgument);
