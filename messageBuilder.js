@@ -135,10 +135,11 @@ const buildElementDetailsEmbed = (element) => {
 	};
 };
 
-const buildDiscussionPurgedOrSavedOrMovedFrenchMessage = (nbMessages, purgeOrSaveOrMove, destinationChannelId) => {
+const buildDiscussionPurgedOrSavedOrMovedFrenchMessage = (nbMessages, purgeOrSaveOrMove, destinationChannelId, discussionId) => {
 	return `${nbMessages} message${nbMessages > 1 ? "s ont" : " a"} été `
 		+ `${purgeOrSaveOrMove === "purge" ? "supprimé" : purgeOrSaveOrMove === "save" ? "sauvegardé" : "déplacé"}${nbMessages > 1 ? "s" : ""}`
-		+ (purgeOrSaveOrMove === "move" ? ` vers <#${destinationChannelId}>` : "");
+		+ (purgeOrSaveOrMove === "move" ? ` vers <#${destinationChannelId}>` : "")
+		+ ` (${discussionId})`;
 };
 
 const buildDiscussionPurgedOrSavedOrMovedMessage = (nbMessages, purgeOrSaveOrMove, discussionId, originChannelId, destinationChannelId) => {

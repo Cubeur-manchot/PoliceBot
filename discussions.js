@@ -51,7 +51,7 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 	}
 	// message in origin channel
 	await sendMessageToChannel(commandMessage.channel,
-		buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, purgeOrSaveOrMove, destinationChannelId));
+		buildDiscussionPurgedOrSavedOrMovedFrenchMessage(discussion.messages.length - 1, purgeOrSaveOrMove, destinationChannelId, discussion.id));
 	// message in log channel
 	await sendMessageLog(buildDiscussionPurgedOrSavedOrMovedMessage(discussion.messages.length - 1, purgeOrSaveOrMove, discussion.id,
 		commandMessage.channel.id, destinationChannelId), commandMessage.client);
