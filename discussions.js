@@ -12,6 +12,12 @@ const helpMessages = {
 	"move": moveHelpMessage
 };
 
+const translateToFrenchWithoutSuffix = {
+	"purge": "supprim",
+	"save": "sauvegard",
+	"move": "déplac"
+};
+
 const purgeCommand = commandMessage => purgeOrSaveOrMoveCommand(commandMessage, "purge");
 
 const saveCommand = commandMessage => purgeOrSaveOrMoveCommand(commandMessage, "save");
@@ -77,16 +83,17 @@ const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId) => {
 const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove) => {
 	if (/^\d+$/.test(commandArgument)) { // argument is a number of messages
 		let numberOfMessages = parseInt(commandArgument);
-		if (numberOfMessages < 1) {
+		if (numberOfMessages === 0) {
 			sendMessageToChannel(channel,
-				`:x: Error : the number of messages to ${purgeOrSaveOrMove} must be strictly positive.\n\n${helpMessages[purgeOrSaveOrMove]}`);
+				`:x: Erreur : le nombre de messages à ${translateToFrenchWithoutSuffix[purgeOrSaveOrMove]}er doit être strictement positif.\n\n`
+					+ helpMessages[purgeOrSaveOrMove]);
 		} else {
 			return getLastMessagesIdOfChannel(numberOfMessages + 1, channel);
 		}
 	} else if (commandArgument.includes("/")) { // look for a date of the form dd/MM
 		if (!/^\d\d\/\d\d$/.test(commandArgument)) {
 			sendMessageToChannel(channel, ":x: Erreur : veuillez spécifier la date au format jj/MM (exemple: 19/06).\n\n"
-			+ helpMessages[purgeOrSaveOrMove]);
+				+ helpMessages[purgeOrSaveOrMove]);
 		} else {
 			let timeStamp = getLastTimeStampFromMonthAndDay(commandArgument);
 			return getAllMessagesIdAfterTimestamp(timeStamp, channel);
@@ -100,8 +107,10 @@ const getMessagesToTreat = (commandArgument, channel, purgeOrSaveOrMove) => {
 			return getAllMessagesIdAfterTimestamp(timeStamp, channel);
 		}
 	} else { // look for a number of messages
-		sendMessageToChannel(channel, `:x: Error : please specify either the number of messages to ${purgeOrSaveOrMove}`
-			+ ` or the date from which the messages must be ${purgeOrSaveOrMove}d.\n\n${helpMessages[purgeOrSaveOrMove]}`);
+		sendMessageToChannel(channel,
+			`:x: Erreur : veuillez spécifier le nombre de messages à ${translateToFrenchWithoutSuffix[purgeOrSaveOrMove]}er,`
+			+ ` ou la date ou l'heure à partir de laquelle les messages doivent être ${translateToFrenchWithoutSuffix[purgeOrSaveOrMove]}és.\n\n`
+			+ helpMessages[purgeOrSaveOrMove]);
 	}
 	return undefined; // stands for all error cases
 };
