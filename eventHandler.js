@@ -2,7 +2,7 @@
 
 const {sendMessageToChannel, sendEmbedToChannel, sendEmbedSoftLog} = require("./messages.js");
 const {saveCommand, purgeCommand, moveCommand} = require("./discussions.js");
-const {readInfoData, writeInfoData} = require("./dataManipulation.js");
+const {readInfoData, writeInfoData, setupGoogleSheetsAPICredentials, loadData} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, handleBanAdd, handleBanRemove, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
@@ -17,6 +17,7 @@ const onReady = PoliceBot => {
 		.catch(console.error);
 	PoliceBot.memberList = readInfoData("members");
 	reloadTempBans(PoliceBot);
+	setupGoogleSheetsAPICredentials();
 };
 
 const onMessage = async message => {
@@ -89,6 +90,12 @@ const messageIsPoliceBotCommandMessage = message => {
 };
 
 const handlePoliceBotCommand = async message => {
+	if (message.content === "&test") {
+		let data = await loadData("test");
+		console.log("data :");
+		console.log(data);
+		return;
+	}
 	let messageContentLowerCase = message.content.toLowerCase();
 	if (messageContentLowerCase.startsWith("&help")) { // main &help command
 		sendMessageToChannel(message.channel, helpMessages.mainHelpMessage);

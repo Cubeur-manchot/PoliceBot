@@ -1,6 +1,36 @@
 "use strict";
 
 const fs = require("fs");
+const {google} = require("googleapis");
+
+const loadData = async tabName => {
+	let auth = new google.auth.GoogleAuth({
+		keyFile: "credentials.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets"
+	});
+	return (await google.sheets({version: "v4", auth: await auth.getClient()}).spreadsheets.values.get({
+		auth: auth,
+		spreadsheetId: "1Fn144WOdpBKbktlesaU9NfEFZIbjLpTin77SaOrLj6M",
+		range: tabName
+	})).data.values;
+};
+
+const setupGoogleSheetsAPICredentials = () => {
+	fs.writeFile("credentials.json", JSON.stringify({
+		type: process.env.CREDENTIALS_type,
+		project_id: process.env.CREDENTIALS_project_id,
+		private_key_id: process.env.CREDENTIALS_private_key_id,
+		private_key: process.env.CREDENTIALS_private_key,
+		client_email: process.env.CREDENTIALS_client_email,
+		client_id: process.env.CREDENTIALS_client_id,
+		auth_uri: process.env.CREDENTIALS_auth_uri,
+		token_uri: process.env.CREDENTIALS_token_uri,
+		auth_provider_x509_cert_url: process.env.CREDENTIALS_auth_provider_x509_cert_url,
+		client_x509_cert_url: process.env.CREDENTIALS_client_x509_cert_url
+	}), function (err) {
+		if (err) {throw err;} else {console.log("Google spreadsheets credentials file written successfully !")}
+	});
+};
 
 const readPoliceBotData = () =>
 	JSON.parse(fs.readFileSync("./policeBotData.json"));
@@ -66,4 +96,10 @@ const groupElementsByMemberId = elementsArray => {
 	return result;
 };
 
-module.exports = {readInfoData, addInfoData, writeInfoData, readPoliceBotData, removePoliceBotData, getAvailableId, groupElementsByMemberId, infoTypeFromIdFirstLetter};
+module.exports = {
+	setupGoogleSheetsAPICredentials,
+	loadData,
+	readInfoData, addInfoData, writeInfoData,
+	readPoliceBotData, removePoliceBotData,
+	getAvailableId, groupElementsByMemberId, infoTypeFromIdFirstLetter
+};

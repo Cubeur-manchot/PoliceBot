@@ -15,7 +15,8 @@
   "dependencies": {
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "googleapis": "89.0.0"
   },
   "license": "ISC"
 }
