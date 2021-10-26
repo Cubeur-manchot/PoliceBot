@@ -15,7 +15,7 @@ jobs:
         uses: mr-smithers-excellent/docker-build-push@v5.5
         with:
           # Name of the Docker image
-          image: mee7
+          image: policebot
           # Target Docker registry
           registry: ghcr.io
           username: ${{ github.actor }}
