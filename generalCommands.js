@@ -88,12 +88,12 @@ const logRemovedElements = async (commandMessage, successfullyRemovedElements, f
 	}
 };
 
-const detailsCommand = commandMessage => {
+const detailsCommand = async commandMessage => {
 	let commandArguments = commandMessage.content.replace(/^&details */i, "").split(" ").filter(word => word !== "");
 	let unknownElements = [];
 	for (let word of commandArguments) {
 		if (/^[iwbd]#[0-9]+$/.test(word)) { // match id format of infraction, warn, ban or discussion
-			let matchingElement = readInfoData(infoTypeFromIdFirstLetter[word[0]]).find(element => element.id === word);
+			let matchingElement = (await readInfoData(infoTypeFromIdFirstLetter[word[0]])).find(element => element.id === word);
 			if (matchingElement) { // found a matching element, send information
 				if (word.includes("d")) {
 					let embedList = buildDiscussionDetailsEmbeds(matchingElement, "normal");

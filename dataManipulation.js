@@ -35,8 +35,32 @@ const setupGoogleSheetsAPICredentials = () => {
 const readPoliceBotData = () =>
 	JSON.parse(fs.readFileSync("./policeBotData.json"));
 
-const readInfoData = infoType =>
-	readPoliceBotData()[infoType];
+const readInfoData = async infoType => {
+	if (infoType === "discussions") {
+		return readPoliceBotData()[infoType];
+	} else {
+		let data = await loadData(infoType);
+		let elementList = [];
+		let headers = data[0];
+		let headersLength = headers.length;
+		for (let lineIndex = 1; lineIndex < data.length; lineIndex++) {
+			let element = {};
+			for (let columnIndex = 0; columnIndex < headersLength; columnIndex++) {
+				element[headers[columnIndex]] = data[lineIndex][columnIndex] ? data[lineIndex][columnIndex] : "";
+			}
+			elementList.push(element);
+		}
+		if (infoType === "members") {
+			let memberList = {};
+			for (let element of elementList) {
+				memberList[element.memberId] = element;
+			}
+			return memberList;
+		} else {
+			return elementList;
+		}
+	}
+};
 
 const writePoliceBotData = policeBotDataObject =>
 	fs.writeFileSync("./policeBotData.json", JSON.stringify(policeBotDataObject, null, "\t"));

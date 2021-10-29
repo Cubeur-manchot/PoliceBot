@@ -193,8 +193,8 @@ const handleBanAdd = user => {
 	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, correspondingBan ? correspondingBan.ban.id : undefined, user.avatarURL(), "ban"), user.client);
 };
 
-const handleBanRemove = user => {
-	let correspondingBan = getLastFinishedBan(user.id, getCurrentDate());
+const handleBanRemove = async user => {
+	let correspondingBan = await getLastFinishedBan(user.id, getCurrentDate());
 	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, correspondingBan ? correspondingBan.id : undefined, user.avatarURL(), "unban"), user.client);
 };
 
@@ -217,8 +217,8 @@ const banIsActive = (ban, date) => {
 	return ban.expirationDate === "" || parseDate(ban.expirationDate) > date;
 };
 
-const getLastFinishedBan = (userId, date) => {
-	let matchingBans = readInfoData("bans").filter(ban => !banIsActive(ban, date));
+const getLastFinishedBan = async (userId, date) => {
+	let matchingBans = (await readInfoData("bans")).filter(ban => !banIsActive(ban, date));
 	if (matchingBans.length) {
 		return matchingBans.sort((firstBan, secondBan) => parseDate(secondBan.expirationDate) - parseDate(firstBan.expirationDate))[0];
 	} else {
@@ -226,9 +226,9 @@ const getLastFinishedBan = (userId, date) => {
 	}
 };
 
-const reloadTempBans = PoliceBot => {
+const reloadTempBans = async PoliceBot => {
 	let cubeursFrancophonesServer = PoliceBot.guilds.cache.get("329175643877015553");
-	let bansGroupedByMemberId = groupElementsByMemberId(readInfoData("bans"));
+	let bansGroupedByMemberId = groupElementsByMemberId(await readInfoData("bans"));
 	let bansExpirationDate = [];
 	for (let memberId in bansGroupedByMemberId) {
 		let bansOfThisMember = bansGroupedByMemberId[memberId];

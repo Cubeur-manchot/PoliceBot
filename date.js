@@ -111,13 +111,11 @@ const getCurrentDate = () => {
 };
 
 const convertDateUtcToLocal = date => {
-	let timezoneOffset = readInfoData("timezoneOffset");
-	return addHours(date, timezoneOffset);
+	return addHours(date, process.env.TIMEZONEOFFSET);
 };
 
 const convertDateLocalToUtc = date => {
-	let timezoneOffset = readInfoData("timezoneOffset");
-	return addHours(date, -timezoneOffset);
+	return addHours(date, -process.env.TIMEZONEOFFSET);
 };
 
 const addHours = (date, hours) => {

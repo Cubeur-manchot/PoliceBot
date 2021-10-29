@@ -11,13 +11,13 @@ const {buildElementListEmbed, buildNicknameChangeLogEmbed, buildAvatarChangeLogE
 	buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
 
-const onReady = PoliceBot => {
+const onReady = async PoliceBot => {
 	PoliceBot.user.setActivity("lire les messages du serveur")
 		.then(() => console.log("PoliceBot is ready !"))
 		.catch(console.error);
-	PoliceBot.memberList = readInfoData("members");
-	reloadTempBans(PoliceBot);
 	setupGoogleSheetsAPICredentials();
+	PoliceBot.memberList = await readInfoData("members");
+	await reloadTempBans(PoliceBot);
 };
 
 const onMessage = async message => {
@@ -90,12 +90,6 @@ const messageIsPoliceBotCommandMessage = message => {
 };
 
 const handlePoliceBotCommand = async message => {
-	if (message.content === "&test") {
-		let data = await loadData("test");
-		console.log("data :");
-		console.log(data);
-		return;
-	}
 	let messageContentLowerCase = message.content.toLowerCase();
 	if (messageContentLowerCase.startsWith("&help")) { // main &help command
 		sendMessageToChannel(message.channel, helpMessages.mainHelpMessage);
@@ -115,7 +109,7 @@ const handlePoliceBotCommand = async message => {
 		|| messageContentLowerCase === "&warns"
 		|| messageContentLowerCase === "&bans"
 		|| messageContentLowerCase === "&discussions") { // display all elements of a type
-		for (let embed of buildElementListEmbed(messageContentLowerCase.slice(1))) {
+		for (let embed of await buildElementListEmbed(messageContentLowerCase.slice(1))) {
 			sendEmbedToChannel(message.channel, embed);
 		}
 	} else if (messageContentLowerCase === "&addinfraction" || messageContentLowerCase === "&infraction") { // help for &addinfraction
@@ -133,7 +127,7 @@ const handlePoliceBotCommand = async message => {
 	} else if (messageContentLowerCase === "&details") { // help for &details
 		sendMessageToChannel(message.channel, helpMessages.detailsHelpMessage);
 	} else if (messageContentLowerCase.startsWith("&details ")) { // &details command
-		detailsCommand(message);
+		await detailsCommand(message);
 	} else if (messageContentLowerCase === "&remove") { // help for &remove
 		sendMessageToChannel(message.channel, helpMessages.removeHelpMessage);
 	} else if (messageContentLowerCase.startsWith("&remove ")) { // &remove command

@@ -20,8 +20,8 @@ const emojiWhenNoElement = {
 	"discussions": ":zipper_mouth:"
 };
 
-const buildElementListEmbed = infoType => {
-	let elements = readInfoData(infoType);
+const buildElementListEmbed = async infoType => {
+	let elements = await readInfoData(infoType);
 	let descriptionChunks = [];
 	if (elements.length) {
 		descriptionChunks.push(`Voici la liste de tou${infoType === "infractions" || infoType === "discussions" ? "te" : ""}s les ${infoType} :\n`);
