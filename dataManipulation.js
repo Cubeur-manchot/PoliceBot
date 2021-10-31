@@ -6,16 +6,17 @@ const {google} = require("googleapis");
 const spreadsheetId = "1Fn144WOdpBKbktlesaU9NfEFZIbjLpTin77SaOrLj6M";
 
 const loadData = async tabName => {
-	let auth = new google.auth.GoogleAuth({
-		keyFile: "credentials.json",
-		scopes: "https://www.googleapis.com/auth/spreadsheets"
-	});
-	return (await google.sheets({version: "v4", auth: await auth.getClient()}).spreadsheets.values.get({
+	let auth = getAuth();
+	return (await (await getSpreadsheetsValues(auth)).get({
 		auth: auth,
 		spreadsheetId: spreadsheetId,
 		range: tabName
 	})).data.values;
 };
+
+const getAuth = () => new google.auth.GoogleAuth({keyFile: "credentials.json", scopes: "https://www.googleapis.com/auth/spreadsheets"});
+
+const getSpreadsheetsValues = async auth => google.sheets({version: "v4", auth: await auth.getClient()}).spreadsheets.values;
 
 const setupGoogleSheetsAPICredentials = () => {
 	fs.writeFile("credentials.json", JSON.stringify({
