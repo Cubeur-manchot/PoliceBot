@@ -3,6 +3,8 @@
 const fs = require("fs");
 const {google} = require("googleapis");
 
+const spreadsheetId = "1Fn144WOdpBKbktlesaU9NfEFZIbjLpTin77SaOrLj6M";
+
 const loadData = async tabName => {
 	let auth = new google.auth.GoogleAuth({
 		keyFile: "credentials.json",
@@ -10,7 +12,7 @@ const loadData = async tabName => {
 	});
 	return (await google.sheets({version: "v4", auth: await auth.getClient()}).spreadsheets.values.get({
 		auth: auth,
-		spreadsheetId: "1Fn144WOdpBKbktlesaU9NfEFZIbjLpTin77SaOrLj6M",
+		spreadsheetId: spreadsheetId,
 		range: tabName
 	})).data.values;
 };
