@@ -2,7 +2,7 @@
 
 const {sendMessageToChannel, sendEmbedToChannel, sendEmbedSoftLog} = require("./messages.js");
 const {saveCommand, purgeCommand, moveCommand} = require("./discussions.js");
-const {readInfoData, writeInfoData, setupGoogleSheetsAPICredentials, loadData} = require("./dataManipulation.js");
+const {readInfoData, writeInfoData, setupGoogleSheetsAPICredentials} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, handleBanAdd, handleBanRemove, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");

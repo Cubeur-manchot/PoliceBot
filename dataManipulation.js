@@ -122,7 +122,6 @@ const groupElementsByMemberId = elementsArray => {
 
 module.exports = {
 	setupGoogleSheetsAPICredentials,
-	loadData,
 	readInfoData, addInfoData, writeInfoData,
 	readPoliceBotData, removePoliceBotData,
 	getAvailableId, groupElementsByMemberId, infoTypeFromIdFirstLetter
