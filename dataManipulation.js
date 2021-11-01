@@ -138,7 +138,7 @@ const getAvailableId = async infoType => {
 	}
 };
 
-const removePoliceBotData = async elementsIdList => {
+const removeBulkData = async elementsIdList => {
 	let elementsIdGroupedByType = groupElementsIdByType(elementsIdList);
 	for (let type in elementsIdGroupedByType) {
 		if (type === "discussions") {
@@ -191,7 +191,7 @@ const groupElementsByMemberId = elementsArray => {
 
 module.exports = {
 	setupGoogleSheetsAPICredentials,
-	readPoliceBotData, removePoliceBotData,
 	readInfoData, appendData, updateData, addInfoData,
+	removeBulkData,
 	getAvailableId, groupElementsByMemberId, groupElementsIdByType, infoTypeFromIdFirstLetter
 };

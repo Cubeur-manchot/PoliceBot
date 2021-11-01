@@ -2,7 +2,7 @@
 
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
 const {buildElementDetailsEmbed, buildDiscussionDetailsEmbeds} = require("./messageBuilder.js");
-const {readPoliceBotData, removePoliceBotData, readInfoData, groupElementsIdByType, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {removeBulkData, readInfoData, groupElementsIdByType, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {banIsActive} = require("./infractionsWarnsBans.js");
 const {unbanMember} = require("./members.js");
 const {getCurrentDate} = require("./date.js");
@@ -17,7 +17,7 @@ const removeCommand = async message => {
 	for (let memberIdToUnban of membersToUnban) {
 		unbanMember(memberIdToUnban, message.guild.members);
 	}
-	removePoliceBotData(elementsToBeRemoved);
+	await removeBulkData(elementsToBeRemoved);
 	await logRemovedElements(message, groupElementsIdByType(elementsToBeRemoved), incorrectIdFormatElements, notFoundElements);
 };
 

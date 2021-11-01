@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readInfoData, appendData, updateData, removePoliceBotData, groupElementsByMemberId} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, appendData, updateData, removeBulkData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, convertDateUtcToLocal, getCurrentDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
@@ -72,7 +72,7 @@ const addBanCommand = async commandMessage => {
 					await appendData(ban, "bans");
 					let banStatus = await banMember(memberId, commandMessage.guild.members);
 					if (banStatus === "Error") {
-						await removePoliceBotData([banId]);
+						await removeBulkData([banId]);
 						sendMessageToChannel(commandMessage.channel, ":x: Erreur lors du bannissement du membre.");
 					} else {
 						await sendMessageToChannel(commandMessage.channel,
