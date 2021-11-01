@@ -14,12 +14,16 @@ const loadData = async tabName => {
 	})).data.values;
 };
 
+const convertDataObjectToTableData = (object, tabName) => {
+	return [tabName === "infractions" ? [object.id, object.memberId, object.date, object.type, object.commentary]
+		: tabName === "warns" ? [object.id, object.memberId, object.date, object.reason, object.commentary]
+			: tabName === "bans" ? [object.id, object.memberId, object.date, object.expirationDate, object.reason, object.commentary]
+				: tabName === "members" ? [object.memberId, object.username, object.tag]
+					: []];
+};
+
 const appendData = async (newObject, tabName) => {
-	let data = tabName === "infractions" ? [newObject.id, newObject.memberId, newObject.date, newObject.type, newObject.commentary]
-		: tabName === "warns" ? [newObject.id, newObject.memberId, newObject.date, newObject.reason, newObject.commentary]
-			: tabName === "bans" ? [newObject.id, newObject.memberId, newObject.date, newObject.expirationDate, newObject.reason, newObject.commentary]
-				: tabName === "members" ? [newObject.memberId, newObject.username, newObject.tag]
-					: [];
+	let tableData = convertDataObjectToTableData(newObject, tabName);
 	let auth = getAuth();
 	await (await getSpreadsheetsValues(auth)).append({
 		auth: auth,
@@ -27,9 +31,28 @@ const appendData = async (newObject, tabName) => {
 		range: tabName,
 		valueInputOption: "RAW",
 		resource: {
-			values: [data]
+			values: tableData
 		}
 	}, undefined);
+};
+
+const updateData = async (newObject, tabName) => {
+	let tableData = convertDataObjectToTableData(newObject, tabName);
+	let elementId = tableData[0][0] + "";
+	let auth = getAuth();
+	let currentData = await loadData(tabName);
+	let rawIndex = currentData.findIndex(raw => raw[0] === elementId);
+	if (rawIndex !== -1) {
+		await (await getSpreadsheetsValues(auth)).update({
+			auth: auth,
+			spreadsheetId: spreadsheetId,
+			range: `${tabName}!A${rawIndex + 1}:${tabName === "bans" ? "F" : "C"}${rawIndex + 1}`, // +1 because lines number starts at 1 in Google Sheet
+			valueInputOption: "RAW",
+			resource: {
+				values: tableData
+			}
+		}, undefined);
+	}
 };
 
 const eraseRawData = async (tabName, rawIndex) => {
@@ -71,7 +94,7 @@ const readPoliceBotData = () =>
 
 const readInfoData = async infoType => {
 	if (infoType === "discussions") {
-		return readPoliceBotData()[infoType];
+		return readPoliceBotData().discussions;
 	} else {
 		let data = await loadData(infoType);
 		let elementList = [];
@@ -174,7 +197,7 @@ const groupElementsByMemberId = elementsArray => {
 
 module.exports = {
 	setupGoogleSheetsAPICredentials,
-	readInfoData, appendData, addInfoData, writeInfoData,
+	readInfoData, appendData, updateData, addInfoData, writeInfoData,
 	readPoliceBotData, removePoliceBotData,
 	getAvailableId, groupElementsByMemberId, groupElementsIdByType, infoTypeFromIdFirstLetter
 };

@@ -72,7 +72,7 @@ const addBanCommand = async commandMessage => {
 					await appendData(ban, "bans");
 					let banStatus = await banMember(memberId, commandMessage.guild.members);
 					if (banStatus === "Error") {
-						removePoliceBotData([banId]);
+						await removePoliceBotData([banId]);
 						sendMessageToChannel(commandMessage.channel, ":x: Erreur lors du bannissement du membre.");
 					} else {
 						await sendMessageToChannel(commandMessage.channel,

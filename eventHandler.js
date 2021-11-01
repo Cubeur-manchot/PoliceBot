@@ -2,7 +2,7 @@
 
 const {sendMessageToChannel, sendEmbedToChannel, sendEmbedSoftLog} = require("./messages.js");
 const {saveCommand, purgeCommand, moveCommand} = require("./discussions.js");
-const {readInfoData, writeInfoData, setupGoogleSheetsAPICredentials} = require("./dataManipulation.js");
+const {readInfoData, appendData, updateData, setupGoogleSheetsAPICredentials} = require("./dataManipulation.js");
 const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, handleBanAdd, handleBanRemove, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
@@ -38,17 +38,29 @@ const onMessage = async message => {
 			await handleInviteLinks(message);
 		}
 	}
-	let members = message.client.memberList;
-	if (!members[message.author.id] // member is not already registered in the list
-		|| ((message.member && message.member.nickname) // if the member has a nickname
-			? members[message.author.id] !== message.member.nickname // the nickname doesn't match the registered one
-			: members[message.author.id] !== message.author.username)) { // the username doesn't match the registered one
-		members[message.author.id] = { // update current username and tag
+	await updateMemberList(message);
+};
+
+const updateMemberList = async message => {
+	let members = message.client.memberList; // retrieve from cache
+	let authorId = message.author.id;
+	if (!members[authorId]) { // member is not already registered in the list
+		let memberObject = {
+			memberId: authorId,
 			username: (message.member && message.member.nickname) ? message.member.nickname : message.author.username,
 			tag: message.author.tag
 		};
-		writeInfoData(members, "members"); // save in data
-		message.client.memberList = members; // update cache
+		await appendData(memberObject, "members");
+		members[authorId] = memberObject; // update cache
+	} else if (members[authorId].username !== ((message.member && message.member.nickname) ? message.member.nickname : message.author.username) // member name has changed
+		|| members[authorId].tag !== message.author.tag) { // member tag has changed
+		let memberObject = {
+			memberId: authorId,
+			username: (message.member && message.member.nickname) ? message.member.nickname : message.author.username,
+			tag: message.author.tag
+		};
+		await updateData(memberObject, "members");
+		members[authorId] = memberObject; // update cache
 	}
 };
 
