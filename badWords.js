@@ -2,7 +2,7 @@
 
 const {sendMessageToChannel, sendPrivateMessage, sendEmbedLog, deleteMessage} = require("./messages.js");
 const {buildBadWordsLogEmbed, buildBadWordPrivateMessage} = require("./messageBuilder.js");
-const {addInfoData, getAvailableId} = require("./dataManipulation.js");
+const {appendData, getAvailableId} = require("./dataManipulation.js");
 const {getReadableDate} = require("./date.js");
 
 const badWords = [
@@ -27,7 +27,7 @@ const handleBadWords = async message => {
 	if (badWords.length) {
 		deleteMessage(message);
 		let infractionId = getAvailableId("infractions");
-		addInfoData({
+		await appendData({
 			id: infractionId,
 			memberId: message.author.id,
 			date: getReadableDate(message.createdAt),

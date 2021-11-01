@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readInfoData, addInfoData, writeInfoData, removePoliceBotData, groupElementsByMemberId} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, appendData, writeInfoData, removePoliceBotData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, convertDateUtcToLocal, getCurrentDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
@@ -21,7 +21,7 @@ const addInfractionOrWarnCommand = async (commandMessage, infoType) => {
 		if (restOfCommand === "") {
 			sendMessageToChannel(commandMessage.channel, `:x: Erreur : ${infoType === "infraction" ? "type" : "motif"} non spécifié.\n\n` + helpMessages[infoType]);
 		} else {
-			let id = getAvailableId(infoType + "s");
+			let id = await getAvailableId(infoType + "s");
 			let infractionOrWarn = {
 				id: id,
 				memberId: memberId,
@@ -29,7 +29,7 @@ const addInfractionOrWarnCommand = async (commandMessage, infoType) => {
 				commentary: commentary
 			};
 			infractionOrWarn[infoType === "infraction" ? "type" : "reason"] = restOfCommand;
-			addInfoData(infractionOrWarn, infoType + "s");
+			await appendData(infractionOrWarn, infoType + "s");
 			await sendMessageToChannel(commandMessage.channel, buildMemberInfractionOrWarnedMessage("french", infoType, memberId, id, restOfCommand));
 			await sendMessageLog(buildMemberInfractionOrWarnedMessage("english", infoType, memberId, id, restOfCommand), commandMessage.client);
 		}
@@ -69,7 +69,7 @@ const addBanCommand = async commandMessage => {
 						reason: reason,
 						commentary: commentary
 					};
-					addInfoData(ban, "bans");
+					await appendData(ban, "bans");
 					let banStatus = await banMember(memberId, commandMessage.guild.members);
 					if (banStatus === "Error") {
 						removePoliceBotData([banId]);

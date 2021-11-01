@@ -3,7 +3,7 @@
 const https = require('https');
 const {sendMessageToChannel, sendPrivateMessage, sendEmbedLog, deleteMessage} = require("./messages.js");
 const {buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage} = require("./messageBuilder.js");
-const {addInfoData, getAvailableId} = require("./dataManipulation.js");
+const {appendData, getAvailableId} = require("./dataManipulation.js");
 const {getReadableDate} = require("./date.js");
 
 const serversWhiteList = {
@@ -43,8 +43,8 @@ const handleInviteLinks = async message => {
     let invitationsNotInWhiteList = await getInvitationsNotInWhiteList(message);
     if (invitationsNotInWhiteList.length) {
         deleteMessage(message);
-        let infractionId = getAvailableId("infractions");
-        addInfoData({
+        let infractionId = await getAvailableId("infractions");
+        await appendData({
             id: infractionId,
             memberId: message.author.id,
             date: getReadableDate(message.createdAt),

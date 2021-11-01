@@ -14,6 +14,24 @@ const loadData = async tabName => {
 	})).data.values;
 };
 
+const appendData = async (newObject, tabName) => {
+	let data = tabName === "infractions" ? [newObject.id, newObject.memberId, newObject.date, newObject.type, newObject.commentary]
+		: tabName === "warns" ? [newObject.id, newObject.memberId, newObject.date, newObject.reason, newObject.commentary]
+			: tabName === "bans" ? [newObject.id, newObject.memberId, newObject.date, newObject.expirationDate, newObject.reason, newObject.commentary]
+				: tabName === "members" ? [newObject.memberId, newObject.username, newObject.tag]
+					: [];
+	let auth = getAuth();
+	await (await getSpreadsheetsValues(auth)).append({
+		auth: auth,
+		spreadsheetId: spreadsheetId,
+		range: tabName,
+		valueInputOption: "RAW",
+		resource: {
+			values: [data]
+		}
+	}, undefined);
+};
+
 const getAuth = () => new google.auth.GoogleAuth({keyFile: "credentials.json", scopes: "https://www.googleapis.com/auth/spreadsheets"});
 
 const getSpreadsheetsValues = async auth => google.sheets({version: "v4", auth: await auth.getClient()}).spreadsheets.values;
@@ -80,8 +98,8 @@ const writeInfoData = (newData, infoType) => {
 	writePoliceBotData(policeBotData);
 };
 
-const getAvailableId = infoType => {
-	let dataOfThisType = readInfoData(infoType);
+const getAvailableId = async infoType => {
+	let dataOfThisType = await readInfoData(infoType);
 	let idWithoutIncrement = infoType[0].toLowerCase() + "#";
 	for (let increment = 1; increment < 100; increment++) {
 		if (!dataOfThisType.find(dataInstance => dataInstance.id === idWithoutIncrement + increment)) { // id is free
@@ -125,7 +143,7 @@ const groupElementsByMemberId = elementsArray => {
 
 module.exports = {
 	setupGoogleSheetsAPICredentials,
-	readInfoData, addInfoData, writeInfoData,
+	readInfoData, appendData, addInfoData, writeInfoData,
 	readPoliceBotData, removePoliceBotData,
 	getAvailableId, groupElementsByMemberId, infoTypeFromIdFirstLetter
 };
