@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readInfoData, appendData, writeInfoData, removePoliceBotData, groupElementsByMemberId} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, appendData, updateData, writeInfoData, removePoliceBotData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, convertDateUtcToLocal, getCurrentDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
@@ -56,11 +56,11 @@ const addBanCommand = async commandMessage => {
 				sendMessageToChannel(commandMessage.channel, ":x: Erreur : je n'ai pas l'autorisation de bannir ce membre.");
 			} else {
 				let banDate = convertDateUtcToLocal(commandMessage.createdAt);
-				let activeBan = getActiveBan(memberId, banDate);
+				let activeBan = await getActiveBan(memberId, banDate);
 				if (activeBan) {
 					sendMessageToChannel(commandMessage.channel, `:x: Erreur : ce membre est déjà banni (${activeBan.ban.id}).`);
 				} else {
-					let banId = getAvailableId("bans");
+					let banId = await getAvailableId("bans");
 					let ban = {
 						id: banId,
 						memberId: memberId,
@@ -93,12 +93,12 @@ const unbanCommand = async commandMessage => {
 	let {parseCheck, memberId} = parseAndCheckMemberIdAndCommentary(commandMessage, "unban");
 	if (parseCheck) {
 		let unbanDate = convertDateUtcToLocal(commandMessage.createdAt);
-		let activeBan = getActiveBan(memberId, unbanDate);
+		let activeBan = await getActiveBan(memberId, unbanDate);
 		if (activeBan) {
 			unbanMember(memberId, commandMessage.guild.members); // unban member
-			let bans = readInfoData("bans");
-			bans[activeBan.banIndex].expirationDate = getReadableDate(unbanDate); // end the ban
-			writeInfoData(bans, "bans"); // save modification
+			let ban = (await readInfoData("bans"))[activeBan.banIndex];
+			ban.expirationDate = getReadableDate(unbanDate);
+			await updateData(ban, "bans");
 			await sendMessageToChannel(commandMessage.channel,
 				buildMemberUnbannedFrenchMessage(memberId, activeBan.ban.id));
 		} else {
@@ -188,8 +188,8 @@ const getReasonAndExpirationDate = argumentsString => {
 	}
 };
 
-const handleBanAdd = user => {
-	let correspondingBan = getActiveBan(user.id, getCurrentDate());
+const handleBanAdd = async user => {
+	let correspondingBan = await getActiveBan(user.id, getCurrentDate());
 	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, correspondingBan ? correspondingBan.ban.id : undefined, user.avatarURL(), "ban"), user.client);
 };
 
@@ -198,8 +198,8 @@ const handleBanRemove = async user => {
 	sendEmbedLog(buildMemberBanOrUnbanLogEmbed(user.id, correspondingBan ? correspondingBan.id : undefined, user.avatarURL(), "unban"), user.client);
 };
 
-const getActiveBan = (userId, date) => {
-	let bans = readInfoData("bans");
+const getActiveBan = async (userId, date) => {
+	let bans = await readInfoData("bans");
 	let correspondingBanIndex = bans.findIndex(ban => {
 		return ban.memberId === userId && banIsActive(ban, date);
 	});
