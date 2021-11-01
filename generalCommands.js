@@ -2,7 +2,7 @@
 
 const {sendMessageToChannel, sendEmbedToChannel} = require("./messages.js");
 const {buildElementDetailsEmbed, buildDiscussionDetailsEmbeds} = require("./messageBuilder.js");
-const {readPoliceBotData, removePoliceBotData, readInfoData, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
+const {readPoliceBotData, removePoliceBotData, readInfoData, groupElementsIdByType, infoTypeFromIdFirstLetter} = require("./dataManipulation.js");
 const {banIsActive} = require("./infractionsWarnsBans.js");
 const {unbanMember} = require("./members.js");
 const {getCurrentDate} = require("./date.js");
@@ -12,78 +12,87 @@ const removeCommand = async message => {
 	let elementsIdToRemove = [...new Set( // keep uniques values
 		message.content.replace(/^&remove */i,"").split(" ").filter(word => word !== "")
 	)];
-	let policeBotData = readPoliceBotData();
-	let elementsToBeRemoved = [];
-	let failedElements = {incorrectIdFormat: [], notFound: []};
-	let successfullyRemovedElements = {infractions: [], warns: [], bans: [], discussions: []};
+	let {correctIdFormat, incorrectIdFormatElements} = checkIdFormat(elementsIdToRemove);
+	let {elementsToBeRemoved, notFoundElements, membersToUnban} = await checkExistence(correctIdFormat);
+	for (let memberIdToUnban of membersToUnban) {
+		unbanMember(memberIdToUnban, message.guild.members);
+	}
+	removePoliceBotData(elementsToBeRemoved);
+	await logRemovedElements(message, groupElementsIdByType(elementsToBeRemoved), incorrectIdFormatElements, notFoundElements);
+};
+
+const checkIdFormat = elementsIdToRemove => {
+	let correctIdFormat = [], incorrectIdFormatElements = [];
 	for (let elementId of elementsIdToRemove) {
-		if (!/[iwbd]#[0-9]+/.test(elementId)) { // check id format
-			failedElements.incorrectIdFormat.push(elementId);
-		} else {
-			let elementType = infoTypeFromIdFirstLetter[elementId[0]];
-			let indexToRemove = policeBotData[elementType].findIndex(element => element.id === elementId);
-			if (indexToRemove === -1) { // check existence
-				failedElements.notFound.push(elementId);
-			} else {
-				if (elementType === "bans") {
-					let ban = policeBotData["bans"][indexToRemove];
-					if (banIsActive(ban, getCurrentDate())) {
-						unbanMember(ban.memberId, message.guild.members); // unban the member
-					}
+		(/[iwbd]#[0-9]+/.test(elementId) ? correctIdFormat : incorrectIdFormatElements).push(elementId);
+	}
+	return {correctIdFormat, incorrectIdFormatElements};
+};
+
+const checkExistence = async elementsIdToRemove => {
+	let elementsToBeRemoved = [], notFoundElements = [], membersToUnban = [];
+	let elementsIdGroupedByType = groupElementsIdByType(elementsIdToRemove);
+	for (let elementType in elementsIdGroupedByType) {
+		let elementsId = elementsIdGroupedByType[elementType];
+		let dataOfThisType = await readInfoData(elementType);
+		for (let elementId of elementsId) {
+			let index = dataOfThisType.findIndex(element => element.id === elementId);
+			((index) !== -1 ? elementsToBeRemoved : notFoundElements).push(elementId);
+			if (elementType === "bans") {
+				let ban = dataOfThisType[index];
+				if (banIsActive(ban, getCurrentDate())) {
+					membersToUnban.push(ban.memberId);
 				}
-				elementsToBeRemoved.push(elementId);
-				successfullyRemovedElements[elementType].push(elementId);
 			}
 		}
 	}
-	removePoliceBotData(elementsToBeRemoved);
-	await logRemovedElements(message, successfullyRemovedElements, failedElements);
+	return {elementsToBeRemoved, notFoundElements, membersToUnban};
 };
 
-const logRemovedElements = async (commandMessage, successfullyRemovedElements, failedElements) => {
-	if (successfullyRemovedElements.infractions.length) {
+const logRemovedElements = async (commandMessage, elementsIdRemovedGroupedByType, incorrectIdFormatElements, notFoundElements) => {
+	if (elementsIdRemovedGroupedByType.infractions.length) {
 		await sendMessageToChannel(commandMessage.channel,
-			(successfullyRemovedElements.infractions.length === 1 ? "L'infraction suivante a été supprimée : "
-				: "Les infractions suivantes ont été supprimées : ") + successfullyRemovedElements.infractions.join(", ")
+			(elementsIdRemovedGroupedByType.infractions.length === 1 ? "L'infraction suivante a été supprimée : "
+				: "Les infractions suivantes ont été supprimées : ") + elementsIdRemovedGroupedByType.infractions.join(", ")
 		);
 	}
-	if (successfullyRemovedElements.warns.length) {
+	if (elementsIdRemovedGroupedByType.warns.length) {
 		await sendMessageToChannel(commandMessage.channel,
-			(successfullyRemovedElements.warns.length === 1 ? "Le warn suivant a été supprimé : "
-				: "Les warns suivants ont été supprimés : ") + successfullyRemovedElements.warns.join(", ")
+			(elementsIdRemovedGroupedByType.warns.length === 1 ? "Le warn suivant a été supprimé : "
+				: "Les warns suivants ont été supprimés : ") + elementsIdRemovedGroupedByType.warns.join(", ")
 		);
 	}
-	if (successfullyRemovedElements.bans.length) {
+	if (elementsIdRemovedGroupedByType.bans.length) {
 		await sendMessageToChannel(commandMessage.channel,
-			(successfullyRemovedElements.bans.length === 1
+			(elementsIdRemovedGroupedByType.bans.length === 1
 				? "Le ban suivant a été supprimé, et le membre à débannir a été débanni : "
 				: "Les bans suivants ont été supprimés, et les membres à débannir ont été débannis : ")
-			+ successfullyRemovedElements.bans.join(", ")
+			+ elementsIdRemovedGroupedByType.bans.join(", ")
 		);
 	}
-	if (successfullyRemovedElements.discussions.length) {
+	if (elementsIdRemovedGroupedByType.discussions.length) {
 		await sendMessageToChannel(commandMessage.channel,
-			(successfullyRemovedElements.discussions.length === 1
+			(elementsIdRemovedGroupedByType.discussions.length === 1
 				? "La discussion suivante a été supprimée : "
 				: "Les discussions suivantes ont été supprimées : ")
-			+ successfullyRemovedElements.discussions.join(", ")
+			+ elementsIdRemovedGroupedByType.discussions.join(", ")
 		);
 	}
-	if (failedElements.incorrectIdFormat.length) {
+	if (incorrectIdFormatElements.length) {
 		await sendMessageToChannel(commandMessage.channel,
-			(failedElements.incorrectIdFormat.length === 1
+			(incorrectIdFormatElements.length === 1
 				? ":x: L'élément suivant n'a pas pu être supprimé, car l'id spécifié n'a pas le bon format : "
 				: ":x: Les éléments suivants n'ont pas pu être supprimés, car les id spécifiés n'ont pas le bon format : ")
-			+ failedElements.incorrectIdFormat.join(", ")
+			+ incorrectIdFormatElements.join(", ")
 			+ "\n" + removeHelpMessage
 		);
 	}
-	if (failedElements.notFound.length) {
+	if (notFoundElements.length) {
 		await sendMessageToChannel(commandMessage.channel,
-			(failedElements.notFound.length === 1
+			(notFoundElements.length === 1
 				? ":x: L'élément suivant n'a pas pu être supprimé, car il n'a pas été trouvé : "
 				: ":x: Les éléments suivants n'ont pas pu être supprimés, car ils n'ont pas été trouvés : ")
-			+ failedElements.notFound.join(", ")
+			+ notFoundElements.join(", ")
 		);
 	}
 };

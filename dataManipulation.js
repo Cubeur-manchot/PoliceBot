@@ -32,6 +32,19 @@ const appendData = async (newObject, tabName) => {
 	}, undefined);
 };
 
+const eraseRawData = async (tabName, rawIndex) => {
+	let auth = getAuth();
+	await (await getSpreadsheetsValues(auth)).update({
+		auth: auth,
+		spreadsheetId: spreadsheetId,
+		range: `${tabName}!A${rawIndex}:${tabName === "bans" ? "F" : "E"}${rawIndex}`,
+		valueInputOption: "RAW",
+		resource: {
+			values: [tabName === "bans" ? ["", "", "", "", "", ""] : ["", "", "", "", ""]]
+		}
+	}, undefined);
+};
+
 const getAuth = () => new google.auth.GoogleAuth({keyFile: "credentials.json", scopes: "https://www.googleapis.com/auth/spreadsheets"});
 
 const getSpreadsheetsValues = async auth => google.sheets({version: "v4", auth: await auth.getClient()}).spreadsheets.values;
@@ -108,17 +121,27 @@ const getAvailableId = async infoType => {
 	}
 };
 
-const removePoliceBotData = elementsIdList => {
-	if (elementsIdList.length) {
-		let policeBotData = readPoliceBotData();
-		for (let elementId of elementsIdList) {
-			let elementType = infoTypeFromIdFirstLetter[elementId[0]];
-			let index = policeBotData[elementType].findIndex(element => element.id === elementId);
-			if (index !== -1) {
-				policeBotData[elementType].splice(index, 1);
+const removePoliceBotData = async elementsIdList => {
+	let elementsIdGroupedByType = groupElementsIdByType(elementsIdList);
+	for (let type in elementsIdGroupedByType) {
+		if (type === "discussions") {
+			let policeBotData = readPoliceBotData();
+			for (let elementId of elementsIdGroupedByType.discussions) {
+				let index = policeBotData.discussions.findIndex(element => element.id === elementId);
+				if (index !== -1) {
+					policeBotData.discussions.splice(index, 1);
+				}
+			}
+			writePoliceBotData(policeBotData);
+		} else {
+			let data = await readInfoData(type);
+			for (let elementId of elementsIdGroupedByType[type]) {
+				let index = data.findIndex(element => element.id === elementId);
+				if (index !== -1) {
+					await eraseRawData(type, index + 2); // +1 because line starts at 1 in Google Sheets, and +1 because of the header line
+				}
 			}
 		}
-		writePoliceBotData(policeBotData);
 	}
 };
 
@@ -127,6 +150,14 @@ const infoTypeFromIdFirstLetter = {
 	w: "warns",
 	b: "bans",
 	d: "discussions"
+};
+
+const groupElementsIdByType = elementsId => {
+	let result = {infractions: [], warns: [], bans: [], discussions: []};
+	for (let elementId of elementsId) {
+		result[infoTypeFromIdFirstLetter[elementId[0]]].push(elementId);
+	}
+	return result;
 };
 
 const groupElementsByMemberId = elementsArray => {
@@ -145,5 +176,5 @@ module.exports = {
 	setupGoogleSheetsAPICredentials,
 	readInfoData, appendData, addInfoData, writeInfoData,
 	readPoliceBotData, removePoliceBotData,
-	getAvailableId, groupElementsByMemberId, infoTypeFromIdFirstLetter
+	getAvailableId, groupElementsByMemberId, groupElementsIdByType, infoTypeFromIdFirstLetter
 };
