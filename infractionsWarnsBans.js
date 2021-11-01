@@ -1,6 +1,6 @@
 "use strict";
 
-const {getAvailableId, readInfoData, appendData, updateData, writeInfoData, removePoliceBotData, groupElementsByMemberId} = require("./dataManipulation.js");
+const {getAvailableId, readInfoData, appendData, updateData, removePoliceBotData, groupElementsByMemberId} = require("./dataManipulation.js");
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, convertDateUtcToLocal, getCurrentDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");

@@ -128,12 +128,6 @@ const addInfoData = (newData, infoType) => {
 	writePoliceBotData(policeBotData);
 };
 
-const writeInfoData = (newData, infoType) => {
-	let policeBotData = readPoliceBotData();
-	policeBotData[infoType] = newData;
-	writePoliceBotData(policeBotData);
-};
-
 const getAvailableId = async infoType => {
 	let dataOfThisType = await readInfoData(infoType);
 	let idWithoutIncrement = infoType[0].toLowerCase() + "#";
@@ -197,7 +191,7 @@ const groupElementsByMemberId = elementsArray => {
 
 module.exports = {
 	setupGoogleSheetsAPICredentials,
-	readInfoData, appendData, updateData, addInfoData, writeInfoData,
 	readPoliceBotData, removePoliceBotData,
+	readInfoData, appendData, updateData, addInfoData,
 	getAvailableId, groupElementsByMemberId, groupElementsIdByType, infoTypeFromIdFirstLetter
 };
