@@ -19,7 +19,8 @@ const convertDataObjectToTableData = (object, tabName) => {
 		: tabName === "warns" ? [object.id, object.memberId, object.date, object.reason, object.commentary]
 			: tabName === "bans" ? [object.id, object.memberId, object.date, object.expirationDate, object.reason, object.commentary]
 				: tabName === "members" ? [object.memberId, object.username, object.tag]
-					: []];
+					: tabName === "discussions" ? [object.id, object.savingDate, object.action, object.channelId, convertMessageObjectListToString(object.messages)]
+						: []];
 };
 
 const appendData = async (newObject, tabName) => {
@@ -187,6 +188,16 @@ const groupElementsByMemberId = elementsArray => {
 		}
 	}
 	return result;
+};
+
+const separator = "¶";
+
+const convertMessageObjectListToString = messageObjectList => {
+	let messageStringList = [];
+	for (let messageObject of messageObjectList) {
+		messageStringList.push(messageObject.authorId + separator + messageObject.date + separator + messageObject.content);
+	}
+	return messageStringList.join(separator + separator);
 };
 
 module.exports = {

@@ -1,7 +1,7 @@
 "use strict";
 
 const {sendMessageToChannel, sendEmbedToChannel, sendMessageLog, deleteMessage} = require("./messages.js");
-const {getAvailableId, addInfoData} = require("./dataManipulation.js");
+const {getAvailableId, appendData} = require("./dataManipulation.js");
 const {saveHelpMessage, purgeHelpMessage, moveHelpMessage} = require("./helpMessages.js");
 const {getReadableDate, convertDateUtcToLocal, getLastTimeStampFromHoursAndMinutes, getLastTimeStampFromMonthAndDay} = require("./date.js");
 const {buildDiscussionDetailsEmbeds, buildDiscussionPurgedOrSavedOrMovedMessage, buildDiscussionPurgedOrSavedOrMovedFrenchMessage} = require("./messageBuilder.js");
@@ -42,8 +42,8 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 		}
 	}
 	let destinationChannel = commandMessage.guild.channels.cache.find(channel => channel.id === destinationChannelId);
-	let discussion = buildDiscussion(commandMessage, purgeOrSaveOrMove, messagesId);
-	addInfoData(discussion, "discussions");
+	let discussion = await buildDiscussion(commandMessage, purgeOrSaveOrMove, messagesId);
+	await appendData(discussion, "discussions");
 	if (purgeOrSaveOrMove === "move") {
 		// embed in destination channel
 		for (let embed of buildDiscussionDetailsEmbeds(discussion, "moved french")) {
@@ -58,7 +58,7 @@ const purgeOrSaveOrMoveCommand = async (commandMessage, purgeOrSaveOrMove) => {
 		commandMessage.channel.id, destinationChannelId), commandMessage.client);
 };
 
-const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId) => {
+const buildDiscussion = async (commandMessage, purgeOrSaveOrMove, messagesId) => {
 	let messages = [];
 	for (let messageId of messagesId) {
 		let message = commandMessage.channel.messages.cache.get(messageId);
@@ -72,7 +72,7 @@ const buildDiscussion = (commandMessage, purgeOrSaveOrMove, messagesId) => {
 		}
 	}
 	return {
-		id: getAvailableId("discussions"),
+		id: await getAvailableId("discussions"),
 		savingDate: getReadableDate(convertDateUtcToLocal(commandMessage.createdAt)),
 		action: purgeOrSaveOrMove,
 		channelId: commandMessage.channel.id,
