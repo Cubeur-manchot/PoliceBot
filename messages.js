@@ -21,10 +21,6 @@ const sendEmbedLog = (embed, client) => {
 	sendEmbedToChannel(client.channels.cache.find(channel => {return channel.id === "795319669459648512"}), embed);
 };
 
-const sendMessageSoftLog = (message, client) => {
-	sendMessageToChannel(client.channels.cache.find(channel => {return channel.id === "861357829357043752"}), message);
-};
-
 const sendEmbedSoftLog = (embed, client, attachments) => {
 	sendEmbedToChannel(client.channels.cache.find(channel => {return channel.id === "861357829357043752"}), embed, attachments);
 };
@@ -37,5 +33,5 @@ const deleteMessage = message => {
 };
 
 module.exports = {sendMessageToChannel, sendPrivateMessage, sendEmbedToChannel,
-	sendMessageLog, sendEmbedLog, sendMessageSoftLog, sendEmbedSoftLog,
+	sendMessageLog, sendEmbedLog, sendEmbedSoftLog,
 	deleteMessage};

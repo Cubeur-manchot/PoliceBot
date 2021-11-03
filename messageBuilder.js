@@ -240,22 +240,6 @@ const buildMemberInfractionOrWarnedMessage = (language, infoType, memberId, id, 
 		+ ` : ${typeOrReason}`;
 };
 
-const buildMemberInfractionFrenchMessage = (memberId, infractionId, type) => {
-	return `<@!${memberId}> a commis une infraction (${infractionId}).\nType : ${type}`;
-};
-
-const buildMemberInfractionMessage = (memberId, infractionId, type) => {
-	return `<@!${memberId}> has commited an infraction (${infractionId}).\nType : ${type}`;
-};
-
-const buildMemberWarnedFrenchMessage = (memberId, warnId, reason) => {
-	return `<@!${memberId}> a reçu un avertissement (${warnId}).\nMotif : ${reason}`;
-};
-
-const buildMemberWarnedMessage = (memberId, warnId, reason) => {
-	return `<@!${memberId}> has been warned (${warnId}).\nReason : ${reason}`;
-};
-
 const buildMemberBannedFrenchMessage = (memberId, banId, reason) => {
 	return `<@!${memberId}> a été banni (${banId}).\nMotif : ${reason}`;
 };
@@ -357,8 +341,6 @@ module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
 	buildMemberInfractionOrWarnedMessage,
-	buildMemberInfractionFrenchMessage, buildMemberInfractionMessage,
-	buildMemberWarnedFrenchMessage, buildMemberWarnedMessage,
 	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage, buildMemberBanOrUnbanLogEmbed,
 	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed,
 	buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed
