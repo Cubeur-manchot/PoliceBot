@@ -94,29 +94,30 @@ const readPoliceBotData = () =>
 	JSON.parse(fs.readFileSync("./policeBotData.json"));
 
 const readInfoData = async infoType => {
-	if (infoType === "discussions") {
-		return readPoliceBotData().discussions;
+	let data = await loadData(infoType);
+	let elementList = [];
+	let headers = data[0];
+	let headersLength = headers.length;
+	for (let lineIndex = 1; lineIndex < data.length; lineIndex++) {
+		let element = {};
+		for (let columnIndex = 0; columnIndex < headersLength; columnIndex++) {
+			element[headers[columnIndex]] = data[lineIndex][columnIndex] ? data[lineIndex][columnIndex] : "";
+		}
+		elementList.push(element);
+	}
+	if (infoType === "members") { // members : hash to speed up access
+		let memberList = {};
+		for (let element of elementList) {
+			memberList[element.memberId] = element;
+		}
+		return memberList;
+	} else if (infoType === "discussions") { // discussions : parse message list with separator
+		for (let discussion of elementList) {
+			discussion.messages = convertStringToMessageObjectList(discussion.messages);
+		}
+		return elementList;
 	} else {
-		let data = await loadData(infoType);
-		let elementList = [];
-		let headers = data[0];
-		let headersLength = headers.length;
-		for (let lineIndex = 1; lineIndex < data.length; lineIndex++) {
-			let element = {};
-			for (let columnIndex = 0; columnIndex < headersLength; columnIndex++) {
-				element[headers[columnIndex]] = data[lineIndex][columnIndex] ? data[lineIndex][columnIndex] : "";
-			}
-			elementList.push(element);
-		}
-		if (infoType === "members") {
-			let memberList = {};
-			for (let element of elementList) {
-				memberList[element.memberId] = element;
-			}
-			return memberList;
-		} else {
-			return elementList;
-		}
+		return elementList;
 	}
 };
 
@@ -192,6 +193,15 @@ const convertMessageObjectListToString = messageObjectList => {
 		messageStringList.push(messageObject.authorId + separator + messageObject.date + separator + messageObject.content);
 	}
 	return messageStringList.join(separator + separator);
+};
+
+const convertStringToMessageObjectList = messagesString => {
+	let messageObjectList = [];
+	for (let messageString of messagesString.split(separator + separator)) {
+		let [authorId, date, content] = messageString.split(separator);
+		messageObjectList.push({authorId, date, content});
+	}
+	return messageObjectList;
 };
 
 module.exports = {
