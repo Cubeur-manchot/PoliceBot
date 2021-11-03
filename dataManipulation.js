@@ -123,12 +123,6 @@ const readInfoData = async infoType => {
 const writePoliceBotData = policeBotDataObject =>
 	fs.writeFileSync("./policeBotData.json", JSON.stringify(policeBotDataObject, null, "\t"));
 
-const addInfoData = (newData, infoType) => {
-	let policeBotData = readPoliceBotData();
-	policeBotData[infoType].push(newData);
-	writePoliceBotData(policeBotData);
-};
-
 const getAvailableId = async infoType => {
 	let dataOfThisType = await readInfoData(infoType);
 	let idWithoutIncrement = infoType[0].toLowerCase() + "#";
@@ -202,7 +196,7 @@ const convertMessageObjectListToString = messageObjectList => {
 
 module.exports = {
 	setupGoogleSheetsAPICredentials,
-	readInfoData, appendData, updateData, addInfoData,
+	readInfoData, appendData, updateData,
 	removeBulkData,
 	getAvailableId, groupElementsByMemberId, groupElementsIdByType, infoTypeFromIdFirstLetter
 };
