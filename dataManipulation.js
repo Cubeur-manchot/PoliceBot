@@ -90,9 +90,6 @@ const setupGoogleSheetsAPICredentials = () => {
 	});
 };
 
-const readPoliceBotData = () =>
-	JSON.parse(fs.readFileSync("./policeBotData.json"));
-
 const readInfoData = async infoType => {
 	let data = await loadData(infoType);
 	let elementList = [];
@@ -121,9 +118,6 @@ const readInfoData = async infoType => {
 	}
 };
 
-const writePoliceBotData = policeBotDataObject =>
-	fs.writeFileSync("./policeBotData.json", JSON.stringify(policeBotDataObject, null, "\t"));
-
 const getAvailableId = async infoType => {
 	let dataOfThisType = await readInfoData(infoType);
 	let idWithoutIncrement = infoType[0].toLowerCase() + "#";
@@ -137,22 +131,11 @@ const getAvailableId = async infoType => {
 const removeBulkData = async elementsIdList => {
 	let elementsIdGroupedByType = groupElementsIdByType(elementsIdList);
 	for (let type in elementsIdGroupedByType) {
-		if (type === "discussions") {
-			let policeBotData = readPoliceBotData();
-			for (let elementId of elementsIdGroupedByType.discussions) {
-				let index = policeBotData.discussions.findIndex(element => element.id === elementId);
-				if (index !== -1) {
-					policeBotData.discussions.splice(index, 1);
-				}
-			}
-			writePoliceBotData(policeBotData);
-		} else {
-			let data = await readInfoData(type);
-			for (let elementId of elementsIdGroupedByType[type]) {
-				let index = data.findIndex(element => element.id === elementId);
-				if (index !== -1) {
-					await eraseRawData(type, index + 2); // +1 because line starts at 1 in Google Sheets, and +1 because of the header line
-				}
+		let data = await readInfoData(type);
+		for (let elementId of elementsIdGroupedByType[type]) {
+			let index = data.findIndex(element => element.id === elementId);
+			if (index !== -1) {
+				await eraseRawData(type, index + 2); // +1 because line starts at 1 in Google Sheets, and +1 because of the header line
 			}
 		}
 	}
