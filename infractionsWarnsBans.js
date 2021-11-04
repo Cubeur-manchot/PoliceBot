@@ -4,7 +4,7 @@ const {getAvailableId, readInfoData, appendData, updateData, removeBulkData, gro
 const {getMemberFromId, getMembersFromName, banMember, unbanMember} = require("./members.js");
 const {getReadableDate, parseDate, convertDateUtcToLocal, getCurrentDate} = require("./date.js");
 const {sendMessageToChannel, sendEmbedLog, sendMessageLog} = require("./messages.js");
-const {buildMemberInfractionOrWarnedMessage,
+const {buildMemberInfractionOrWarnedMessage, buildMemberInfractionOrWarnedLogEmbed,
 	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage, buildMemberBanOrUnbanLogEmbed} = require("./messageBuilder.js");
 const {addInfractionHelpMessage, addWarnHelpMessage, addBanHelpMessage, unbanHelpMessage} = require("./helpMessages.js");
 
@@ -30,8 +30,8 @@ const addInfractionOrWarnCommand = async (commandMessage, infoType) => {
 			};
 			infractionOrWarn[infoType === "infraction" ? "type" : "reason"] = restOfCommand;
 			await appendData(infractionOrWarn, infoType + "s");
-			await sendMessageLog(buildMemberInfractionOrWarnedMessage("english", infoType, memberId, id, restOfCommand), commandMessage.client);
 			await sendMessageToChannel(commandMessage.channel, buildMemberInfractionOrWarnedMessage(infoType, memberId, id, restOfCommand));
+			await sendEmbedLog(buildMemberInfractionOrWarnedLogEmbed(memberId, id, infoType), commandMessage.client);1
 		}
 	}
 };

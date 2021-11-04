@@ -243,6 +243,16 @@ const buildMemberUnbannedFrenchMessage = (memberId, banId) => {
 	return `<@!${memberId}> a été débanni (${banId}).`;
 };
 
+const buildMemberInfractionOrWarnedLogEmbed = (userId, infractionOrWarnId, infractionOrWarn) => {
+	let committedAnInfractionOrReceivedAWarn = infractionOrWarn === "infraction" ? "committed an infraction" : "received a warn";
+	return {
+		color: embedColorFromType[infractionOrWarn],
+		title: `__Member has ${committedAnInfractionOrReceivedAWarn}__`,
+		description: `${infractionOrWarn === "infraction" ? ":exclamation:" : ":warning:"} User <@!${userId}> has ${committedAnInfractionOrReceivedAWarn} (${infractionOrWarnId}).`,
+		timestamp: new Date()
+	};
+};
+
 const buildMemberBanOrUnbanLogEmbed = (userId, banId, avatarUrl, banOrUnban) => {
 	return {
 		color: embedColorFromType["bans"],
@@ -335,7 +345,7 @@ module.exports = {buildElementListEmbed, buildElementDetailsEmbed,
 	buildDiscussionPurgedOrSavedOrMovedFrenchMessage, buildDiscussionPurgedOrSavedOrMovedMessage,
 	buildBadWordsLogEmbed, buildBadWordPrivateMessage,
 	buildInviteLinkLogEmbed, buildInviteLinkPrivateMessage,
-	buildMemberInfractionOrWarnedMessage,
+	buildMemberInfractionOrWarnedMessage, buildMemberInfractionOrWarnedLogEmbed,
 	buildMemberBannedFrenchMessage, buildMemberUnbannedFrenchMessage, buildMemberBanOrUnbanLogEmbed,
 	buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed,
 	buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed
