@@ -230,14 +230,9 @@ const buildInviteLinkPrivateMessage = invitationsNotInWhiteListStringified => {
 		+ invitationsNotInWhiteListStringified.join(", ");
 };
 
-const buildMemberInfractionOrWarnedMessage = (language, infoType, memberId, id, typeOrReason) => {
-	return `<@${memberId}> `
-		+ (infoType === "infraction"
-			? (language === "french" ? "a commis une infraction" : "has committed an infraction")
-			: (language === "french" ? "a reçu un avertissement" : "has been warned"))
-		+ ` (${id}).\n`
-		+ (infoType === "infraction" ? "Type" : (language === "french" ? "Motif" : "Reason"))
-		+ ` : ${typeOrReason}`;
+const buildMemberInfractionOrWarnedMessage = (infoType, memberId, id, typeOrReason) => {
+	return `<@${memberId}> ${infoType === "infraction" ? "a commis une infraction" : "a reçu un avertissement"} (${id}).\n`
+		+ `${infoType === "infraction" ? "Type" : "Motif"} : ${typeOrReason}`;
 };
 
 const buildMemberBannedFrenchMessage = (memberId, banId, reason) => {
@@ -257,7 +252,7 @@ const buildMemberBanOrUnbanLogEmbed = (userId, banId, avatarUrl, banOrUnban) => 
 			url: avatarUrl
 		},
 		timestamp: new Date()
-	}
+	};
 };
 
 const buildNicknameChangeLogEmbed = (oldMemberPseudo, oldMemberTag, userId, userAvatarUrl, nicknameOrUsername) => {
@@ -285,7 +280,7 @@ const buildAvatarChangeLogEmbed = (userId, oldAvatarUrl, newAvatarUrl) => {
 			url: newAvatarUrl
 		},
 		timestamp: new Date()
-	}
+	};
 };
 
 const buildMessageChangeLogEmbeds = (oldMessageContent, newMessageContent, userId, messageUrl, channelId, avatarUrl) => {

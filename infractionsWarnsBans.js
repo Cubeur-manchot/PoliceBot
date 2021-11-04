@@ -30,8 +30,8 @@ const addInfractionOrWarnCommand = async (commandMessage, infoType) => {
 			};
 			infractionOrWarn[infoType === "infraction" ? "type" : "reason"] = restOfCommand;
 			await appendData(infractionOrWarn, infoType + "s");
-			await sendMessageToChannel(commandMessage.channel, buildMemberInfractionOrWarnedMessage("french", infoType, memberId, id, restOfCommand));
 			await sendMessageLog(buildMemberInfractionOrWarnedMessage("english", infoType, memberId, id, restOfCommand), commandMessage.client);
+			await sendMessageToChannel(commandMessage.channel, buildMemberInfractionOrWarnedMessage(infoType, memberId, id, restOfCommand));
 		}
 	}
 };
