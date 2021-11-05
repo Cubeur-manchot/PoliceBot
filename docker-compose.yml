@@ -5,7 +5,3 @@ services:
     restart: always
     build: .
     env_file: .env
-    volumes:
-      - type: bind
-        source: ./policeBotData.json
-        target: /policeBotData.json
