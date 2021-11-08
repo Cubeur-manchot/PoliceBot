@@ -26,7 +26,7 @@ const handleBadWords = async message => {
 	let badWords = containedBadWords(message);
 	if (badWords.length) {
 		deleteMessage(message);
-		let infractionId = getAvailableId("infractions");
+		let infractionId = await getAvailableId("infractions");
 		await appendData({
 			id: infractionId,
 			memberId: message.author.id,
