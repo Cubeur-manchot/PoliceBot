@@ -3,5 +3,6 @@ services:
   policebot:
     container_name: policebot
     restart: always
-    build: .
+    #build: .
+    image: ghcr.io/cubeur-manchot/policebot:latest
     env_file: .env
