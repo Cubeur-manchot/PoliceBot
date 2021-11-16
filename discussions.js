@@ -141,11 +141,8 @@ const getLastMessagesIdOfChannel = (nbMessages, channel) => {
 };
 
 const getAllMessagesIdAfterTimestamp = (timestamp, channel) => {
-	let channelMessages = channel.messages.cache.array().filter(message => message.createdAt >= timestamp);
 	let result = [];
-	for (let message of channelMessages) {
-		result.push(message.id);
-	}
+	channel.messages.cache.array().filter(message => message.createdAt >= timestamp).forEach(message => result.push(message.id));
 	return result;
 };
 

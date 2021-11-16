@@ -12,12 +12,12 @@ const {buildElementListEmbed, buildNicknameChangeLogEmbed, buildAvatarChangeLogE
 const helpMessages = require("./helpMessages.js");
 
 const onReady = async PoliceBot => {
+	await setupGoogleSheetsAPICredentials();
+	PoliceBot.memberList = await readInfoData("members");
+	await reloadTempBans(PoliceBot);
 	PoliceBot.user.setActivity("lire les messages du serveur")
 		.then(() => console.log("PoliceBot is ready !"))
 		.catch(console.error);
-	setupGoogleSheetsAPICredentials();
-	PoliceBot.memberList = await readInfoData("members");
-	await reloadTempBans(PoliceBot);
 };
 
 const onMessage = async message => {

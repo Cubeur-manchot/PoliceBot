@@ -109,12 +109,14 @@ const getCurrentDate = () => {
 };
 
 const convertDateUtcToLocal = date => {
-	return addHours(date, process.env.TIMEZONEOFFSET);
+	return addHours(date, getTimeZoneOffset());
 };
 
 const convertDateLocalToUtc = date => {
-	return addHours(date, -process.env.TIMEZONEOFFSET);
+	return addHours(date, -getTimeZoneOffset());
 };
+
+const getTimeZoneOffset = () => parseInt(process.env.TIMEZONEOFFSET);
 
 const addHours = (date, hours) => {
 	return new Date(date.setHours(date.getHours() + hours));

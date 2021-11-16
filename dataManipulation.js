@@ -9,8 +9,8 @@ const getAuth = () => new google.auth.GoogleAuth({keyFile: "credentials.json", s
 
 const getSpreadsheetsValues = async auth => google.sheets({version: "v4", auth: await auth.getClient()}).spreadsheets.values;
 
-const setupGoogleSheetsAPICredentials = () => {
-	fs.writeFile("credentials.json", JSON.stringify({
+const setupGoogleSheetsAPICredentials = async () => {
+	let jsonContent = JSON.stringify({
 		type: process.env.CREDENTIALS_type,
 		project_id: process.env.CREDENTIALS_project_id,
 		private_key_id: process.env.CREDENTIALS_private_key_id,
@@ -21,9 +21,14 @@ const setupGoogleSheetsAPICredentials = () => {
 		token_uri: process.env.CREDENTIALS_token_uri,
 		auth_provider_x509_cert_url: process.env.CREDENTIALS_auth_provider_x509_cert_url,
 		client_x509_cert_url: process.env.CREDENTIALS_client_x509_cert_url
-	}), function (err) {
-		if (err) {throw err;} else {console.log("Google spreadsheets credentials file written successfully !")}
 	});
+	let error;
+	await fs.writeFile("credentials.json", jsonContent, writeFileError => error = writeFileError);
+	if (error) {
+		throw error;
+	} else {
+		console.log("Google spreadsheets credentials file written successfully !");
+	}
 };
 
 const loadData = async tabName => {
