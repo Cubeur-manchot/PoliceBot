@@ -9,7 +9,6 @@ const badWords = [
 	{ word : "bite", regexString : "b(i|1)tt?es?" },
 	{ word : "teub", regexString : "teube?s?" },
 	{ word : "chibre", regexString : "ch(i|1)bre?s?" },
-	{ word : "couille", regexString : "(c|k)ou(i|1)ll?es?" },
 	{ word : "enculé", regexString : "(e|a)n(c|k)ul(é|e)s?" },
 	{ word : "connard/connasse", regexString : "(c|k)(o|0)nn?a(rd?|ss?e)s?" },
 	{ word : "pétasse", regexString : "p(é|e)tass?es?" },
