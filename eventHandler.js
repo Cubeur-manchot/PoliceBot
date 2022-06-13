@@ -7,6 +7,7 @@ const {removeCommand, detailsCommand} = require("./generalCommands.js");
 const {addInfractionCommand, addWarnCommand, addBanCommand, unbanCommand, handleBanAdd, handleBanRemove, reloadTempBans} = require("./infractionsWarnsBans.js");
 const {handleBadWords, handleBadWordsSoft} = require("./badWords");
 const {handleInviteLinks, handleInviteLinksSoft} = require("./inviteLinks.js");
+const {handleImmatureWords} = require("./immatureWords.js");
 const {buildElementListEmbed, buildNicknameChangeLogEmbed, buildAvatarChangeLogEmbed,
 	buildMessageChangeLogEmbeds, buildMessageDeleteLogEmbed} = require("./messageBuilder.js");
 const helpMessages = require("./helpMessages.js");
@@ -36,6 +37,7 @@ const onMessage = async message => {
 		if (!message.member.roles.cache.get("332427771286519808") // handle invite links only for non-moderators
 			&& !message.member.roles.cache.get("329903067283718147")) { // and non-founder
 			await handleInviteLinks(message);
+			await handleImmatureWords(message);
 		}
 	}
 	await updateMemberList(message);
