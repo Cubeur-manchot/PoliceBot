@@ -1,11 +1,16 @@
 "use strict";
 
-const {sendMessageToChannel} = require("./messages.js");
+const {sendMessageToChannel, deleteMessage} = require("./messages.js");
+
+const immatureWordsList = ["feur", "ratio", "lekip"];
 
 const handleImmatureWords = async message => {
-    if (message.content.toLowerCase().startsWith("feur")
-        || message.content.toLowerCase().includes("(feur)")) {
-        sendMessageToChannel(message.channel, "Sérieux tu n'as rien de plus mature ? :unamused:");
+    for (let immatureWord of immatureWordsList) {
+        if (message.content.toLowerCase().startsWith(immatureWord)
+            || (message.content.toLowerCase().includes(immatureWord) && message.content.length < 20)) {
+            deleteMessage(message);
+            return;
+        }
     }
 };
 
