@@ -2,7 +2,7 @@
 
 const {sendMessageToChannel, deleteMessage} = require("./messages.js");
 
-const immatureWordsList = ["feur", "ratio", "lekip"];
+const immatureWordsList = ["feur", "ratio", "lekip", "crampté", "cramptés", "crampter", "miaou", "quoicoubeh"];
 
 const handleImmatureWords = async message => {
     for (let immatureWord of immatureWordsList) {
