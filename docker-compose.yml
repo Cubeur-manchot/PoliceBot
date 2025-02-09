@@ -1,8 +1,12 @@
-version: '3.8'
 services:
   policebot:
+    profiles: ["production"]
     container_name: policebot
-    restart: always
-    #build: .
     image: ghcr.io/cubeur-manchot/policebot:latest
+    restart: unless-stopped
+    env_file: .env
+  policebot-dev:
+    profiles: ["development"]
+    container_name: policebot-dev
+    build: .
     env_file: .env
