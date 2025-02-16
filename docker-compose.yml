@@ -1,12 +1,13 @@
 services:
   policebot:
-    profiles: ["production"]
+    profiles: ["prod"]
     container_name: policebot
     image: ghcr.io/cubeur-manchot/policebot:latest
     restart: unless-stopped
     env_file: .env
   policebot-dev:
-    profiles: ["development"]
+    profiles: ["dev"]
     container_name: policebot-dev
     build: .
+    stop_grace_period: 3s
     env_file: .env
