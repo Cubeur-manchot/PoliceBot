@@ -2,7 +2,7 @@
 
 import PoliceBot from "./policebot.js";
 
-const bot = new PoliceBot();
+const bot = new PoliceBot(process.env.PREFIX, process.env.LOG_LEVELS.split(","));
 
 /*
 const Discord = require("discord.js");
