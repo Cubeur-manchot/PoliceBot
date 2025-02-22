@@ -4,6 +4,7 @@
   "description": "Discord bot to help moderators on a french-speaking server.",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "homepage": "https://github.com/Cubeur-manchot/PoliceBot#readme",
   "repository": {
     "type": "git",

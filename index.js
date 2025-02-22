@@ -1,5 +1,10 @@
 "use strict";
 
+import PoliceBot from "./policebot.js";
+
+const bot = new PoliceBot();
+
+/*
 const Discord = require("discord.js");
 
 const {onReady, onMessage, onMessageUpdate, onMessageDelete, onUserUpdate, onGuildMemberUpdate, onGuildBanAdd, onGuildBanRemove} = require("./eventHandler.js");
@@ -18,3 +23,4 @@ PoliceBot.on("guildBanRemove", (guild, user) => onGuildBanRemove(user));
 PoliceBot.login(process.env.TOKEN)
 	.then(() => console.log("PoliceBot is logged in !"))
 	.catch(console.error);
+*/
