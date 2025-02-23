@@ -25,10 +25,19 @@ export default class DiscordClientManager {
 		this.discordClient.user.setPresence({status: "online", activities: [{type: Discord.ActivityType.Playing, name: "surveiller Cubeurs Francophones"}]})
 		this.bot.logger.info("Presence has been set to active.")
 	};
+	setInactivePresence = () => {
+		this.discordClient.user.setPresence({status: "idle", activities: [{type: Discord.ActivityType.Playing, name: "faire la sieste 😴"}]})
+		this.bot.logger.info("Presence has been set to inactive.")
+	};
 	loginWithToken = token => {
 		this.discordClient.login(token)
 			.then(() => this.bot.logger.info("Login successful."))
 			.catch(error => this.bot.logger.error(`Login failed : ${error}.`));
+	};
+	shutDown = async () => {
+		this.setInactivePresence();
+		await this.discordClient.destroy();
+		this.bot.logger.info("Discord client has been shut down.");
 	};
 };
 
