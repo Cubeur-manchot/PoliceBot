@@ -2,7 +2,7 @@
 
 import PoliceBot from "./policebot.js";
 
-const bot = new PoliceBot(process.env.PREFIX, process.env.LOG_LEVELS.split(","), process.env.TOKEN);
+const bot = new PoliceBot(process.env.LOG_LEVELS.split(","), process.env.TOKEN);
 
 process.on("SIGTERM", async () => {
 	bot.logger.info("SIGTERM has been received, the application will stop.");
