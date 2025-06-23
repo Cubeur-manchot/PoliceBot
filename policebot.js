@@ -1,11 +1,13 @@
 "use strict";
 
-import Logger from "./logger.js";
+import CommandManager from "./commandManager.js";
 import DiscordClientManager from "./discordClientManager.js";
+import Logger from "./logger.js";
 
 export default class PoliceBot {
 	constructor(logLevels, token) {
 		this.logger = new Logger(logLevels);
+		this.commandManager = new CommandManager(this);
 		this.discordClientManager = new DiscordClientManager(this, token);
 	};
 	shutDown = async () => {

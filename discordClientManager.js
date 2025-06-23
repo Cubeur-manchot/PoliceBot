@@ -20,6 +20,7 @@ export default class DiscordClientManager {
 	onClientReady = () => {
 		this.bot.logger.info("Discord client is ready.");
 		this.setActivePresence();
+		this.bot.commandManager.updateApplicationCommands();
 	};
 	setActivePresence = () => {
 		this.discordClient.user.setPresence({status: "online", activities: [{type: Discord.ActivityType.Playing, name: "surveiller Cubeurs Francophones"}]})
@@ -39,5 +40,10 @@ export default class DiscordClientManager {
 		await this.discordClient.destroy();
 		this.bot.logger.info("Discord client has been shut down.");
 	};
+	fetchApplicationCommands = () => this.discordClient.rest.get(Discord.Routes.applicationCommands(this.discordClient.application.id));
+	deployApplicationCommands = applicationCommands =>
+		this.discordClient.rest.put(Discord.Routes.applicationCommands(this.discordClient.application.id), {body: applicationCommands})
+		.then(() => this.bot.logger.info("Application commands have been updated successfully."))
+		.catch(applicationCommandsPutError => this.bot.logger.error(`Fail to update application commands : "${applicationCommandsPutError}".`));
 };
 
