@@ -1,10 +1,15 @@
 "use strict";
 
 import Discord from "discord.js";
+import dictionnize from "./utils.js";
 
 export default class CommandManager {
 	constructor(bot) {
 		this.bot = bot;
+		let commandHandlers = [
+		];
+		this.commandHandlers = dictionnize(commandHandlers, "commandName");
+		this.commands = commandHandlers.map(commandHandler => commandHandler.command);
 	};
 	updateApplicationCommands = async () => {
 		this.bot.logger.info("Start updating application commands.");
@@ -25,7 +30,7 @@ export default class CommandManager {
 			deployedCommandsMap[command.name][command.type] = command.type === Discord.ApplicationCommandType.ChatInput ? command : true;
 			return deployedCommandsMap;
 		}, {});
-		for (let command of applicationCommands) { // check if all defined commands are deployed
+		for (let command of this.commands) { // check if all defined commands are deployed
 			if (command.contexts.slash) {
 				commandCount++;
 				let deployedSlashCommand = deployedCommandsMap[command.name]?.[Discord.ApplicationCommandType.ChatInput];
@@ -35,7 +40,7 @@ export default class CommandManager {
 				if (deployedSlashCommand.description !== command.description) {
 					return false;
 				}
-				let deployedSlashCommandOptions = Object.entries(deployedSlashCommand.options.map(option => [option.name, option]));
+				let deployedSlashCommandOptions = dictionnize(deployedSlashCommand.options, "name");
 				for (let commandOption of command.options ?? []) {
 					let deployedCommandOption = deployedSlashCommandOptions[commandOption.name];
 					if (!deployedCommandOption) {
@@ -71,7 +76,7 @@ export default class CommandManager {
 		return true;
 	};
 	buildApplicationCommands = () =>
-		applicationCommands.map(
+		this.commands.map(
 			command => [
 				command.contexts.slash ? command.getSlashApplicationCommand() : null,
 				command.contexts.user ? command.getUserContextApplicationCommand() : null,
@@ -79,56 +84,3 @@ export default class CommandManager {
 			].filter(Boolean)
 		).flat();
 };
-
-class Command {
-	constructor(commandInfo) {
-		Object.assign(this, commandInfo);
-	};
-	getSlashApplicationCommand = () => {
-		let applicationCommand = new Discord.SlashCommandBuilder()
-			.setName(this.name)
-			.setDescription(this.description);
-		for (let commandOption of this.options ?? []) {
-			applicationCommand.addStringOption(option => {
-				option
-					.setName(commandOption.name)
-					.setDescription(commandOption.description)
-					.setRequired(commandOption.required);
-				if (commandOption.choices) {
-					option.addChoices(...commandOption.choices);
-				}
-				return option;
-			});
-		}
-		return applicationCommand;
-	};
-	getUserContextApplicationCommand = () => this.getContextMenuApplicationCommand(Discord.ApplicationCommandType.User);
-	getMessageContextApplicationCommand = () => this.getContextMenuApplicationCommand(Discord.ApplicationCommandType.Message);
-	getContextMenuApplicationCommand = type =>
-		new Discord.ContextMenuCommandBuilder()
-			.setType(type)
-			.setName(this.name);
-};
-
-const applicationCommands = [
-	new Command({
-		name: "command1",
-		description: "description of command1",
-		options: null,
-		contexts: {
-			slash: true,
-			user: true,
-			message: false
-		}
-	}),
-	new Command({
-		name: "command2",
-		description: "description of command2",
-		options: null,
-		contexts: {
-			slash: false,
-			user: true,
-			message: true
-		}
-	})
-];
