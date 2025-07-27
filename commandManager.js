@@ -44,6 +44,9 @@ export default class CommandManager {
 					if (deployedCommandOption.required ^ commandOption.required) {
 						return false;
 					}
+					if (deployedCommandOption.description !== commandOption.description) {
+						return false;
+					}
 				}
 				if (deployedSlashCommand.options.length !== command.options.length) {
 					return false;
