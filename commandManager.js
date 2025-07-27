@@ -22,7 +22,6 @@ export default class CommandManager {
 		this.bot.discordClientManager.deployApplicationCommands(commands.map(command => command.toJSON()));
 	};
 	areApplicationCommandsIdentical = deployedCommands => {
-		let commandCount = 0;
 		let deployedCommandsMap = deployedCommands.reduce((deployedCommandsMap, command) => {
 			if (!deployedCommandsMap[command.name]) {
 				deployedCommandsMap[command.name] = {};
@@ -32,7 +31,6 @@ export default class CommandManager {
 		}, {});
 		for (let command of this.commands) { // check if all defined commands are deployed
 			if (command.contexts.slash) {
-				commandCount++;
 				let deployedSlashCommand = deployedCommandsMap[command.name]?.[Discord.ApplicationCommandType.ChatInput];
 				if (!deployedSlashCommand) {
 					return false;
@@ -58,19 +56,18 @@ export default class CommandManager {
 				}
 			}
 			if (command.contexts.user) {
-				commandCount++;
 				if (!deployedCommandsMap[command.name]?.[Discord.ApplicationCommandType.User]) {
 					return false;
 				}
 			}
 			if (command.contexts.message) {
-				commandCount++;
 				if (!deployedCommandsMap[command.name]?.[Discord.ApplicationCommandType.Message]) {
 					return false;
 				}
 			}
 		}
-		if (deployedCommands.length !== commandCount) { // some commands are deployed but are not defined
+		let expectedCommandCount = this.commands.reduce((sum, command) => sum + command.contexts.slash + command.contexts.user + command.contexts.message, 0);
+		if (deployedCommands.length !== expectedCommandCount) { // some commands are deployed but are not defined
 			return false;
 		}
 		return true;
