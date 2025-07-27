@@ -10,6 +10,7 @@ export default class CommandManager {
 		this.bot.logger.info("Start updating application commands.");
 		let deployedCommands = await this.bot.discordClientManager.fetchApplicationCommands();
 		if (this.areApplicationCommandsIdentical(deployedCommands)) {
+			this.bot.logger.info("Application commands are already up-to-date.");
 			return;
 		}
 		let commands = this.buildApplicationCommands();
