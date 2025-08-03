@@ -1,5 +1,7 @@
 x-common-config: &common-config
   env_file: .env
+  volumes:
+    - ./secrets/firebase_serviceAccountKey.json:/run/secrets/firebase_serviceAccountKey.json:ro
 
 services:
   policebot:
