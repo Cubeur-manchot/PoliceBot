@@ -15,7 +15,9 @@ export default class Command {
 	getSlashApplicationCommand = () => {
 		let applicationCommand = new Discord.SlashCommandBuilder()
 			.setName(this.name)
-			.setDescription(this.description);
+			.setDescription(this.description)
+			.setDefaultMemberPermissions(Discord.PermissionsBitField.Flags.BanMembers)
+			.setDMPermission(false);
 		for (let commandOption of this.options ?? []) {
 			applicationCommand.addStringOption(option => {
 				option

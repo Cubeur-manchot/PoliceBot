@@ -40,9 +40,9 @@ export default class DiscordClientManager {
 		await this.discordClient.destroy();
 		this.bot.logger.info("Discord client has been shut down.");
 	};
-	fetchApplicationCommands = () => this.discordClient.rest.get(Discord.Routes.applicationCommands(this.discordClient.application.id));
+	fetchApplicationCommands = () => this.discordClient.rest.get(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID));
 	deployApplicationCommands = applicationCommands =>
-		this.discordClient.rest.put(Discord.Routes.applicationCommands(this.discordClient.application.id), {body: applicationCommands})
+		this.discordClient.rest.put(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID), {body: applicationCommands})
 		.then(() => this.bot.logger.info("Application commands have been updated successfully."))
 		.catch(applicationCommandsPutError => this.bot.logger.error(`Fail to update application commands : "${applicationCommandsPutError}".`));
 };
