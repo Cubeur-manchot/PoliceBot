@@ -45,5 +45,8 @@ export default class DiscordClientManager {
 		this.discordClient.rest.put(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID), {body: applicationCommands})
 		.then(() => this.bot.logger.info("Application commands have been updated successfully."))
 		.catch(applicationCommandsPutError => this.bot.logger.error(`Fail to update application commands : "${applicationCommandsPutError}".`));
+	replyInteraction = (interaction, answer) =>
+		interaction.reply(answer)
+		.catch(interactionReplyError => this.bot.logger.error(`Failed to reply an interaction : "${interactionReplyError}".`));
 };
 
