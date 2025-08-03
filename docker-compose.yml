@@ -1,19 +1,22 @@
+x-common-config: &common-config
+  env_file: .env
+
 services:
   policebot:
     profiles: ["prod"]
     container_name: policebot
+    <<: *common-config
     image: ghcr.io/cubeur-manchot/policebot:latest
     restart: unless-stopped
-    env_file: .env
     environment:
       - SERVER_ID=329175643877015553
       - MODERATOR_ROLE_ID=332427771286519808
   policebot-dev:
     profiles: ["dev"]
     container_name: policebot-dev
+    <<: *common-config
     build: .
     stop_grace_period: 3s
-    env_file: .env
     environment:
       - SERVER_ID=422718228913979392
       - MODERATOR_ROLE_ID=424959068092891137
