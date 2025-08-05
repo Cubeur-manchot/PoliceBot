@@ -16,11 +16,16 @@ export default class DiscordClientManager {
 	};
 	attachActions = () => [
 		{triggerType: "once", event: Discord.Events.ClientReady, method: this.onClientReady},
+		{triggerType: "on", event: Discord.Events.InteractionCreate, method: this.onInteractionCreate}
 	].forEach(action => this.discordClient[action.triggerType](action.event, action.method));
 	onClientReady = () => {
 		this.bot.logger.info("Discord client is ready.");
 		this.setActivePresence();
 		this.bot.commandManager.updateApplicationCommands();
+	onInteractionCreate = interaction => {
+		if (interaction.isCommand()) {
+			this.bot.commandManager.handleCommand(interaction);
+		}
 	};
 	setActivePresence = () => {
 		this.discordClient.user.setPresence({status: "online", activities: [{type: Discord.ActivityType.Playing, name: "surveiller Cubeurs Francophones"}]})

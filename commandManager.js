@@ -80,4 +80,5 @@ export default class CommandManager {
 				command.contexts.message ? command.getMessageContextApplicationCommand() : null,
 			].filter(Boolean)
 		).flat();
+	handleCommand = interaction => this.commandHandlers[interaction.commandName].handleCommand(interaction);
 };
