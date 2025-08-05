@@ -46,7 +46,7 @@ export default class DiscordClientManager {
 		.then(() => this.bot.logger.info("Application commands have been updated successfully."))
 		.catch(applicationCommandsPutError => this.bot.logger.error(`Fail to update application commands : "${applicationCommandsPutError}".`));
 	replyInteraction = (interaction, answer) =>
-		interaction.reply(answer)
+		interaction.reply(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral}))
 		.catch(interactionReplyError => this.bot.logger.error(`Failed to reply an interaction : "${interactionReplyError}".`));
 };
 
