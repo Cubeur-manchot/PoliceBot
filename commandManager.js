@@ -1,12 +1,15 @@
 "use strict";
 
 import Discord from "discord.js";
+import WhitelistCommandHandler from "./commandHandlers/whitelistCommandHandler.js";
+
 import dictionnize from "./utils.js";
 
 export default class CommandManager {
 	constructor(bot) {
 		this.bot = bot;
 		let commandHandlers = [
+			new WhitelistCommandHandler(this)
 		];
 		this.commandHandlers = dictionnize(commandHandlers, "commandName");
 		this.commands = commandHandlers.map(commandHandler => commandHandler.command);
