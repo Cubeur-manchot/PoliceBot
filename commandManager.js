@@ -83,5 +83,8 @@ export default class CommandManager {
 				command.contexts.message ? command.getMessageContextApplicationCommand() : null,
 			].filter(Boolean)
 		).flat();
-	handleCommand = interaction => this.commandHandlers[interaction.commandName].handleCommand(interaction);
+	handleCommand = async interaction => {
+		let answer = await this.commandHandlers[interaction.commandName].handleCommand(interaction);
+		this.bot.discordClientManager.replyInteraction(interaction, answer);
+	};
 };

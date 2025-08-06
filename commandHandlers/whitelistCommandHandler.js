@@ -29,46 +29,40 @@ export default class WhitelistCommandHandler extends CommandHandler {
 				: interaction.targetMessage.content)
 			.match(new RegExp(`(?<=https:\/\/discord\.gg\/)[0-9a-z]+`, "i"))?.[0];
 		if (!inviteId) {
-			this.commandManager.bot.discordClientManager.replyInteraction(interaction, {content: ":x: Aucun lien d'invitation n'a été trouvé."});
-			return;
+			return {content: ":x: Aucun lien d'invitation n'a été trouvé."};
 		}
 		let serverInfo;
 		try {
 			serverInfo = await this.getServerInfo(inviteId);
 		} catch {
-			this.commandManager.bot.discordClientManager.replyInteraction(interaction, {content: ":x: Une erreur s'est produite lors de la récupération des informations du serveur. Celui-ci n'a pas pu être ajouté à la whitelist."});
-			return;
+			return {content: ":x: Une erreur s'est produite lors de la récupération des informations du serveur. Celui-ci n'a pas pu être ajouté à la whitelist."};
 		}
 		if (!serverInfo) {
-			this.commandManager.bot.discordClientManager.replyInteraction(interaction, {content: ":x: Aucune information n'est disponible pour ce serveur. Celui-ci n'a pas pu être ajouté à la whitelist."});
-			return;
+			return {content: ":x: Aucune information n'est disponible pour ce serveur. Celui-ci n'a pas pu être ajouté à la whitelist."};
 		}
 		let whiteListedServer;
 		try {
 			whiteListedServer = await this.commandManager.bot.dataManager.getServerWhiteListById(serverInfo.id);
 		} catch {
-			this.commandManager.bot.discordClientManager.replyInteraction(interaction, {content: ":x: Une erreur s'est produite lors de la récupération de la whitelist. Le serveur n'a pas pu être ajouté à celle-ci."});
-			return;
+			return {content: ":x: Une erreur s'est produite lors de la récupération de la whitelist. Le serveur n'a pas pu être ajouté à celle-ci."};
 		}
 		if (!whiteListedServer) {
 			try {
 				await this.commandManager.bot.dataManager.addServerWhiteList(serverInfo);
-				this.commandManager.bot.discordClientManager.replyInteraction(interaction, {content: ":white_check_mark: Ce serveur a été ajouté à la whitelist."});
+				return {content: ":white_check_mark: Ce serveur a été ajouté à la whitelist."};
 			} catch {
-				this.commandManager.bot.discordClientManager.replyInteraction(interaction, {content: ":x: Une erreur s'est produite lors de l'ajout du serveur à la whitelist. Le serveur n'a pas pu être ajouté à celle-ci."});
+				return {content: ":x: Une erreur s'est produite lors de l'ajout du serveur à la whitelist. Le serveur n'a pas pu être ajouté à celle-ci."};
 			}
-			return;
 		}
 		if (whiteListedServer.data.name !== serverInfo.name) {
 			try {
 				await this.commandManager.bot.dataManager.updateServerWhiteList(whiteListedServer.id, serverInfo);
-				this.commandManager.bot.discordClientManager.replyInteraction(interaction, {content: ":ballot_box_with_check: Ce serveur est déjà présent dans la whitelist avec un nom différent. Le nom du serveur a été mis à jour."});
+				return {content: ":ballot_box_with_check: Ce serveur est déjà présent dans la whitelist avec un nom différent. Le nom du serveur a été mis à jour."};
 			} catch {
-				this.commandManager.bot.discordClientManager.replyInteraction(interaction, {content: ":x: Ce serveur est déjà présent dans la whitelist. Une erreur s'est produite lors de la mise à jour du nom du serveur dans la whitelist."});
+				return {content: ":x: Ce serveur est déjà présent dans la whitelist. Une erreur s'est produite lors de la mise à jour du nom du serveur dans la whitelist."};
 			}
-			return;
 		}
-		this.commandManager.bot.discordClientManager.replyInteraction(interaction, {content: ":ballot_box_with_check: Ce serveur est déjà présent dans la whitelist."});
+		return {content: ":ballot_box_with_check: Ce serveur est déjà présent dans la whitelist."};
 	};
 	getServerInfo = async invitationId => {
 		let url = `https://discord.com/api/invites/${invitationId}`;
