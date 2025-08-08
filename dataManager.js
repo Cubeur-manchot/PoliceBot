@@ -18,8 +18,10 @@ export default class DataManager {
 			firebase.initializeApp({credential: firebase.applicationDefault()});
 		}
 		this.db = firestore.getFirestore();
+		this.cache = Object.fromEntries([...Object.keys(DataManager.collectionNames), "serversInfo"].map(cacheKey => [cacheKey, {}]));
 	};
-	getData = async (collectionName, filters, fields) => {
+	getDataByKey = async (collectionName, keyName, keyValue) => (this.cache[collectionName][keyValue] ??= await this.fetchData(collectionName, Object.fromEntries([[keyName, keyValue]]), null));
+	fetchData = async (collectionName, filters, fields) => {
 		let query = this.db.collection(collectionName);
 		for (let [field, value] of Object.entries(filters)) {
 			query = query.where(field, "==", value);
@@ -47,10 +49,10 @@ export default class DataManager {
 		try {
 			await this.db.collection(collectionName).doc(documentId).update(newData);
 		} catch (updateDataError) {
-			this.bot.logger.error(`Error when updating new data to database (collectionName = "${collectionName}", document id = "${documentId}", new data = "${JSON.stringify(newData)}") : "${updateDataError}".`);
+			this.bot.logger.error(`Error when updating data in database (collectionName = "${collectionName}", document id = "${documentId}", new data = "${JSON.stringify(newData)}") : "${updateDataError}".`);
 		};
 	};
-	getServerWhiteListById = async serverId => (await this.getData(DataManager.collectionNames.serversWhiteList, {id: serverId}, null))[0];
+	getServerWhiteListById = async serverId => (await this.getDataByKey(DataManager.collectionNames.serversWhiteList, "id", serverId))[0];
 	addServerWhiteList = async serverInfo => await this.addData(DataManager.collectionNames.serversWhiteList, serverInfo);
 	updateServerWhiteList = async (documentId, serverInfo) => await this.updateData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo);
 };
