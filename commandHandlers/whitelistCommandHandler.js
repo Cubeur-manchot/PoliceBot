@@ -33,7 +33,7 @@ export default class WhitelistCommandHandler extends CommandHandler {
 		}
 		let serverInfo;
 		try {
-			serverInfo = await this.getServerInfo(inviteId);
+			serverInfo = await this.commandManager.bot.dataManager.getServerInfo(inviteId);
 		} catch {
 			return {content: ":x: Une erreur s'est produite lors de la récupération des informations du serveur. Celui-ci n'a pas pu être ajouté à la whitelist."};
 		}
@@ -63,34 +63,5 @@ export default class WhitelistCommandHandler extends CommandHandler {
 			}
 		}
 		return {content: ":ballot_box_with_check: Ce serveur est déjà présent dans la whitelist."};
-	};
-	getServerInfo = async invitationId => {
-		let url = `https://discord.com/api/invites/${invitationId}`;
-		let response;
-		try {
-			response = await fetch(
-				`https://discord.com/api/invites/${invitationId}`,
-				{
-					headers: {
-						"User-Agent": "PoliceBot (https://github.com/Cubeur-manchot/PoliceBot)",
-						"Accept": "application/json"
-					}
-				}
-			);
-		} catch (fetchServerInfoError) {
-			this.commandManager.bot.logger.error(`Error while fetching Discord API (${url}) : ${fetchServerInfoError}.`);
-			throw fetchServerInfoError;
-		}
-		if (!response.ok) {
-			this.commandManager.bot.logger.error(`HTTP error while fetching Discord API (${url}) : ${response.status}.`);
-			return null;
-		}
-		try {
-			let {guild} = await response.json();
-			return guild ? {id: parseInt(guild.id), name: guild.name} : null;
-		} catch (jsonError) {
-			this.commandManager.bot.logger.error(`Error while getting JSON data from Discord API response (${url}) : ${jsonError}.`);
-			return null;
-		}
 	};
 };
