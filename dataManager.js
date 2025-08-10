@@ -36,9 +36,9 @@ export default class DataManager {
 		try {
 			let snapshot = await query.get();
 			return snapshot.docs.map(document => ({id: document.id, data: document.data()}));
-		} catch (getDataGetError) {
-			this.bot.logger.error(`Error when querying database (collectionName = "${collectionName}", filters = "${JSON.stringify(filters)}", fields = "${JSON.stringify(fields)}") : "${getDataGetError}".`);
-			throw getDataGetError;
+		} catch (fetchDataError) {
+			this.bot.logger.error(`Error when querying database (collectionName = "${collectionName}", filters = "${JSON.stringify(filters)}", fields = "${JSON.stringify(fields)}") :`, fetchDataError);
+			throw fetchDataError;
 		}
 	};
 	fetchServerInfo = async invitationId => {
@@ -55,18 +55,18 @@ export default class DataManager {
 				}
 			);
 		} catch (fetchServerInfoError) {
-			this.commandManager.bot.logger.error(`Error while fetching Discord API (${url}) : ${fetchServerInfoError}.`);
+			this.bot.logger.error(`Error while fetching Discord API (${url}) :`, fetchServerInfoError);
 			throw fetchServerInfoError;
 		}
 		if (!response.ok) {
-			this.commandManager.bot.logger.error(`HTTP error while fetching Discord API (${url}) : ${response.status}.`);
+			this.bot.logger.error(`HTTP error while fetching Discord API (${url}) :`, response.status);
 			return null;
 		}
 		try {
 			let {guild} = await response.json();
 			return guild ? {id: parseInt(guild.id), name: guild.name} : null;
 		} catch (jsonError) {
-			this.commandManager.bot.logger.error(`Error while getting JSON data from Discord API response (${url}) : ${jsonError}.`);
+			this.bot.logger.error(`Error while getting JSON data from Discord API response (${url}) :`, jsonError);
 			return null;
 		}
 	};
@@ -74,15 +74,16 @@ export default class DataManager {
 		try {
 			await this.db.collection(collectionName).add(newData);
 		} catch (addDataError) {
-			this.bot.logger.error(`Error when adding new data to database (collectionName = "${collectionName}", new data = "${JSON.stringify(newData)}") : "${addDataError}".`);
-			throw addErrorData
+			this.bot.logger.error(`Error when adding new data to database (collectionName = "${collectionName}", new data = "${JSON.stringify(newData)}") :`, addDataError);
+			throw addDataError;
 		};
 	};
 	updateFirestoreData = async (collectionName, documentId, newData) => {
 		try {
 			await this.db.collection(collectionName).doc(documentId).update(newData);
 		} catch (updateDataError) {
-			this.bot.logger.error(`Error when updating data in database (collectionName = "${collectionName}", document id = "${documentId}", new data = "${JSON.stringify(newData)}") : "${updateDataError}".`);
+			this.bot.logger.error(`Error when updating data in database (collectionName = "${collectionName}", document id = "${documentId}", new data = "${JSON.stringify(newData)}") :`, updateDataError);
+			throw updateDataError;
 		};
 	};
 	getServerWhiteListById = async serverId => (await this.getDataByKey(DataManager.collectionNames.serversWhiteList, "id", serverId))[0];

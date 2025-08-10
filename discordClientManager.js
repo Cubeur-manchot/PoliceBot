@@ -38,7 +38,7 @@ export default class DiscordClientManager {
 	loginWithToken = token => {
 		this.discordClient.login(token)
 			.then(() => this.bot.logger.info("Login successful."))
-			.catch(error => this.bot.logger.error(`Login failed : ${error}.`));
+			.catch(loginError => this.bot.logger.error("Login failed :", loginError));
 	};
 	shutDown = async () => {
 		this.setInactivePresence();
@@ -49,9 +49,9 @@ export default class DiscordClientManager {
 	deployApplicationCommands = applicationCommands =>
 		this.discordClient.rest.put(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID), {body: applicationCommands})
 		.then(() => this.bot.logger.info("Application commands have been updated successfully."))
-		.catch(applicationCommandsPutError => this.bot.logger.error(`Fail to update application commands : "${applicationCommandsPutError}".`));
+		.catch(applicationCommandsPutError => this.bot.logger.error("Failed to update application commands :", applicationCommandsPutError));
 	replyInteraction = (interaction, answer) =>
 		interaction.reply(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral}))
-		.catch(interactionReplyError => this.bot.logger.error(`Failed to reply an interaction : "${interactionReplyError}".`));
+		.catch(interactionReplyError => this.bot.logger.error("Failed to reply an interaction :", interactionReplyError));
 };
 
