@@ -39,10 +39,14 @@ export default class DiscordClientManager {
 		this.discordClient.user.setPresence({status: "idle", activities: [{type: Discord.ActivityType.Playing, name: "faire la sieste 😴"}]})
 		this.bot.logger.info("Presence has been set to inactive.")
 	};
-	loginWithToken = token => {
-		this.discordClient.login(token)
-			.then(() => this.bot.logger.info("Login successful."))
-			.catch(loginError => this.bot.logger.error("Login failed :", loginError));
+	loginWithToken = async token => {
+		try {
+			await this.discordClient.login(token);
+			this.bot.logger.info("Login successful.");
+		} catch (loginError) {
+			this.bot.logger.error("Login failed :", loginError);
+			throw loginError;
+		}
 	};
 	shutDown = async () => {
 		this.setInactivePresence();
@@ -57,8 +61,13 @@ export default class DiscordClientManager {
 	replyInteraction = (interaction, answer) =>
 		interaction.reply(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral}))
 		.catch(interactionReplyError => this.bot.logger.error("Failed to reply an interaction :", interactionReplyError));
-	joinThread = thread =>
-		thread.join()
-        .then(() => this.bot.logger.info(`Newly created thread "${thread.name}" in channel "${thread.parent?.name}" has been successfully joined.`))
-        .catch(threadJoinError => this.logger.error(`Failed to join newly created thread "${thread.name}" in channel "${thread.parent?.name}" :`, threadJoinError));
+	joinThread = async thread => {
+		try {
+			await thread.join();
+			this.bot.logger.info(`Newly created thread "${thread.name}" in channel "${thread.parent?.name}" has been successfully joined.`);
+		} catch (threadJoinError) {
+			this.logger.error(`Failed to join newly created thread "${thread.name}" in channel "${thread.parent?.name}" :`, threadJoinError);
+			throw threadJoinError;
+		}
+	};
 };
