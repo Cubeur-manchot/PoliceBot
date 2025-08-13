@@ -70,4 +70,13 @@ export default class DiscordClientManager {
 			throw threadJoinError;
 		}
 	};
+	addRoleToMember = async (member, roleId) => {
+		try {
+			await member.roles.add(roleId);
+			this.bot.logger.info(`Role with id "${roleId}" has been successfully added to member "${member.nickname ?? member.user.globalName} (${member.user.username})".`);
+		} catch (roleAddError) {
+			this.bot.logger.error(`Failed to add role with id "${roleId}" to member "${member.nickname ?? member.user.globalName} (${member.user.username})" :`, roleAddError);
+			throw roleAddError;
+		}
+	};
 };

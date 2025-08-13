@@ -1,6 +1,7 @@
 "use strict";
 
 import Discord from "discord.js";
+import PrisonCommandHandler from "./commandHandlers/prisonCommandHandler.js";
 import WhitelistCommandHandler from "./commandHandlers/whitelistCommandHandler.js";
 
 import dictionnize from "./utils.js";
@@ -9,6 +10,7 @@ export default class CommandManager {
 	constructor(bot) {
 		this.bot = bot;
 		let commandHandlers = [
+			new PrisonCommandHandler(this),
 			new WhitelistCommandHandler(this)
 		];
 		this.commandHandlers = dictionnize(commandHandlers, "commandName");
