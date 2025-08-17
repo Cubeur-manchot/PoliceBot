@@ -32,12 +32,12 @@ export default class DiscordClientManager {
 	};
 	onThreadCreate = thread => this.joinThread(thread);
 	setActivePresence = () => {
-		this.discordClient.user.setPresence({status: "online", activities: [{type: Discord.ActivityType.Playing, name: "surveiller Cubeurs Francophones"}]})
-		this.bot.logger.info("Presence has been set to active.")
+		this.discordClient.user.setPresence({status: "online", activities: [{type: Discord.ActivityType.Playing, name: "surveiller Cubeurs Francophones"}]});
+		this.bot.logger.info("Presence has been set to active.");
 	};
 	setInactivePresence = () => {
-		this.discordClient.user.setPresence({status: "idle", activities: [{type: Discord.ActivityType.Playing, name: "faire la sieste 😴"}]})
-		this.bot.logger.info("Presence has been set to inactive.")
+		this.discordClient.user.setPresence({status: "idle", activities: [{type: Discord.ActivityType.Playing, name: "faire la sieste 😴"}]});
+		this.bot.logger.info("Presence has been set to inactive.");
 	};
 	loginWithToken = async token => {
 		try {

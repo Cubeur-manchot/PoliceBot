@@ -1,19 +1,18 @@
 "use strict";
 
 import Discord from "discord.js";
+import BotHelper from "./botHelper.js";
 import PrisonCommandHandler from "./commandHandlers/prisonCommandHandler.js";
 import WhitelistCommandHandler from "./commandHandlers/whitelistCommandHandler.js";
 
-import dictionnize from "./utils.js";
-
-export default class CommandManager {
+export default class CommandManager extends BotHelper {
 	constructor(bot) {
-		this.bot = bot;
+		super(bot);
 		let commandHandlers = [
 			new PrisonCommandHandler(this),
 			new WhitelistCommandHandler(this)
 		];
-		this.commandHandlers = dictionnize(commandHandlers, "commandName");
+		this.commandHandlers = this.dictionnize(commandHandlers, "commandName");
 		this.commands = commandHandlers.map(commandHandler => commandHandler.command);
 	};
 	updateApplicationCommands = async () => {
@@ -43,7 +42,7 @@ export default class CommandManager {
 				if (deployedSlashCommand.description !== command.description) {
 					return false;
 				}
-				let deployedSlashCommandOptions = dictionnize(deployedSlashCommand.options, "name");
+				let deployedSlashCommandOptions = this.dictionnize(deployedSlashCommand.options, "name");
 				for (let commandOption of command.options ?? []) {
 					let deployedCommandOption = deployedSlashCommandOptions[commandOption.name];
 					if (!deployedCommandOption) {
