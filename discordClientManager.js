@@ -1,10 +1,11 @@
 "use strict";
 
 import Discord from "discord.js";
+import BotHelper from "./botHelper.js";
 
-export default class DiscordClientManager {
+export default class DiscordClientManager extends BotHelper {
 	constructor(bot, token) {
-		this.bot = bot;
+		super(bot);
 		this.discordClient = new Discord.Client({
 			intents: [
 				Discord.GatewayIntentBits.Guilds
@@ -21,7 +22,7 @@ export default class DiscordClientManager {
 		{triggerType: "on", event: Discord.Events.ThreadCreate, method: this.onThreadCreate}
 	].forEach(action => this.discordClient[action.triggerType](action.event, action.method));
 	onClientReady = () => {
-		this.bot.logger.info("Discord client is ready.");
+		this.logger.info("Discord client is ready.");
 		this.setActivePresence();
 		this.bot.commandManager.updateApplicationCommands();
 	};
@@ -33,50 +34,43 @@ export default class DiscordClientManager {
 	onThreadCreate = thread => this.joinThread(thread);
 	setActivePresence = () => {
 		this.discordClient.user.setPresence({status: "online", activities: [{type: Discord.ActivityType.Playing, name: "surveiller Cubeurs Francophones"}]});
-		this.bot.logger.info("Presence has been set to active.");
+		this.logger.info("Presence has been set to active.");
 	};
 	setInactivePresence = () => {
 		this.discordClient.user.setPresence({status: "idle", activities: [{type: Discord.ActivityType.Playing, name: "faire la sieste 😴"}]});
-		this.bot.logger.info("Presence has been set to inactive.");
+		this.logger.info("Presence has been set to inactive.");
 	};
-	loginWithToken = async token => {
-		try {
-			await this.discordClient.login(token);
-			this.bot.logger.info("Login successful.");
-		} catch (loginError) {
-			this.bot.logger.error("Login failed :", loginError);
-			throw loginError;
-		}
-	};
+	loginWithToken = async token => this.runAsync(
+		() => this.discordClient.login(token),
+		"Discord client has logged in successfully",
+		"Failed to log in with Discord client"
+	);
 	shutDown = async () => {
 		this.setInactivePresence();
 		await this.discordClient.destroy();
-		this.bot.logger.info("Discord client has been shut down.");
+		this.logger.info("Discord client has been shut down.");
 	};
 	fetchApplicationCommands = () => this.discordClient.rest.get(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID));
-	deployApplicationCommands = applicationCommands =>
-		this.discordClient.rest.put(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID), {body: applicationCommands})
-		.then(() => this.bot.logger.info("Application commands have been updated successfully."))
-		.catch(applicationCommandsPutError => this.bot.logger.error("Failed to update application commands :", applicationCommandsPutError));
-	replyInteraction = (interaction, answer) =>
-		interaction.reply(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral}))
-		.catch(interactionReplyError => this.bot.logger.error("Failed to reply an interaction :", interactionReplyError));
-	joinThread = async thread => {
-		try {
-			await thread.join();
-			this.bot.logger.info(`Newly created thread "${thread.name}" in channel "${thread.parent?.name}" has been successfully joined.`);
-		} catch (threadJoinError) {
-			this.logger.error(`Failed to join newly created thread "${thread.name}" in channel "${thread.parent?.name}" :`, threadJoinError);
-			throw threadJoinError;
-		}
-	};
-	addRoleToMember = async (member, roleId) => {
-		try {
-			await member.roles.add(roleId);
-			this.bot.logger.info(`Role with id "${roleId}" has been successfully added to member "${member.nickname ?? member.user.globalName} (${member.user.username})".`);
-		} catch (roleAddError) {
-			this.bot.logger.error(`Failed to add role with id "${roleId}" to member "${member.nickname ?? member.user.globalName} (${member.user.username})" :`, roleAddError);
-			throw roleAddError;
-		}
-	};
+	deployApplicationCommands = async applicationCommands => this.runAsync(
+		() => this.discordClient.rest.put(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID), {body: applicationCommands}),
+		"Application commands have been updated successfully",
+		"Failed to update application commands"
+	);
+	replyInteraction = async (interaction, answer) => this.runAsync(
+		() => interaction.reply(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral})),
+		"Interaction has been replied successfully",
+		"Failed to reply an interaction"
+	);
+	joinThread = async thread => this.runAsync(
+		() => thread.join(),
+		"Newly created thread {0} in channel {1} has been joined successfully",
+		"Failed to join newly created thread {0} in channel {1}",
+		[thread.name, thread.parent?.name]
+	);
+	addRoleToMember = async (member, roleId) => this.runAsync(
+		() => member.roles.add(roleId),
+		"Role with id {0} has been added to member {1} ({2}) successfully",
+		"Failed to add role with id {0} to member {1} ({2})",
+		[roleId, member.nickname ?? member.user.globalName, member.user.username]
+	);
 };
