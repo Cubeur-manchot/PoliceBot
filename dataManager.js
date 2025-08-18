@@ -1,9 +1,10 @@
 "use strict";
 
-import * as firebase from 'firebase-admin/app';
-import * as firestore from 'firebase-admin/firestore';
+import * as firebase from "firebase-admin/app";
+import * as firestore from "firebase-admin/firestore";
+import BotHelper from "./botHelper.js";
 
-export default class DataManager {
+export default class DataManager extends BotHelper {
 	static collectionNames = {
 		bans: "bans",
 		channels: "channels",
@@ -14,7 +15,7 @@ export default class DataManager {
 	};
 	static serverInfoCollectionName = "serversInfo";
 	constructor(bot) {
-		this.bot = bot;
+		super(bot);
 		if (!firebase.getApps().length) {
 			firebase.initializeApp({credential: firebase.applicationDefault()});
 		}
@@ -33,59 +34,53 @@ export default class DataManager {
 		if (fields) {
 			query = query.select(...fields);
 		}
-		try {
-			let snapshot = await query.get();
-			return snapshot.docs.map(document => ({id: document.id, data: document.data()}));
-		} catch (fetchDataError) {
-			this.bot.logger.error(`Error when querying database (collectionName = "${collectionName}", filters = "${JSON.stringify(filters)}", fields = "${JSON.stringify(fields)}") :`, fetchDataError);
-			throw fetchDataError;
-		}
+		return (
+			await this.runAsync(
+				() => query.get(),
+				"Collection {0} has been fetched with filters {1} and fields {2} successfully",
+				"Failed to fetch collection {0} with filters {1} and fields {2}",
+				[collectionName, JSON.stringify(filters), JSON.stringify(fields)]
+			)
+		).docs.map(document => ({id: document.id, data: document.data()}));
 	};
 	fetchServerInfo = async invitationId => {
 		let url = `https://discord.com/api/invites/${invitationId}`;
-		let response;
-		try {
-			response = await fetch(
-				`https://discord.com/api/invites/${invitationId}`,
+		let response = await this.runAsync(
+			() => fetch(`https://discord.com/api/invites/${invitationId}`,
 				{
 					headers: {
 						"User-Agent": "PoliceBot (https://github.com/Cubeur-manchot/PoliceBot)",
 						"Accept": "application/json"
 					}
 				}
-			);
-		} catch (fetchServerInfoError) {
-			this.bot.logger.error(`Error while fetching Discord API (${url}) :`, fetchServerInfoError);
-			throw fetchServerInfoError;
-		}
+			),
+			"Discord API ({0}) has been fetched successfully",
+			"Failed to fetch Discord API ({0})",
+			[url]
+		);
 		if (!response.ok) {
-			this.bot.logger.error(`HTTP error while fetching Discord API (${url}) :`, response.status);
+			this.logger.error(`HTTP error while fetching Discord API (${url}) :`, response.status);
 			return null;
 		}
-		try {
-			let {guild} = await response.json();
-			return guild ? {id: parseInt(guild.id), name: guild.name} : null;
-		} catch (jsonError) {
-			this.bot.logger.error(`Error while getting JSON data from Discord API response (${url}) :`, jsonError);
-			return null;
-		}
+		let serverInfo = await this.runAsync(
+			() => response.json(),
+			"JSON data from Discord API response has been extracted successfully",
+			"Failed to extract JSON data from Discord API response"
+		);
+		return serverInfo.guild ? {id: parseInt(serverInfo.guild.id), name: serverInfo.guild.name} : null;
 	};
-	addFirestoreData = async (collectionName, newData) => {
-		try {
-			await this.db.collection(collectionName).add(newData);
-		} catch (addDataError) {
-			this.bot.logger.error(`Error when adding new data to database (collectionName = "${collectionName}", new data = "${JSON.stringify(newData)}") :`, addDataError);
-			throw addDataError;
-		};
-	};
-	updateFirestoreData = async (collectionName, documentId, newData) => {
-		try {
-			await this.db.collection(collectionName).doc(documentId).update(newData);
-		} catch (updateDataError) {
-			this.bot.logger.error(`Error when updating data in database (collectionName = "${collectionName}", document id = "${documentId}", new data = "${JSON.stringify(newData)}") :`, updateDataError);
-			throw updateDataError;
-		};
-	};
+	addFirestoreData = async (collectionName, newData) => this.runAsync(
+		() => this.db.collection(collectionName).add(newData),
+		"New data {0} has been added to collection {1} successfully",
+		"Failed to add new data {0} to collection {1}",
+		[JSON.stringify(newData), collectionName]
+	);
+	updateFirestoreData = async (collectionName, documentId, newData) => this.runAsync(
+		() => this.db.collection(collectionName).doc(documentId).update(newData),
+		"Document {0} in collection {1} has been updated with new data ({2}) successfully",
+		"Failed to update document {0} in collection {1} with new data ({2})",
+		[documentId, collectionName, JSON.stringify(newData)]
+	);
 	getServerWhiteListById = async serverId => (await this.getDataByKey(DataManager.collectionNames.serversWhiteList, "id", serverId))[0];
 	addServerWhiteList = async serverInfo => await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo);
 	updateServerWhiteList = async (documentId, serverInfo) => await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo);
