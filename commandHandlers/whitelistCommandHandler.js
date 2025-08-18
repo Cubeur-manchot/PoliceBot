@@ -27,7 +27,7 @@ export default class WhitelistCommandHandler extends CommandHandler {
 			(interaction.isChatInputCommand()
 				? Object.values(this.parseOptions(interaction.options))[0]
 				: interaction.targetMessage.content)
-			.match(new RegExp("(?<=https?:\/\/discord\.(?:gg|con\/invite)\/)[0-9a-z-]+", "i"))?.[0];
+			.match(new RegExp("(?<=https?:\/\/discord\.(?:gg|com\/invite)\/)[0-9a-z-]+", "i"))?.[0];
 		if (!inviteId) {
 			return {content: ":x: Aucun lien d'invitation n'a été trouvé."};
 		}
