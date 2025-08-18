@@ -50,11 +50,17 @@ export default class DiscordClientManager extends BotHelper {
 		await this.discordClient.destroy();
 		this.logger.info("Discord client has been shut down.");
 	};
-	fetchApplicationCommands = () => this.discordClient.rest.get(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID));
+	fetchApplicationCommands = async () => this.runAsync(
+		() => this.discordClient.rest.get(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID)),
+		"Application commands of server {0} have been fetched successfully",
+		"Failed to fetch application commands of server {0}",
+		[process.env.SERVER_ID]
+	);
 	deployApplicationCommands = async applicationCommands => this.runAsync(
 		() => this.discordClient.rest.put(Discord.Routes.applicationGuildCommands(this.discordClient.application.id, process.env.SERVER_ID), {body: applicationCommands}),
-		"Application commands have been updated successfully",
-		"Failed to update application commands"
+		"Application commands of server {0} have been updated successfully",
+		"Failed to update application commands of server {0}",
+		[process.env.SERVER_ID]
 	);
 	replyInteraction = async (interaction, answer) => this.runAsync(
 		() => interaction.reply(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral})),
