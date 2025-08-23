@@ -73,10 +73,11 @@ export default class DiscordClientManager extends BotHelper {
 		"Failed to join newly created thread {0} in channel {1}",
 		[thread.name, thread.parent?.name]
 	);
-	addRoleToMember = async (member, roleId) => this.runAsync(
+	addRoleToMember = async (member, roleId, userErrorMessage) => this.runAsync(
 		() => member.roles.add(roleId),
 		"Role with id {0} has been added to member {1} ({2}) successfully",
 		"Failed to add role with id {0} to member {1} ({2})",
-		[roleId, member.nickname ?? member.user.globalName, member.user.username]
+		[roleId, member.nickname ?? member.user.globalName, member.user.username],
+		userErrorMessage
 	);
 };
