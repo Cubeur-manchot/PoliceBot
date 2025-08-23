@@ -86,7 +86,15 @@ export default class CommandManager extends BotHelper {
 			].filter(Boolean)
 		).flat();
 	handleCommand = async interaction => {
+		try {
 			let answer = await this.commandHandlers[interaction.commandName].handleCommand(interaction);
 			this.discordClientManager.replyInteraction(interaction, answer);
+		} catch (error) {
+			if (typeof error === "string") { // custom error with error message to user
+				this.discordClientManager.replyInteraction(interaction, {content: `:x: ${error}.`});
+			} else {
+				throw error;
+			}
+		}
 	};
 };
