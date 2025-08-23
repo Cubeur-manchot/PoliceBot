@@ -27,6 +27,7 @@ export default class DataManager extends BotHelper {
 			? await this.fetchServerInfo(keyValue)
 			: await this.fetchFirestoreData(collectionName, Object.fromEntries([[keyName, keyValue]]), null);
 	fetchFirestoreData = async (collectionName, filters, fields) => {
+	updateCache = (collectionName, key, value) => this.cache[collectionName][key] = value;
 		let query = this.db.collection(collectionName);
 		for (let [field, value] of Object.entries(filters)) {
 			query = query.where(field, "==", value);
@@ -84,9 +85,11 @@ export default class DataManager extends BotHelper {
 	getServerWhiteListById = async (serverId, userErrorMessage) => (await this.getData(DataManager.collectionNames.serversWhiteList, "id", serverId, userErrorMessage))[0];
 	addServerWhiteList = async (serverInfo, userErrorMessage) => {
 		await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo, userErrorMessage);
+		this.updateCache(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo);
 	};
 	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => {
 		await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo, userErrorMessage);
+		this.updateCache(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo);
 	};
 	getServerInfo = async (invitationId, userErrorMessage) => await this.getData(DataManager.serverInfoCollectionName, null, invitationId, userErrorMessage);
 };
