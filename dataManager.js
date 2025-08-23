@@ -81,8 +81,12 @@ export default class DataManager extends BotHelper {
 		"Failed to update document {0} in collection {1} with new data ({2})",
 		[documentId, collectionName, JSON.stringify(newData)]
 	);
-	getServerWhiteListById = async serverId => (await this.getDataByKey(DataManager.collectionNames.serversWhiteList, "id", serverId))[0];
-	addServerWhiteList = async serverInfo => await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo);
-	updateServerWhiteList = async (documentId, serverInfo) => await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo);
-	getServerInfo = async invitationId => await this.getDataByKey(DataManager.serverInfoCollectionName, null, invitationId);
+	getServerWhiteListById = async (serverId, userErrorMessage) => (await this.getData(DataManager.collectionNames.serversWhiteList, "id", serverId, userErrorMessage))[0];
+	addServerWhiteList = async (serverInfo, userErrorMessage) => {
+		await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo, userErrorMessage);
+	};
+	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => {
+		await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo, userErrorMessage);
+	};
+	getServerInfo = async (invitationId, userErrorMessage) => await this.getData(DataManager.serverInfoCollectionName, null, invitationId, userErrorMessage);
 };
