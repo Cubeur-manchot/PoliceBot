@@ -7,14 +7,14 @@ export default class BotHelper {
 		this.logArgumentReplaceRegexp = /\{(\d+)\}/g;
 	};
 	dictionnize = (array, property) => Object.fromEntries(array.map(element => [element[property], element]));
-	runAsync = async (asyncMethod, successMessage, errorMessage, logArguments) => {
+	runAsync = async (asyncFunction, logSuccessMessagePattern, logErrorMessagePattern, logArguments, userErrorMessage) => {
 		try {
-			let result = await asyncMethod();
-			this.logger.info(`${this.replaceLogMessage(successMessage, logArguments)}.`);
+			let result = await asyncFunction();
+			this.logger.info(`${this.replaceLogMessage(logSuccessMessagePattern, logArguments)}.`);
 			return result;
 		} catch (asyncActionError) {
-			this.logger.error(`${this.replaceLogMessage(errorMessage, logArguments)} :`, asyncActionError);
-			throw asyncActionError;
+			this.logger.error(`${this.replaceLogMessage(logErrorMessagePattern, logArguments)} :`, asyncActionError);
+			throw userErrorMessage ?? asyncActionError;
 		}
 	};
 	replaceLogMessage = (message, logArguments) => message.replace(this.logArgumentReplaceRegexp, (match, index) => `"${logArguments?.[index] ?? match}"`);
