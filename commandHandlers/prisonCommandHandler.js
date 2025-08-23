@@ -3,6 +3,8 @@
 import CommandHandler from "./commandHandler.js";
 
 export default class PrisonCommandHandler extends CommandHandler {
+	static prisonerRoleAddErrorMessage = "Une erreur s'est produite. L'utilisateur n'a pas pu être envoyé en prison";
+	static prisonerRoleAddSuccessMessage = ":white_check_mark: L'utilisateur a été envoyé en prison.";
 	constructor(commandManager) {
 		super(
 			commandManager,
@@ -17,11 +19,7 @@ export default class PrisonCommandHandler extends CommandHandler {
 		);
 	};
 	handleCommand = async interaction => {
-		try {
-			await this.commandManager.bot.discordClientManager.addRoleToMember(interaction.targetMember, process.env.PRISONER_ROLE_ID);
-			return {content: ":white_check_mark: L'utilisateur a été envoyé en prison."};
-		} catch {
-			return {content: ":x: Une erreur s'est produite. L'utilisateur n'a pas pu être envoyé en prison."};
-		}
+		await this.discordClientManager.addRoleToMember(interaction.targetMember, process.env.PRISONER_ROLE_ID, PrisonCommandHandler.prisonerRoleAddErrorMessage);
+		return {content: PrisonCommandHandler.prisonerRoleAddSuccessMessage};
 	};
 };
