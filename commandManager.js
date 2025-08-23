@@ -8,6 +8,7 @@ import WhitelistCommandHandler from "./commandHandlers/whitelistCommandHandler.j
 export default class CommandManager extends BotHelper {
 	constructor(bot) {
 		super(bot);
+		this.discordClientManager = this.bot.discordClientManager;
 		let commandHandlers = [
 			new PrisonCommandHandler(this),
 			new WhitelistCommandHandler(this)
@@ -17,13 +18,13 @@ export default class CommandManager extends BotHelper {
 	};
 	updateApplicationCommands = async () => {
 		this.bot.logger.info("Start updating application commands.");
-		let deployedCommands = await this.bot.discordClientManager.fetchApplicationCommands();
+		let deployedCommands = await this.discordClientManager.fetchApplicationCommands();
 		if (this.areApplicationCommandsIdentical(deployedCommands)) {
 			this.bot.logger.info("Application commands are already up-to-date.");
 			return;
 		}
 		let commands = this.buildApplicationCommands();
-		this.bot.discordClientManager.deployApplicationCommands(commands.map(command => command.toJSON()));
+		this.discordClientManager.deployApplicationCommands(commands.map(command => command.toJSON()));
 	};
 	areApplicationCommandsIdentical = deployedCommands => {
 		let deployedCommandsMap = deployedCommands.reduce((deployedCommandsMap, command) => {
@@ -85,7 +86,7 @@ export default class CommandManager extends BotHelper {
 			].filter(Boolean)
 		).flat();
 	handleCommand = async interaction => {
-		let answer = await this.commandHandlers[interaction.commandName].handleCommand(interaction);
-		this.bot.discordClientManager.replyInteraction(interaction, answer);
+			let answer = await this.commandHandlers[interaction.commandName].handleCommand(interaction);
+			this.discordClientManager.replyInteraction(interaction, answer);
 	};
 };
