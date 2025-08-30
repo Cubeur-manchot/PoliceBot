@@ -26,7 +26,14 @@ export default class DataManager extends BotHelper {
 		??= collectionName === DataManager.serverInfoCollectionName
 			? await this.fetchServerInfo(keyValue, userErrorMessage)
 			: await this.fetchFirestoreData(collectionName, Object.fromEntries([[keyName, keyValue]]), null, userErrorMessage);
-	updateCache = (collectionName, key, value) => this.cache[collectionName][key] = value;
+	addCache = (collectionName, key, value) => {
+		(this.cache[collectionName][key] ??= []).push(value);
+		this.logger.info(`Cache for collection "${collectionName}" has been extended (key = "${key}", value = "${JSON.stringify(value)}") successfully.`);
+	};
+	replaceCache = (collectionName, key, value) => {
+		this.cache[collectionName][key][0].data = value;
+		this.logger.info(`Cache for collection "${collectionName}" has been replaced (key = "${key}", value = "${JSON.stringify(value)}") successfully.`);
+	};
 	fetchFirestoreData = async (collectionName, filters, fields, userErrorMessage) => {
 		let query = this.db.collection(collectionName);
 		for (let [field, value] of Object.entries(filters)) {
@@ -74,28 +81,28 @@ export default class DataManager extends BotHelper {
 		);
 		return serverInfo.guild ? {id: parseInt(serverInfo.guild.id), name: serverInfo.guild.name} : null;
 	};
-	addFirestoreData = async (collectionName, newData, userErrorMessage) => this.runAsync(
-		() => this.db.collection(collectionName).add(newData),
-		"New data {0} has been added to collection {1} successfully",
-		"Failed to add new data {0} to collection {1}",
-		[JSON.stringify(newData), collectionName],
-		userErrorMessage
-	);
-	updateFirestoreData = async (collectionName, documentId, newData, userErrorMessage) => this.runAsync(
-		() => this.db.collection(collectionName).doc(documentId).update(newData),
-		"Document {0} in collection {1} has been updated with new data ({2}) successfully",
-		"Failed to update document {0} in collection {1} with new data ({2})",
-		[documentId, collectionName, JSON.stringify(newData)],
-		userErrorMessage
-	);
+	addFirestoreData = async (collectionName, key, newData, userErrorMessage) => {
+		let addedDocument = await this.runAsync(
+			() => this.db.collection(collectionName).add(newData),
+			"New data {0} has been added to collection {1} successfully",
+			"Failed to add new data {0} to collection {1}",
+			[JSON.stringify(newData), collectionName],
+			userErrorMessage
+		);
+		this.addCache(collectionName, key, {id: addedDocument.id, data: newData});
+	};
+	updateFirestoreData = async (collectionName, documentId, key, newData, userErrorMessage) => {
+		await this.runAsync(
+			() => this.db.collection(collectionName).doc(documentId).update(newData),
+			"Document {0} in collection {1} has been updated with new data ({2}) successfully",
+			"Failed to update document {0} in collection {1} with new data ({2})",
+			[documentId, collectionName, JSON.stringify(newData)],
+			userErrorMessage
+		);
+		this.replaceCache(collectionName, key, newData);
+	};
 	getServerWhiteListById = async (serverId, userErrorMessage) => (await this.getData(DataManager.collectionNames.serversWhiteList, "id", serverId, userErrorMessage))[0];
-	addServerWhiteList = async (serverInfo, userErrorMessage) => {
-		await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo, userErrorMessage);
-		this.updateCache(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo);
-	};
-	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => {
-		await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo, userErrorMessage);
-		this.updateCache(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo);
-	};
+	addServerWhiteList = async (serverInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo, userErrorMessage);
+	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo.id, serverInfo, userErrorMessage);
 	getServerInfo = async (invitationId, userErrorMessage) => await this.getData(DataManager.serverInfoCollectionName, null, invitationId, userErrorMessage);
 };
