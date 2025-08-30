@@ -11,5 +11,5 @@ export default class CommandHandler {
 		this.commandName = commandName;
 	};
 	handleCommand = () => this.commandManager.bot.logger.error("Invoking 'handleCommand()' on an abstract class.");
-	parseOptions = options => Object.fromEntries(this.command.options.map(option => [option.name, options.getString(option.name)]));
+	parseOptions = options => Object.fromEntries(this.command.options.map(option => [option.name, options[`get${option.type ?? Command.optionTypes.string}`](option.name)]));
 };
