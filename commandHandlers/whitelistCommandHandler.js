@@ -23,7 +23,7 @@ export default class WhitelistCommandHandler extends CommandHandler {
 			"Ajoute un serveur à la whitelist",
 			[
 				{
-					name: "lien",
+					name: "link",
 					description: "Lien d'invitation complet",
 					required: true
 				}
@@ -47,7 +47,7 @@ export default class WhitelistCommandHandler extends CommandHandler {
 	getInvitationLink = interaction => {
 		let inviteId =
 			(interaction.isChatInputCommand()
-				? Object.values(this.parseOptions(interaction.options))[0]
+				? this.parseOptions(interaction.options).link
 				: interaction.targetMessage.content)
 			.match(new RegExp("(?<=https?:\/\/discord\.(?:gg|com\/invite)\/)[0-9a-z-]+", "i"))?.[0];
 		if (inviteId) {
