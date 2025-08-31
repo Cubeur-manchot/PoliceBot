@@ -3,6 +3,7 @@
 import Discord from "discord.js";
 import BotHelper from "./botHelper.js";
 import PrisonCommandHandler from "./commandHandlers/prisonCommandHandler.js";
+import WarningCommandHandler from "./commandHandlers/warningCommandHandler.js";
 import WhitelistCommandHandler from "./commandHandlers/whitelistCommandHandler.js";
 
 export default class CommandManager extends BotHelper {
@@ -11,6 +12,7 @@ export default class CommandManager extends BotHelper {
 		this.discordClientManager = this.bot.discordClientManager;
 		let commandHandlers = [
 			new PrisonCommandHandler(this),
+			new WarningCommandHandler(this),
 			new WhitelistCommandHandler(this)
 		];
 		this.commandHandlers = this.dictionnize(commandHandlers, "commandName");

@@ -11,7 +11,7 @@ export default class DataManager extends BotHelper {
 		discussions: "discussions",
 		infractions: "infractions",
 		serversWhiteList: "serversWhiteList",
-		warns: "warns"
+		warnings: "warnings"
 	};
 	static serverInfoCollectionName = "serversInfo";
 	constructor(bot) {
@@ -105,4 +105,5 @@ export default class DataManager extends BotHelper {
 	addServerWhiteList = async (serverInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo, userErrorMessage);
 	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo.id, serverInfo, userErrorMessage);
 	getServerInfo = async (invitationId, userErrorMessage) => await this.getData(DataManager.serverInfoCollectionName, null, invitationId, userErrorMessage);
+	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 };
