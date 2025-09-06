@@ -14,12 +14,11 @@ export default class PrisonCommandHandler extends CommandHandler {
 				user: true,
 				message: false
 			},
-			"Envoie un membre en prison",
-			[]
+			"Envoie un membre en prison"
 		);
 	};
 	handleCommand = async interaction => {
 		await this.discordClientManager.addRoleToMember(interaction.targetMember, process.env.PRISONER_ROLE_ID, PrisonCommandHandler.prisonerRoleAddErrorMessage);
-		return {content: PrisonCommandHandler.prisonerRoleAddSuccessMessage};
+		return PrisonCommandHandler.prisonerRoleAddSuccessMessage;
 	};
 };

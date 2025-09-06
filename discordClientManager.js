@@ -67,6 +67,13 @@ export default class DiscordClientManager extends BotHelper {
 		"Interaction has been replied successfully",
 		"Failed to reply an interaction"
 	);
+	showModal = async (interaction, modal, userErrorMessage) => this.runAsync(
+		() => interaction.showModal(modal),
+		"Modal {0} (customId = {1}) has been shown successfully",
+		"Failed to show modal {0} (customId = {1})",
+		[modal.data.title, modal.data.custom_id],
+		userErrorMessage
+	);
 	joinThread = async thread => this.runAsync(
 		() => thread.join(),
 		"Newly created thread {0} in channel {1} has been joined successfully",

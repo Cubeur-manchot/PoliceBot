@@ -36,13 +36,13 @@ export default class WhitelistCommandHandler extends CommandHandler {
 		let whiteListedServer = await this.dataManager.getServerWhiteListById(serverInfo.id, WhitelistCommandHandler.serverWhitelistGetErrorMessage);
 		if (!whiteListedServer) {
 			await this.dataManager.addServerWhiteList(serverInfo, WhitelistCommandHandler.serverWhitelistAddErrorMessage);
-			return {content: WhitelistCommandHandler.serverWhitelistAddSuccessMessage};
+			return WhitelistCommandHandler.serverWhitelistAddSuccessMessage;
 		}
 		if (whiteListedServer.data.name !== serverInfo.name) {
 			await this.dataManager.updateServerWhiteList(whiteListedServer.id, serverInfo, WhitelistCommandHandler.serverWhitelistUpdateErrorMessage);
-			return {content: WhitelistCommandHandler.serverWhitelistUpdateSuccessMessage};
+			return WhitelistCommandHandler.serverWhitelistUpdateSuccessMessage;
 		}
-		return {content: WhitelistCommandHandler.serverAlreadyInWhitelistInfoMessage};
+		return WhitelistCommandHandler.serverAlreadyInWhitelistInfoMessage;
 	};
 	getInvitationLink = interaction => {
 		let inviteId =

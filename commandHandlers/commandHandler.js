@@ -1,5 +1,6 @@
 "use strict";
 
+import Discord from "discord.js";
 import Command from "../command.js";
 
 export default class CommandHandler {
@@ -12,4 +13,26 @@ export default class CommandHandler {
 	};
 	handleCommand = () => this.commandManager.bot.logger.error("Invoking 'handleCommand()' on an abstract class.");
 	parseOptions = options => Object.fromEntries(this.command.options.map(option => [option.name, options[`get${option.type ?? Command.optionTypes.string}`](option.name)]));
+	buildDiscordModal = (title, fields) => {
+		let modal = new Discord.ModalBuilder()
+			.setCustomId(this.commandName)
+			.setTitle(title)
+			.addComponents(fields.map(field => new Discord.ActionRowBuilder().addComponents(this.buildDiscordModalTextInput(field))));
+		return modal;
+	};
+	buildDiscordModalTextInput = field => {
+		console.log(field.isLong)
+		let textInput = new Discord.TextInputBuilder()
+			.setCustomId(field.name)
+			.setLabel(field.label)
+			.setStyle(field.isLong ? Discord.TextInputStyle.Paragraph : Discord.TextInputStyle.Short)
+			.setRequired(true)
+			.setPlaceholder(field.placeholder ?? "")
+			.setMinLength(field.minLength ?? 0)
+			.setMaxLength(field.maxLength ?? 4000);
+		if (field.initialValue) { // prevent from form validation errors to show up at loading
+			textInput.setValue(field.initialValue);
+		}
+		return textInput;
+	};
 };

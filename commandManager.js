@@ -90,7 +90,16 @@ export default class CommandManager extends BotHelper {
 	handleCommand = async interaction => {
 		try {
 			let answer = await this.commandHandlers[interaction.commandName].handleCommand(interaction);
-			this.discordClientManager.replyInteraction(interaction, answer);
+			switch (answer.constructor) {
+				case String:
+					this.discordClientManager.replyInteraction(interaction, {content: answer});
+					return;
+				case Discord.ModalBuilder:
+					this.discordClientManager.showModal(interaction, answer);
+					return;
+				default:
+					throw "Unrecognized command anwser type";
+			}
 		} catch (commandError) {
 			if (typeof commandError === "string") { // custom error with error message to user
 				this.discordClientManager.replyInteraction(interaction, {content: `:x: ${commandError}.`});
