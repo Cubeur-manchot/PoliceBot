@@ -89,7 +89,10 @@ export default class CommandManager extends BotHelper {
 		).flat();
 	handleCommand = async interaction => {
 		try {
-			let answer = await this.commandHandlers[interaction.commandName].handleCommand(interaction);
+			let answer = await this.commandHandlers
+				[interaction.commandName ?? interaction.customId] // commandName for application commands (slash, user, message), customId for modal submits
+				[`handle${Discord.InteractionType[interaction.type]}`] // "handleApplicationCommand" or "handleModalSubmit"
+				(interaction);
 			switch (answer.constructor) {
 				case String:
 					this.discordClientManager.replyInteraction(interaction, {content: answer});

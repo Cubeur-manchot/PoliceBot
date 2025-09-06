@@ -30,7 +30,7 @@ export default class WhitelistCommandHandler extends CommandHandler {
 			]
 		);
 	};
-	handleCommand = async interaction => {
+	handleApplicationCommand = async interaction => {
 		let inviteId = this.getInvitationLink(interaction);
 		let serverInfo = await this.dataManager.getServerInfo(inviteId, WhitelistCommandHandler.serverInfoGetErrorMessage);
 		let whiteListedServer = await this.dataManager.getServerWhiteListById(serverInfo.id, WhitelistCommandHandler.serverWhitelistGetErrorMessage);
@@ -47,7 +47,7 @@ export default class WhitelistCommandHandler extends CommandHandler {
 	getInvitationLink = interaction => {
 		let inviteId =
 			(interaction.isChatInputCommand()
-				? this.parseOptions(interaction.options).link
+				? this.parseCommandOptions(interaction.options).link
 				: interaction.targetMessage.content)
 			.match(new RegExp("(?<=https?:\/\/discord\.(?:gg|com\/invite)\/)[0-9a-z-]+", "i"))?.[0];
 		if (inviteId) {

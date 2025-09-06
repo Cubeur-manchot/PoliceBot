@@ -31,9 +31,9 @@ export default class WarningCommandHandler extends CommandHandler {
 			]
 		);
 	};
-	handleCommand = async interaction => {
 		let {member, reason} = this.parseOptions(interaction.options);
 		await this.dataManager.addWarning({userId: member.id, reason: reason, time: new Date()}, WarningCommandHandler.warningAddErrorMessage);
+	handleApplicationCommand = async interaction => {
 		return WarningCommandHandler.warningAddSuccessMessage;
 	};
 };

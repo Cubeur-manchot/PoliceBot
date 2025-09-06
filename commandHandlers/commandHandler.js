@@ -11,8 +11,10 @@ export default class CommandHandler {
 		this.command = new Command(this, commandName, commandContexts, commandDescription, commandOptions, modalFields);
 		this.commandName = commandName;
 	};
-	handleCommand = () => this.commandManager.bot.logger.error("Invoking 'handleCommand()' on an abstract class.");
-	parseOptions = options => Object.fromEntries(this.command.options.map(option => [option.name, options[`get${option.type ?? Command.optionTypes.string}`](option.name)]));
+	handleApplicationCommand = () => this.commandManager.bot.logger.error("Invoking \"handleApplicationCommand()\" on an abstract class.");
+	handleModalSubmit = () => this.commandManager.bot.logger.error("Invoking \"handleModalSubmit()\" on an abstract class.");
+	parseCommandOptions = options => Object.fromEntries(this.command.options.map(option => [option.name, options[`get${option.type ?? Command.optionTypes.string}`](option.name)]));
+	parseModalTextFields = fields => Object.fromEntries(this.command.modalFields.map(field => [field.name, fields.getTextInputValue(field.name)]));
 	buildDiscordModal = (title, fields) => {
 		let modal = new Discord.ModalBuilder()
 			.setCustomId(this.commandName)
