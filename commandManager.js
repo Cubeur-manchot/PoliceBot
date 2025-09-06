@@ -91,11 +91,11 @@ export default class CommandManager extends BotHelper {
 		try {
 			let answer = await this.commandHandlers[interaction.commandName].handleCommand(interaction);
 			this.discordClientManager.replyInteraction(interaction, answer);
-		} catch (error) {
-			if (typeof error === "string") { // custom error with error message to user
-				this.discordClientManager.replyInteraction(interaction, {content: `:x: ${error}.`});
+		} catch (commandError) {
+			if (typeof commandError === "string") { // custom error with error message to user
+				this.discordClientManager.replyInteraction(interaction, {content: `:x: ${commandError}.`});
 			} else {
-				throw error;
+				throw commandError;
 			}
 		}
 	};
