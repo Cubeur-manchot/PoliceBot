@@ -7,13 +7,14 @@ export default class Command {
 		string: "String",
 		user: "User",
 	};
-	constructor(commandHandler, name, contexts, description, options) {
+	constructor(commandHandler, name, contexts, description, options, modalFields) {
 		this.commandHandler = commandHandler;
 		this.name = name;
 		this.contexts = contexts;
 		if (contexts.slash) {
 			this.description = description;
 			this.options = options;
+			this.modalFields = modalFields;
 		}
 	};
 	getSlashApplicationCommand = () => {
