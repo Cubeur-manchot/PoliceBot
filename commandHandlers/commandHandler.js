@@ -23,7 +23,6 @@ export default class CommandHandler {
 		return modal;
 	};
 	buildDiscordModalTextInput = field => {
-		console.log(field.isLong)
 		let textInput = new Discord.TextInputBuilder()
 			.setCustomId(field.name)
 			.setLabel(field.label)
