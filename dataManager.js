@@ -13,26 +13,30 @@ export default class DataManager extends BotHelper {
 		serversWhiteList: "serversWhiteList",
 		warnings: "warnings"
 	};
-	static serverInfoCollectionName = "serversInfo";
+	static serverInfoDataType = "serversInfo";
 	constructor(bot) {
 		super(bot);
 		if (!firebase.getApps().length) {
 			firebase.initializeApp({credential: firebase.applicationDefault()});
 		}
 		this.db = firestore.getFirestore();
-		this.cache = Object.fromEntries([...Object.keys(DataManager.collectionNames), DataManager.serverInfoCollectionName].map(cacheKey => [cacheKey, {}]));
+		this.cache = Object.fromEntries(
+			[...Object.keys(DataManager.collectionNames), DataManager.serverInfoDataType]
+			.map(cacheKey => [cacheKey, {}])
+		);
 	};
-	getData = async (collectionName, keyName, keyValue, userErrorMessage) => this.cache[collectionName][keyValue]
-		??= collectionName === DataManager.serverInfoCollectionName
+	getData = async (dataType, keyName, keyValue, userErrorMessage) => this.cache[dataType][keyValue]
+		??= dataType === DataManager.serverInfoDataType
 			? await this.fetchServerInfo(keyValue, userErrorMessage)
-			: await this.fetchFirestoreData(collectionName, Object.fromEntries([[keyName, keyValue]]), null, userErrorMessage);
-	addCache = (collectionName, key, value) => {
-		(this.cache[collectionName][key] ??= []).push(value);
-		this.logger.info(`Cache for collection "${collectionName}" has been extended (key = "${key}", value = "${JSON.stringify(value)}") successfully.`);
+			: await this.fetchFirestoreData(dataType, Object.fromEntries([[keyName, keyValue]]), null, userErrorMessage);
+	addCache = (dataType, key, value) => {
+		(this.cache[dataType][key] ??= []).push(value);
+		this.logger.info(`Cache for data type "${dataType}" has been extended (key = "${key}", value = "${JSON.stringify(value)}") successfully.`);
 	};
-	replaceCache = (collectionName, key, value) => {
-		this.cache[collectionName][key][0].data = value;
-		this.logger.info(`Cache for collection "${collectionName}" has been replaced (key = "${key}", value = "${JSON.stringify(value)}") successfully.`);
+	replaceCache = (dataType, key, value) => {
+		this.cache[dataType][key][0].data = value;
+		this.logger.info(`Cache for data type "${dataType}" has been replaced (key = "${key}", value = "${JSON.stringify(value)}") successfully.`);
+	};
 	};
 	fetchFirestoreData = async (collectionName, filters, fields, userErrorMessage) => {
 		let query = this.db.collection(collectionName);
@@ -104,6 +108,6 @@ export default class DataManager extends BotHelper {
 	getServerWhiteListById = async (serverId, userErrorMessage) => (await this.getData(DataManager.collectionNames.serversWhiteList, "id", serverId, userErrorMessage))[0];
 	addServerWhiteList = async (serverInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo, userErrorMessage);
 	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo.id, serverInfo, userErrorMessage);
-	getServerInfo = async (invitationId, userErrorMessage) => await this.getData(DataManager.serverInfoCollectionName, null, invitationId, userErrorMessage);
+	getServerInfo = async (invitationId, userErrorMessage) => await this.getData(DataManager.serverInfoDataType, null, invitationId, userErrorMessage);
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 };
