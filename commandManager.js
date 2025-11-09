@@ -5,6 +5,7 @@ import BotHelper from "./botHelper.js";
 import PrisonCommandHandler from "./commandHandlers/prisonCommandHandler.js";
 import WarningCommandHandler from "./commandHandlers/warningCommandHandler.js";
 import WhitelistCommandHandler from "./commandHandlers/whitelistCommandHandler.js";
+import DiscordMessageBuilder from "./discordMessageBuilder.js";
 
 export default class CommandManager extends BotHelper {
 	constructor(bot) {
@@ -99,6 +100,9 @@ export default class CommandManager extends BotHelper {
 					return;
 				case Discord.ModalBuilder:
 					this.discordClientManager.showModal(interaction, answer);
+					return;
+				case DiscordMessageBuilder:
+					this.discordClientManager.replyInteraction(interaction, {content: answer.textContent, components: answer.components});
 					return;
 				default:
 					throw "Unrecognized command anwser type";

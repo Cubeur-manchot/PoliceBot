@@ -2,6 +2,7 @@
 
 import Discord from "discord.js";
 import Command from "../command.js";
+import DiscordMessageBuilder from "../discordMessageBuilder.js";
 
 export default class CommandHandler {
 	constructor(commandManager, commandName, commandContexts, commandDescription, commandOptions, modalFields) {
@@ -36,4 +37,9 @@ export default class CommandHandler {
 		}
 		return textInput;
 	};
+	buildDiscordMessageWithUsersSelectComponents = (textContent, members) =>
+		new DiscordMessageBuilder(textContent, [
+			{type: DiscordMessageBuilder.componentTypes.user, members},
+			{type: DiscordMessageBuilder.componentTypes.button, label: "Valider"},
+		]);
 };
