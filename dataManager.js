@@ -37,6 +37,9 @@ export default class DataManager extends BotHelper {
 		this.cache[dataType][key][0].data = value;
 		this.logger.info(`Cache for data type "${dataType}" has been replaced (key = "${key}", value = "${JSON.stringify(value)}") successfully.`);
 	};
+	cleanCache = dataType => {
+		this.cache[dataType] = {};
+		this.logger.info(`Cache for data type "${dataType}" has been cleaned successfully.`);
 	};
 	fetchFirestoreData = async (collectionName, filters, fields, userErrorMessage) => {
 		let query = this.db.collection(collectionName);
