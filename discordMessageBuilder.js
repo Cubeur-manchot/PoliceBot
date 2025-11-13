@@ -14,7 +14,7 @@ export default class DiscordMessageBuilder {
 	buildComponent = component => {
 		switch (component.type) {
 			case DiscordMessageBuilder.componentTypes.user: return this.buildUserSelectComponent(component.members);
-			case DiscordMessageBuilder.componentTypes.button: return this.buildButtonComponent(component.label);
+			case DiscordMessageBuilder.componentTypes.button: return this.buildButtonComponent(component.label, component.customId);
 			default: throw "Unrecognized component type";
 		};
 	};
@@ -25,9 +25,9 @@ export default class DiscordMessageBuilder {
 			.setMinValues(1)
 			.setMaxValues(20)
 			.setDefaultUsers(memberIds);
-	buildButtonComponent = label =>
+	buildButtonComponent = (label, customId) =>
 		new Discord.ButtonBuilder()
-			.setCustomId("validateButton")
+			.setCustomId(customId ?? "validateButton")
 			.setLabel(label)
 			.setStyle(Discord.ButtonStyle.Primary);
 };

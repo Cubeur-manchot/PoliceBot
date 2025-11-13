@@ -37,9 +37,9 @@ export default class CommandHandler {
 		}
 		return textInput;
 	};
-	buildDiscordMessageWithUsersSelectComponents = (textContent, members) =>
+	buildDiscordMessageWithUsersSelectComponents = (textContent, members, validateButtonCustomId) =>
 		new DiscordMessageBuilder(textContent, [
 			{type: DiscordMessageBuilder.componentTypes.user, members},
-			{type: DiscordMessageBuilder.componentTypes.button, label: "Valider"},
+			{type: DiscordMessageBuilder.componentTypes.button, label: "Valider", customId: validateButtonCustomId},
 		]);
 };
