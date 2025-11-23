@@ -2,7 +2,8 @@
 
 import * as firebase from "firebase-admin/app";
 import * as firestore from "firebase-admin/firestore";
-import BotHelper from "./botHelper.js";
+import BotHelper from "../botHelper.js";
+import ListMapCache from "./listMapCache.js";
 
 export default class DataManager extends BotHelper {
 	static collectionNames = {
@@ -16,33 +17,34 @@ export default class DataManager extends BotHelper {
 	static serverInfoDataType = "serversInfo";
 	constructor(bot) {
 		super(bot);
+		this.initializeDatabase();
+		this.initializeCache();
+	};
+	initializeDatabase = () => {
 		if (!firebase.getApps().length) {
 			firebase.initializeApp({credential: firebase.applicationDefault()});
 		}
-		this.db = firestore.getFirestore();
-		this.cache = Object.fromEntries(
-			[...Object.keys(DataManager.collectionNames), DataManager.serverInfoDataType]
-			.map(cacheKey => [cacheKey, {}])
+		this.database = firestore.getFirestore();
+	};
+	initializeCache = () => {
+		this.cache = this.dictionnize(
+			[...Object.values(DataManager.collectionNames), DataManager.serverInfoDataType].map(dataType => new ListMapCache(this, dataType)),
+			"dataType"
 		);
 	};
-	getData = async (dataType, keyName, keyValue, userErrorMessage) => this.cache[dataType][keyValue]
-		??= dataType === DataManager.serverInfoDataType
+	getData = async (dataType, keyName, keyValue, userErrorMessage) => {
+		let cachedValue = this.cache[dataType].getEntry(keyValue);
+		if (cachedValue) {
+			return cachedValue;
+		};
+		let fetchedValue = dataType === DataManager.serverInfoDataType
 			? await this.fetchServerInfo(keyValue, userErrorMessage)
 			: await this.fetchFirestoreData(dataType, Object.fromEntries([[keyName, keyValue]]), null, userErrorMessage);
-	addCache = (dataType, key, value) => {
-		(this.cache[dataType][key] ??= []).push(value);
-		this.logger.info(`Cache for data type "${dataType}" has been extended (key = "${key}", value = "${JSON.stringify(value)}") successfully.`);
-	};
-	replaceCache = (dataType, key, value) => {
-		this.cache[dataType][key][0].data = value;
-		this.logger.info(`Cache for data type "${dataType}" has been replaced (key = "${key}", value = "${JSON.stringify(value)}") successfully.`);
-	};
-	cleanCache = dataType => {
-		this.cache[dataType] = {};
-		this.logger.info(`Cache for data type "${dataType}" has been cleaned successfully.`);
+		this.cache[dataType].addEntry(keyValue, fetchedValue);
+		return fetchedValue;
 	};
 	fetchFirestoreData = async (collectionName, filters, fields, userErrorMessage) => {
-		let query = this.db.collection(collectionName);
+		let query = this.database.collection(collectionName);
 		for (let [field, value] of Object.entries(filters)) {
 			query = query.where(field, "==", value);
 		}
@@ -90,23 +92,23 @@ export default class DataManager extends BotHelper {
 	};
 	addFirestoreData = async (collectionName, key, newData, userErrorMessage) => {
 		let addedDocument = await this.runAsync(
-			() => this.db.collection(collectionName).add(newData),
+			() => this.database.collection(collectionName).add(newData),
 			"New data {0} has been added to collection {1} successfully",
 			"Failed to add new data {0} to collection {1}",
 			[JSON.stringify(newData), collectionName],
 			userErrorMessage
 		);
-		this.addCache(collectionName, key, {id: addedDocument.id, data: newData});
+		this.cache[collectionName].safePushToEntry(key, {id: addedDocument.id, data: newData});
 	};
 	updateFirestoreData = async (collectionName, documentId, key, newData, userErrorMessage) => {
 		await this.runAsync(
-			() => this.db.collection(collectionName).doc(documentId).update(newData),
+			() => this.database.collection(collectionName).doc(documentId).update(newData),
 			"Document {0} in collection {1} has been updated with new data ({2}) successfully",
 			"Failed to update document {0} in collection {1} with new data ({2})",
 			[documentId, collectionName, JSON.stringify(newData)],
 			userErrorMessage
 		);
-		this.replaceCache(collectionName, key, newData);
+		this.cache[collectionName].removeEntry(key);
 	};
 	getServerWhiteListById = async (serverId, userErrorMessage) => (await this.getData(DataManager.collectionNames.serversWhiteList, "id", serverId, userErrorMessage))[0];
 	addServerWhiteList = async (serverInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo, userErrorMessage);

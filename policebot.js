@@ -1,7 +1,7 @@
 "use strict";
 
 import CommandManager from "./commandManager.js";
-import DataManager from "./dataManager.js";
+import DataManager from "./dataManagers/dataManager.js";
 import DiscordClientManager from "./discordClientManager.js";
 import Logger from "./logger.js";
 

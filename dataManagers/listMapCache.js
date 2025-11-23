@@ -1,0 +1,69 @@
+"use strict";
+
+import BotHelper from "../botHelper.js";
+
+export default class ListMapCache extends BotHelper {
+	#timer;
+	constructor(dataManager, dataType, expirationTimeMinutes = 1440) {
+		super(dataManager.bot);
+		this.dataType = dataType;
+		this.expirationTimeMilliseconds = expirationTimeMinutes * 60 * 1000;
+		this.resetData(); // Map<key, Array> containing either all values for a given key, or be empty (no partial lists)
+	};
+	resetData = () => {
+		this.data = new Map();
+		this.logger.info(`Cache for data type "${this.dataType}" has been reset successfully.`);
+		this.clearTimer();
+	};
+	resetExpiration = () => {
+		this.clearTimer();
+		this.#timer = setTimeout(() => this.resetData(), this.expirationTimeMilliseconds);
+	};
+	clearTimer = () => {
+		clearTimeout(this.#timer);
+	};
+	getEntry = key => this.data.get(key);
+	addEntry = (key, list) => {
+		if (!this.data.has(key)) {
+			this.data.set(key, list);
+			this.resetExpiration();
+			this.logger.info(`Cache for data type "${this.dataType}" has been extended with new entry (key = "${key}", list = "${JSON.stringify(list)}") successfully.`);
+		} else {
+			throw `Failed to add a new entry to the cache for data type "${this.dataType}", because the cache already contains the key "${key}".`;
+		}
+	};
+	replaceEntry = (key, list) => {
+		if (this.data.has(key)) {
+			this.data.set(key, list);
+			this.resetExpiration();
+			this.logger.info(`Cache entry for data type "${this.dataType}" has been updated (key = "${key}", list = "${JSON.stringify(list)}") successfully.`);
+		} else {
+			throw `Failed to update the cache entry for data type "${this.dataType}", because the cache does not contain the key "${key}".`;
+		}
+	};
+	removeEntry = key => {
+		if (this.data.has(key)) {
+			this.data.delete(key);
+			this.logger.info(`Cache entry for data type "${this.dataType}" has been removed (key = "${key}") successfully.`);
+		} else {
+			throw `Failed to remove the cache entry for data type "${this.dataType}", because the cache does not contain the key "${key}".`;
+		}
+	};
+	pushToEntry = (key, value) => {
+		if (this.data.has(key)) {
+			this.data.get(key).push(value);
+			this.resetExpiration();
+			this.logger.info(`Cache entry for data type "${this.dataType}" has been extended (key = "${key}", new value = "${JSON.stringify(value)}") successfully.`);
+		} else {
+			throw `Failed to push the value "${value}" to the cache entry for data type "${this.dataType}", because the cache does not contain the key "${key}".`;
+		}
+	};
+	safePushToEntry = (key, value) => {
+		if (this.data.has(key)) {
+			this.data.get(key).push(value);
+			this.resetExpiration();
+			this.logger.info(`Cache entry for data type "${this.dataType}" has been extended (key = "${key}", new value = "${JSON.stringify(value)}") successfully.`);
+		}
+		// do not create the key if it does not exist, because only full lists are allowed
+	};
+};
