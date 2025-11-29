@@ -27,7 +27,7 @@ export default class DiscordClientManager extends BotHelper {
 		this.bot.commandManager.updateApplicationCommands();
 	};
 	onInteractionCreate = interaction => {
-		if (interaction.isCommand() || interaction.isModalSubmit()) {
+		if (interaction.isCommand() || interaction.isModalSubmit() || interaction.isMessageComponent()) {
 			this.bot.commandManager.handleCommand(interaction);
 		}
 	};
