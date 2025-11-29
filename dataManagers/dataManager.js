@@ -15,6 +15,8 @@ export default class DataManager extends BotHelper {
 		warnings: "warnings"
 	};
 	static serverInfoDataType = "serversInfo";
+	static discordMessagesDataType = "discordMessages";
+	static discordMembersCurrentSelectionDataType = "discordMembersCurrentSelection";
 	constructor(bot) {
 		super(bot);
 		this.initializeDatabase();
@@ -28,7 +30,12 @@ export default class DataManager extends BotHelper {
 	};
 	initializeCache = () => {
 		this.cache = this.dictionnize(
-			[...Object.values(DataManager.collectionNames), DataManager.serverInfoDataType].map(dataType => new ListMapCache(this, dataType)),
+			[
+				...Object.values(DataManager.collectionNames).map(dataType => new ListMapCache(this, dataType)),
+				new ListMapCache(this, DataManager.serverInfoDataType),
+				new ListMapCache(this, DataManager.discordMessagesDataType, 15),
+				new ListMapCache(this, DataManager.discordMembersCurrentSelectionDataType, 15)
+			],
 			"dataType"
 		);
 	};
@@ -115,4 +122,8 @@ export default class DataManager extends BotHelper {
 	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo.id, serverInfo, userErrorMessage);
 	getServerInfo = async (invitationId, userErrorMessage) => await this.getData(DataManager.serverInfoDataType, null, invitationId, userErrorMessage);
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
+	getCachedMessagesByAuthorIds = authorIdList => this.cache[DataManager.discordMessagesDataType].getEntries(authorIdList);
+	cacheMessagesByAuthorId = map => this.cache[DataManager.discordMessagesDataType].setEntries(map);
+	getCachedSelectedUsers = () => this.cache[DataManager.discordMembersCurrentSelectionDataType].getKeys(list => list[0] === true);
+	cacheSelectedUsers = map => this.cache[DataManager.discordMembersCurrentSelectionDataType].setEntries(map);
 };
