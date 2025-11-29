@@ -13,21 +13,21 @@ export default class DiscordMessageBuilder {
 	};
 	buildComponent = component => {
 		switch (component.type) {
-			case DiscordMessageBuilder.componentTypes.user: return this.buildUserSelectComponent(component.members);
+			case DiscordMessageBuilder.componentTypes.user: return this.buildUserSelectComponent(component.members, component.customId);
 			case DiscordMessageBuilder.componentTypes.button: return this.buildButtonComponent(component.label, component.customId);
 			default: throw "Unrecognized component type";
 		};
 	};
-	buildUserSelectComponent = memberIds =>
+	buildUserSelectComponent = (memberIds, customId) =>
 		new Discord.UserSelectMenuBuilder()
-			.setCustomId("selectedUsers")
+			.setCustomId(`${customId}-usersSelect`)
 			.setPlaceholder("Sélectionner les utilisateurs")
 			.setMinValues(1)
 			.setMaxValues(20)
 			.setDefaultUsers(memberIds);
 	buildButtonComponent = (label, customId) =>
 		new Discord.ButtonBuilder()
-			.setCustomId(customId ?? "validateButton")
+			.setCustomId(`${customId}-validateButton`)
 			.setLabel(label)
 			.setStyle(Discord.ButtonStyle.Primary);
 };
