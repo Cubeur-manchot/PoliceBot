@@ -105,7 +105,7 @@ export default class CommandManager extends BotHelper {
 					this.discordClientManager.replyInteraction(interaction, {content: answer.textContent, components: answer.components});
 					return;
 				default:
-					throw "Unrecognized command anwser type";
+					throw "Unrecognized command answer type";
 			}
 		} catch (commandError) {
 			if (typeof commandError === "string") { // custom error with error message to user
