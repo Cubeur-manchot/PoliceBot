@@ -67,6 +67,11 @@ export default class DiscordClientManager extends BotHelper {
 		"Interaction has been replied successfully",
 		"Failed to reply an interaction"
 	);
+	deferUpdateInteraction = async interaction => this.runAsync(
+		() => interaction.deferUpdate(),
+		"Interaction has been defer updated successfully",
+		"Failed to defer update an interaction"
+	);
 	showModal = async (interaction, modal, userErrorMessage) => this.runAsync(
 		() => interaction.showModal(modal),
 		"Modal {0} (customId = {1}) has been shown successfully",

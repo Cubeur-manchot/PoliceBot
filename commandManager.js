@@ -94,7 +94,7 @@ export default class CommandManager extends BotHelper {
 				[`handle${Discord.InteractionType[interaction.type]}`] // "handleApplicationCommand" or "handleModalSubmit"
 				[this.getCommandName(interaction)]
 				(interaction);
-			switch (answer.constructor) {
+			switch (answer?.constructor ?? answer) {
 				case String:
 					this.discordClientManager.replyInteraction(interaction, {content: answer});
 					return;
@@ -103,6 +103,9 @@ export default class CommandManager extends BotHelper {
 					return;
 				case DiscordMessageBuilder:
 					this.discordClientManager.replyInteraction(interaction, {content: answer.textContent, components: answer.components});
+					return;
+				case null:
+					this.discordClientManager.deferUpdateInteraction(interaction);
 					return;
 				default:
 					throw "Unrecognized command answer type";
