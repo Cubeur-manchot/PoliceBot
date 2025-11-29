@@ -92,4 +92,28 @@ export default class DiscordClientManager extends BotHelper {
 		[roleId, member.nickname ?? member.user.globalName, member.user.username],
 		userErrorMessage
 	);
+	fetchMessages = async (channel, beforeMessageId, userErrorMessage) => this.runAsync(
+		() => channel.messages.fetch({limit: 100, ...(beforeMessageId && {before: beforeMessageId})}),
+		"Messages were fetched in channel {0} before message with id {1} successfully",
+		"Failed to fetch messages in channel {0} before message with id {1}",
+		[channel.name, beforeMessageId],
+		userErrorMessage
+	);
+	bulkDeleteMessagesBatch = async (channel, messagesToDelete) => this.runAsync(
+		() => channel.bulkDelete(messagesToDelete),
+		"{0} messages in channel {1} have been bulk deleted successfully",
+		"Failed to bulk delete {0} messages in channel {1}",
+		[messagesToDelete.length, channel.name]
+	);
+	bulkDeleteMessages = async (channel, messagesToDelete, userErrorMessage) => {
+		let bulkDeletes = await Promise.allSettled(
+			Array.from(
+				{length: Math.ceil(messagesToDelete.length / 100)},
+				(_, index) => this.bulkDeleteMessagesBatch(channel, messagesToDelete.slice(index * 100, (index + 1) * 100))
+			)
+		);
+		if (bulkDeletes.some(bulkDelete => bulkDelete.status === "rejected")) {
+			throw userErrorMessage;
+		}
+	};
 };
