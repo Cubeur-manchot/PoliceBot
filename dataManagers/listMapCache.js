@@ -22,6 +22,12 @@ export default class ListMapCache extends BotHelper {
 	clearTimer = () => {
 		clearTimeout(this.#timer);
 	};
+	getEntries = keys => keys.map(key => this.data.get(key)).filter(Boolean).flat();
+	setEntries = map => {
+		this.data = map;
+		this.resetExpiration();
+		this.logger.info(`Cache for data type "${this.dataType}" has been set (${map.size} keys) successfully.`);
+	};
 	getEntry = key => this.data.get(key);
 	addEntry = (key, list) => {
 		if (!this.data.has(key)) {
