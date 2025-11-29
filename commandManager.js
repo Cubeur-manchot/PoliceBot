@@ -2,6 +2,7 @@
 
 import Discord from "discord.js";
 import BotHelper from "./botHelper.js";
+import OffTopicCommandHandler from "./commandHandlers/offTopicCommandHandler.js";
 import PrisonCommandHandler from "./commandHandlers/prisonCommandHandler.js";
 import WarningCommandHandler from "./commandHandlers/warningCommandHandler.js";
 import WhitelistCommandHandler from "./commandHandlers/whitelistCommandHandler.js";
@@ -12,6 +13,7 @@ export default class CommandManager extends BotHelper {
 		super(bot);
 		this.discordClientManager = this.bot.discordClientManager;
 		let commandHandlers = [
+			new OffTopicCommandHandler(this),
 			new PrisonCommandHandler(this),
 			new WarningCommandHandler(this),
 			new WhitelistCommandHandler(this)
