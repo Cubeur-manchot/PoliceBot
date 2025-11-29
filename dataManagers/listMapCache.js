@@ -72,4 +72,8 @@ export default class ListMapCache extends BotHelper {
 		}
 		// do not create the key if it does not exist, because only full lists are allowed
 	};
+	getKeys = condition =>
+		[...this.data]
+		.filter(([_, value]) => condition(value))
+		.map(([key, _]) => key);
 };
