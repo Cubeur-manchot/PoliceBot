@@ -91,8 +91,8 @@ export default class CommandManager extends BotHelper {
 	handleCommand = async interaction => {
 		try {
 			let answer = await this.commandHandlers
-				[interaction.commandName ?? interaction.customId] // commandName for application commands (slash, user, message), customId for modal submits
 				[`handle${Discord.InteractionType[interaction.type]}`] // "handleApplicationCommand" or "handleModalSubmit"
+				[this.getCommandName(interaction)]
 				(interaction);
 			switch (answer.constructor) {
 				case String:
@@ -115,4 +115,7 @@ export default class CommandManager extends BotHelper {
 			}
 		}
 	};
+	getCommandName = interaction =>
+		interaction.commandName // application commands
+		?? interaction.customId; // modal submits
 };
