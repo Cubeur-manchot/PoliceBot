@@ -86,7 +86,7 @@ export default class OffTopicCommandHandler extends CommandHandler {
 		for (let i = 0; i < 100; i++) { // safety limitation of 100 requests of 100 messages = 10000 messages in total
 			let messages = await this.discordClientManager.fetchMessages(channel, beforeMessageId, OffTopicCommandHandler.fetchMessagesErrorMessage);
 			let oldestMessage = messages.last();
-			if (oldestMessage.createdTimestamp >= startTimestamp) { // all messages are more recent that startTimestamp
+			if (oldestMessage.createdTimestamp >= startTimestamp) { // all messages are more recent than startTimestamp
 				messages.forEach(addMessageToGroupingMap);
 			} else {
 				for (let message of messages.values()) {
