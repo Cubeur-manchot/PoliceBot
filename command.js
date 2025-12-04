@@ -5,7 +5,7 @@ import Discord from "discord.js";
 export default class Command {
 	static optionTypes = {
 		string: "String",
-		user: "User",
+		user: "User"
 	};
 	constructor(commandHandler, name, contexts, description, options, modalFields) {
 		this.commandHandler = commandHandler;
