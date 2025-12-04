@@ -10,6 +10,16 @@ process.on("SIGTERM", async () => {
 	process.exit(0);
 });
 
+if (process.env.ENVIRONMENT === "development") {
+	setTimeout( // auto-shutdown after 100 seconds
+		() => {
+			bot.logger.info("Development timeout is reached, the application will stop.");
+			process.exit(0);
+		},
+		100000
+	);
+};
+
 /*
 const Discord = require("discord.js");
 

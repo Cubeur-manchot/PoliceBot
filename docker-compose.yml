@@ -11,6 +11,7 @@ services:
     image: ghcr.io/cubeur-manchot/policebot:latest
     restart: unless-stopped
     environment:
+      - ENVIRONMENT=production
       - SERVER_ID=329175643877015553
       - MODERATOR_ROLE_ID=332427771286519808
       - PRISONER_ROLE_ID=664224270381219870
@@ -21,6 +22,7 @@ services:
     build: .
     stop_grace_period: 3s
     environment:
+      - ENVIRONMENT=development
       - SERVER_ID=422718228913979392
       - MODERATOR_ROLE_ID=424959068092891137
       - PRISONER_ROLE_ID=1404943453078687764
