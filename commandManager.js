@@ -11,7 +11,7 @@ import DiscordMessageBuilder from "./discordMessageBuilder.js";
 export default class CommandManager extends BotHelper {
 	constructor(bot) {
 		super(bot);
-		this.discordClientManager = this.bot.discordClientManager;
+		this.discordActionManager = this.bot.discordClientManager.discordActionManager;
 		let commandHandlers = [
 			new OffTopicCommandHandler(this),
 			new PrisonCommandHandler(this),
@@ -23,13 +23,13 @@ export default class CommandManager extends BotHelper {
 	};
 	updateApplicationCommands = async () => {
 		this.bot.logger.info("Start updating application commands.");
-		let deployedCommands = await this.discordClientManager.fetchApplicationCommands();
+		let deployedCommands = await this.discordActionManager.fetchApplicationCommands();
 		if (this.areApplicationCommandsIdentical(deployedCommands)) {
 			this.bot.logger.info("Application commands are already up-to-date.");
 			return;
 		}
 		let commands = this.buildApplicationCommands();
-		this.discordClientManager.deployApplicationCommands(commands.map(command => command.toJSON()));
+		this.discordActionManager.deployApplicationCommands(commands.map(command => command.toJSON()));
 	};
 	areApplicationCommandsIdentical = deployedCommands => {
 		let deployedCommandsMap = deployedCommands.reduce((deployedCommandsMap, command) => {
@@ -98,23 +98,23 @@ export default class CommandManager extends BotHelper {
 				(interaction);
 			switch (answer?.constructor ?? answer) {
 				case String:
-					this.discordClientManager.replyInteraction(interaction, {content: answer});
+					this.discordActionManager.replyInteraction(interaction, {content: answer});
 					return;
 				case Discord.ModalBuilder:
-					this.discordClientManager.showModal(interaction, answer);
+					this.discordActionManager.showModal(interaction, answer);
 					return;
 				case DiscordMessageBuilder:
-					this.discordClientManager.replyInteraction(interaction, {content: answer.textContent, components: answer.components});
+					this.discordActionManager.replyInteraction(interaction, {content: answer.textContent, components: answer.components});
 					return;
 				case null:
-					this.discordClientManager.deferUpdateInteraction(interaction);
+					this.discordActionManager.deferUpdateInteraction(interaction);
 					return;
 				default:
 					throw "Unrecognized command answer type";
 			}
 		} catch (commandError) {
 			if (typeof commandError === "string") { // custom error with error message to user
-				this.discordClientManager.replyInteraction(interaction, {content: `:x: ${commandError}.`});
+				this.discordActionManager.replyInteraction(interaction, {content: `:x: ${commandError}.`});
 			} else {
 				throw commandError;
 			}

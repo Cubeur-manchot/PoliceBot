@@ -18,7 +18,7 @@ export default class PrisonCommandHandler extends CommandHandler {
 		);
 	};
 	handleApplicationCommand = async interaction => {
-		await this.discordClientManager.addRoleToMember(interaction.targetMember, process.env.PRISONER_ROLE_ID, PrisonCommandHandler.prisonerRoleAddErrorMessage);
+		await this.discordActionManager.addRoleToMember(interaction.targetMember, process.env.PRISONER_ROLE_ID, PrisonCommandHandler.prisonerRoleAddErrorMessage);
 		return PrisonCommandHandler.prisonerRoleAddSuccessMessage;
 	};
 };

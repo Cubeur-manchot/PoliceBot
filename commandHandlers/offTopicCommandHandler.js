@@ -56,7 +56,7 @@ export default class OffTopicCommandHandler extends CommandHandler {
 	handleValidateButtonClick = async interaction => {
 		let selectedUserIds = this.dataManager.getCachedSelectedUsers();
 		let messagesToDelete = this.dataManager.getCachedMessagesByAuthorIds(selectedUserIds);
-		await this.discordClientManager.bulkDeleteMessages(interaction.channel, messagesToDelete, OffTopicCommandHandler.bulkDeleteMessagesErrorMessage);
+		await this.discordActionManager.bulkDeleteMessages(interaction.channel, messagesToDelete, OffTopicCommandHandler.bulkDeleteMessagesErrorMessage);
 		return OffTopicCommandHandler.bulkDeleteMessagesSuccessMessage.replace("{count}", messagesToDelete.length);
 	};
 	getOffTopicStartTime = interaction => {
@@ -84,7 +84,7 @@ export default class OffTopicCommandHandler extends CommandHandler {
 		};
 		let beforeMessageId;
 		for (let i = 0; i < 100; i++) { // safety limitation of 100 requests of 100 messages = 10000 messages in total
-			let messages = await this.discordClientManager.fetchMessages(channel, beforeMessageId, OffTopicCommandHandler.fetchMessagesErrorMessage);
+			let messages = await this.discordActionManager.fetchMessages(channel, beforeMessageId, OffTopicCommandHandler.fetchMessagesErrorMessage);
 			let oldestMessage = messages.last();
 			if (oldestMessage.createdTimestamp >= startTimestamp) { // all messages are more recent than startTimestamp
 				messages.forEach(addMessageToGroupingMap);

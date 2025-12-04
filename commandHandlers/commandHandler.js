@@ -7,7 +7,7 @@ import DiscordMessageBuilder from "../discordMessageBuilder.js";
 export default class CommandHandler {
 	constructor(commandManager, commandName, commandContexts, commandDescription, commandOptions, modalFields) {
 		this.commandManager = commandManager;
-		this.discordClientManager = this.commandManager.bot.discordClientManager;
+		this.discordActionManager = this.commandManager.bot.discordClientManager.discordActionManager;
 		this.dataManager = this.commandManager.bot.dataManager;
 		this.command = new Command(this, commandName, commandContexts, commandDescription, commandOptions, modalFields);
 		this.commandName = commandName;
