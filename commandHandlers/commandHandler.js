@@ -3,17 +3,19 @@
 import Discord from "discord.js";
 import Command from "../command.js";
 import DiscordMessageBuilder from "../discordMessageBuilder.js";
+import BotHelper from "../botHelper.js";
 
-export default class CommandHandler {
+export default class CommandHandler extends BotHelper {
 	constructor(commandManager, commandName, commandContexts, commandDescription, commandOptions, modalFields) {
+		super(commandManager.bot);
 		this.commandManager = commandManager;
-		this.discordActionManager = this.commandManager.bot.discordClientManager.discordActionManager;
-		this.dataManager = this.commandManager.bot.dataManager;
+		this.discordActionManager = this.bot.discordClientManager.discordActionManager;
+		this.dataManager = this.bot.dataManager;
 		this.command = new Command(this, commandName, commandContexts, commandDescription, commandOptions, modalFields);
 		this.commandName = commandName;
 	};
-	handleApplicationCommand = () => this.commandManager.bot.logger.error("Invoking \"handleApplicationCommand()\" on an abstract class.");
-	handleModalSubmit = () => this.commandManager.bot.logger.error("Invoking \"handleModalSubmit()\" on an abstract class.");
+	handleApplicationCommand = () => this.logger.error("Invoking \"handleApplicationCommand()\" on an abstract class.");
+	handleModalSubmit = () => this.logger.error("Invoking \"handleModalSubmit()\" on an abstract class.");
 	parseCommandOptions = options => Object.fromEntries(this.command.options.map(option => [option.name, options[`get${option.type ?? Command.optionTypes.string}`](option.name)]));
 	parseModalTextFields = fields => Object.fromEntries(this.command.modalFields.map(field => [field.name, fields.getTextInputValue(field.name)]));
 	buildDiscordModal = (title, fields) => {
