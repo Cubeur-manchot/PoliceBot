@@ -124,6 +124,8 @@ export default class DataManager extends BotHelper {
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 	getCachedMessagesByAuthorIds = authorIdList => this.cache[DataManager.discordMessagesDataType].getEntries(authorIdList);
 	cacheMessagesByAuthorId = map => this.cache[DataManager.discordMessagesDataType].setEntries(map);
+	clearMessagesCache = () => this.cache[DataManager.discordMessagesDataType].resetData();
 	getCachedSelectedUsers = () => this.cache[DataManager.discordMembersCurrentSelectionDataType].getKeys(list => list[0] === true);
 	cacheSelectedUsers = map => this.cache[DataManager.discordMembersCurrentSelectionDataType].setEntries(map);
+	clearSelectedUsersCache = () => this.cache[DataManager.discordMembersCurrentSelectionDataType].resetData();
 };

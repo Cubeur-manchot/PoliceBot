@@ -57,6 +57,8 @@ export default class OffTopicCommandHandler extends CommandHandler {
 		let selectedUserIds = this.dataManager.getCachedSelectedUsers();
 		let messagesToDelete = this.dataManager.getCachedMessagesByAuthorIds(selectedUserIds);
 		await this.discordActionManager.bulkDeleteMessages(interaction.channel, messagesToDelete, OffTopicCommandHandler.bulkDeleteMessagesErrorMessage);
+		this.dataManager.clearSelectedUsersCache();
+		this.dataManager.clearMessagesCache();
 		return OffTopicCommandHandler.bulkDeleteMessagesSuccessMessage.replace("{count}", messagesToDelete.length);
 	};
 	getOffTopicStartTime = interaction => {
