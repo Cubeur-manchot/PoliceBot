@@ -21,15 +21,9 @@ export default class DiscordClientManager extends BotHelper {
 		this.loginWithToken(token);
 	};
 	attachActions = () => [
-		{triggerType: "once", event: Discord.Events.ClientReady, method: this.onClientReady},
 		{triggerType: "on", event: Discord.Events.InteractionCreate, method: this.onInteractionCreate},
 		{triggerType: "on", event: Discord.Events.ThreadCreate, method: this.onThreadCreate}
 	].forEach(action => this.discordClient[action.triggerType](action.event, action.method));
-	onClientReady = () => {
-		this.logger.info("Discord client is ready.");
-		this.discordActionManager.setActivePresence();
-		this.bot.commandManager.updateApplicationCommands();
-	};
 	onInteractionCreate = interaction => {
 		if (interaction.isCommand() || interaction.isModalSubmit() || interaction.isMessageComponent()) {
 			this.bot.commandManager.handleCommand(interaction);
