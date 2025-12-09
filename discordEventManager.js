@@ -11,6 +11,7 @@ export default class DiscordEventManager extends BotHelper {
 		this.discordClient = discordClientManager.discordClient;
 		let eventHandlers = [
 			new ClientReadyEventHandler(this),
+			new ThreadCreateEventHandler(this)
 		];
 		this.eventHandlers = this.dictionnize(eventHandlers, "eventName");
 		eventHandlers.forEach(eventHandler => eventHandler.attachEventToClient());
