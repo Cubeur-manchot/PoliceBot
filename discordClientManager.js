@@ -3,6 +3,7 @@
 import Discord from "discord.js";
 import BotHelper from "./botHelper.js";
 import DiscordActionManager from "./discordActionManager.js";
+import DiscordEventManager from "./discordEventManager.js";
 
 export default class DiscordClientManager extends BotHelper {
 	constructor(bot, token) {
@@ -16,6 +17,7 @@ export default class DiscordClientManager extends BotHelper {
 		});
 		this.discordActionManager = new DiscordActionManager(this);
 		this.attachActions();
+		this.discordEventManager = new DiscordEventManager(this);
 		this.loginWithToken(token);
 	};
 	attachActions = () => [
