@@ -107,7 +107,9 @@ export default class CommandManager extends BotHelper {
 					this.discordActionManager.replyInteraction(interaction, {content: answer.textContent, components: answer.components});
 					return;
 				case null:
-					this.discordActionManager.deferUpdateInteraction(interaction);
+					if (!interaction.defferred && !interaction.replied) {
+						this.discordActionManager.deferUpdateInteraction(interaction);
+					}
 					return;
 				default:
 					throw "Unrecognized command answer type";
