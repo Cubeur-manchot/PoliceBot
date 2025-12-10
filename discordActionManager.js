@@ -39,6 +39,16 @@ export default class DiscordActionManager extends BotHelper {
 		"Interaction has been defer updated successfully",
 		"Failed to defer update an interaction"
 	);
+	followUpInteraction = async (interaction, answer) => this.runAsync(
+		() => interaction.followUp(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral})),
+		"Interaction has been followed up successfully",
+		"Failed to follow up an interaction"
+	);
+	updateInteractionMessage = async (interaction, answer) => this.runAsync(
+		() => interaction.update(answer),
+		"Interaction message has been updated successfully",
+		"Failed to update an interaction message"
+	);
 	showModal = async (interaction, modal, userErrorMessage) => this.runAsync(
 		() => interaction.showModal(modal),
 		"Modal {0} (customId = {1}) has been shown successfully",

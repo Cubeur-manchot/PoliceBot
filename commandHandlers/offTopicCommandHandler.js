@@ -7,7 +7,8 @@ export default class OffTopicCommandHandler extends CommandHandler {
 	static incorrectDateFormatErrorMessage = "Le format de date est incorrect. Veuillez entrer une date au format ISO";
 	static fetchMessagesErrorMessage = "Une erreur s'est produite lors de la récupération des messages du salon";
 	static bulkDeleteMessagesErrorMessage = "Une erreur s'est produite lors de la suppression des messages. Certains messages n'ont peut-être pas été supprimés";
-	static bulkDeleteMessagesSuccessMessage = ":white_check_mark: {count} messages ont été supprimés.";
+	static bulkDeleteMessagesDeferMessage = ":wastebasket: {messageCount} messages vont être supprimés.";
+	static bulkDeleteMessagesSuccessMessage = ":white_check_mark: {messageCount} messages ont été supprimés.";
 	constructor(commandManager) {
 		super(
 			commandManager,
@@ -56,10 +57,22 @@ export default class OffTopicCommandHandler extends CommandHandler {
 	handleValidateButtonClick = async interaction => {
 		let selectedUserIds = this.dataManager.getCachedSelectedUsers();
 		let messagesToDelete = this.dataManager.getCachedMessagesByAuthorIds(selectedUserIds);
-		await this.discordActionManager.bulkDeleteMessages(interaction.channel, messagesToDelete, OffTopicCommandHandler.bulkDeleteMessagesErrorMessage);
+		let messagesCount = messagesToDelete.length;
 		this.dataManager.clearSelectedUsersCache();
 		this.dataManager.clearMessagesCache();
-		return OffTopicCommandHandler.bulkDeleteMessagesSuccessMessage.replace("{count}", messagesToDelete.length);
+		await this.discordActionManager.updateInteractionMessage(
+			interaction,
+			{
+				content: OffTopicCommandHandler.bulkDeleteMessagesDeferMessage.replace("{messageCount}", messagesCount),
+				components: []
+			}
+		);
+		await this.discordActionManager.bulkDeleteMessages(interaction.channel, messagesToDelete, OffTopicCommandHandler.bulkDeleteMessagesErrorMessage);
+		await this.discordActionManager.followUpInteraction(
+			interaction,
+			{content: OffTopicCommandHandler.bulkDeleteMessagesSuccessMessage.replace("{messageCount}", messagesCount)}
+		);
+		return null;
 	};
 	getOffTopicStartTime = interaction => {
 		let startTime = new Date(
