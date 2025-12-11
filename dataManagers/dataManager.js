@@ -107,6 +107,22 @@ export default class DataManager extends BotHelper {
 		);
 		this.cache[collectionName].safePushToEntry(key, {id: addedDocument.id, data: newData});
 	};
+	addBatchFirestoreData = async (collectionName, elements, keyName, userErrorMessage) => {
+		let batch = this.database.batch();
+		let collection = this.database.collection(collectionName);
+		for (let element of elements) {
+			let documentId = collection.doc();
+			batch.set(documentId, element);
+			this.cache[collectionName].safePushToEntry(element[keyName], {id: documentId, data: element});
+		}
+		await this.runAsync(
+			() => batch.commit(),
+			"Batch data of {0} elements has been added to collection {1} successfully",
+			"Failed to add batch data of {0} elements to collection {1}",
+			[elements.length, collectionName],
+			userErrorMessage
+		);
+	};
 	updateFirestoreData = async (collectionName, documentId, key, newData, userErrorMessage) => {
 		await this.runAsync(
 			() => this.database.collection(collectionName).doc(documentId).update(newData),
