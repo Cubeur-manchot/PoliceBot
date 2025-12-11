@@ -7,9 +7,10 @@ export default class OffTopicCommandHandler extends CommandHandler {
 	static fetchMessagesErrorMessage = "Une erreur s'est produite lors de la récupération des messages du salon";
 	static usersSelectionPromptMessage = "Veuillez sélectionner les utilisateurs ayant participé au HS dans <#{channelId}> depuis {startTime}.";
 	static noMessageToDeleteInformationMessage = ":information: Aucun message à supprimer pour les utilisateurs sélectionnés.";
-	static bulkDeleteMessagesErrorMessage = "Une erreur s'est produite lors de la suppression des messages. Certains messages n'ont peut-être pas été supprimés";
 	static bulkDeleteMessagesDeferMessage = ":wastebasket: {messageCount} messages vont être supprimés.";
-	static bulkDeleteMessagesSuccessMessage = ":white_check_mark: {messageCount} messages ont été supprimés.";
+	static bulkDeleteMessagesErrorMessage = "Une erreur s'est produite lors de la suppression des messages. Certains messages n'ont peut-être pas été supprimés";
+	static saveInfractionErrorMessage = "Les {messageCount} messages ont été supprimés, mais une erreur s'est produite lors de l'enregistrement de l'infraction pour les {userCount} utilisateurs sélectionnés";
+	static saveInfractionSuccessMessage = ":white_check_mark: {messageCount} messages ont été supprimés et l'infraction a été enregistrée pour les {userCount} utilisateurs.";
 	constructor(commandManager) {
 		super(
 			commandManager,
@@ -57,6 +58,7 @@ export default class OffTopicCommandHandler extends CommandHandler {
 	};
 	handleValidateButtonClick = async interaction => {
 		let selectedUserIds = this.dataManager.getCachedSelectedUsers();
+		let userCount = selectedUserIds.length;
 		let messagesToDelete = this.dataManager.getCachedMessagesByAuthorIds(selectedUserIds);
 		let messageCount = messagesToDelete.length;
 		this.dataManager.clearSelectedUsersCache();
@@ -79,9 +81,19 @@ export default class OffTopicCommandHandler extends CommandHandler {
 			}
 		);
 		await this.discordActionManager.bulkDeleteMessages(interaction.channel, messagesToDelete, OffTopicCommandHandler.bulkDeleteMessagesErrorMessage);
+		let infractionDate = new Date();
+		let infractions = selectedUserIds.map(userId =>
+			({
+				type: "Off-topic",
+				time: infractionDate,
+				userId: parseInt(userId),
+				messageCount: messagesToDelete.filter(message => message.author.id === userId).length
+			})
+		);
+		await this.dataManager.addInfractions(infractions, OffTopicCommandHandler.saveInfractionErrorMessage.replace("{userCount}", userCount).replace("{messageCount}", messageCount));
 		await this.discordActionManager.followUpInteraction(
 			interaction,
-			{content: OffTopicCommandHandler.bulkDeleteMessagesSuccessMessage.replace("{messageCount}", messageCount)}
+			{content: OffTopicCommandHandler.saveInfractionSuccessMessage.replace("{userCount}", userCount).replace("{messageCount}", messageCount)}
 		);
 		return null;
 	};
