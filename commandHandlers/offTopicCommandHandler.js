@@ -6,6 +6,7 @@ export default class OffTopicCommandHandler extends CommandHandler {
 	static incorrectDateFormatErrorMessage = "Le format de date est incorrect. Veuillez entrer une date au format ISO";
 	static fetchMessagesErrorMessage = "Une erreur s'est produite lors de la récupération des messages du salon";
 	static usersSelectionPromptMessage = "Veuillez sélectionner les utilisateurs ayant participé au HS dans <#{channelId}> depuis {startTime}.";
+	static noMessageToDeleteInformationMessage = ":information: Aucun message à supprimer pour les utilisateurs sélectionnés.";
 	static bulkDeleteMessagesErrorMessage = "Une erreur s'est produite lors de la suppression des messages. Certains messages n'ont peut-être pas été supprimés";
 	static bulkDeleteMessagesDeferMessage = ":wastebasket: {messageCount} messages vont être supprimés.";
 	static bulkDeleteMessagesSuccessMessage = ":white_check_mark: {messageCount} messages ont été supprimés.";
@@ -60,6 +61,16 @@ export default class OffTopicCommandHandler extends CommandHandler {
 		let messageCount = messagesToDelete.length;
 		this.dataManager.clearSelectedUsersCache();
 		this.dataManager.clearMessagesCache();
+		if (messageCount === 0) {
+			await this.discordActionManager.updateInteractionMessage(
+				interaction,
+				{
+					content: OffTopicCommandHandler.noMessageToDeleteInformationMessage,
+					components: []
+				}
+			);
+			return null;
+		};
 		await this.discordActionManager.updateInteractionMessage(
 			interaction,
 			{
