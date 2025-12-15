@@ -2,7 +2,7 @@
 
 import Discord from "discord.js";
 import Command from "../command.js";
-import DiscordMessageBuilder from "../discordMessageBuilder.js";
+import DiscordComponentMessageBuilder from "../messageBuilders/discordComponentMessageBuilder.js";
 import BotHelper from "../botHelper.js";
 
 export default class CommandHandler extends BotHelper {
@@ -40,8 +40,8 @@ export default class CommandHandler extends BotHelper {
 		return textInput;
 	};
 	buildDiscordMessageWithUsersSelectComponents = (textContent, members, customId) =>
-		new DiscordMessageBuilder(textContent, [
-			{type: DiscordMessageBuilder.componentTypes.user, members, customId},
-			{type: DiscordMessageBuilder.componentTypes.button, label: "Valider", customId},
+		new DiscordComponentMessageBuilder(textContent, [
+			{type: DiscordComponentMessageBuilder.componentTypes.user, members, customId},
+			{type: DiscordComponentMessageBuilder.componentTypes.button, label: "Valider", customId},
 		]);
 };

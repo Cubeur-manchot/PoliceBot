@@ -6,7 +6,7 @@ import OffTopicCommandHandler from "./commandHandlers/offTopicCommandHandler.js"
 import PrisonCommandHandler from "./commandHandlers/prisonCommandHandler.js";
 import WarningCommandHandler from "./commandHandlers/warningCommandHandler.js";
 import WhitelistCommandHandler from "./commandHandlers/whitelistCommandHandler.js";
-import DiscordMessageBuilder from "./discordMessageBuilder.js";
+import DiscordComponentMessageBuilder from "./messageBuilders/discordComponentMessageBuilder.js";
 
 export default class CommandManager extends BotHelper {
 	constructor(bot) {
@@ -103,7 +103,7 @@ export default class CommandManager extends BotHelper {
 				case Discord.ModalBuilder:
 					this.discordActionManager.showModal(interaction, answer);
 					return;
-				case DiscordMessageBuilder:
+				case DiscordComponentMessageBuilder:
 					this.discordActionManager.replyInteraction(interaction, {content: answer.textContent, components: answer.components});
 					return;
 				case null:

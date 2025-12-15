@@ -2,7 +2,7 @@
 
 import Discord from "discord.js";
 
-export default class DiscordMessageBuilder {
+export default class DiscordComponentMessageBuilder {
 	static componentTypes = {
 		user: "User",
 		button: "Button"
@@ -13,8 +13,8 @@ export default class DiscordMessageBuilder {
 	};
 	buildComponent = component => {
 		switch (component.type) {
-			case DiscordMessageBuilder.componentTypes.user: return this.buildUserSelectComponent(component.members, component.customId);
-			case DiscordMessageBuilder.componentTypes.button: return this.buildButtonComponent(component.label, component.customId);
+			case DiscordComponentMessageBuilder.componentTypes.user: return this.buildUserSelectComponent(component.members, component.customId);
+			case DiscordComponentMessageBuilder.componentTypes.button: return this.buildButtonComponent(component.label, component.customId);
 			default: throw "Unrecognized component type";
 		};
 	};
