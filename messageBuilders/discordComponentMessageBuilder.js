@@ -15,7 +15,7 @@ export default class DiscordComponentMessageBuilder {
 		switch (component.type) {
 			case DiscordComponentMessageBuilder.componentTypes.user: return this.buildUserSelectComponent(component.members, component.customId);
 			case DiscordComponentMessageBuilder.componentTypes.button: return this.buildButtonComponent(component.label, component.customId);
-			default: throw "Unrecognized component type";
+			default: throw new Error(`Unrecognized component type "${component.type}"`);
 		};
 	};
 	buildUserSelectComponent = (memberIds, customId) =>
