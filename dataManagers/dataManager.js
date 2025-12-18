@@ -39,7 +39,8 @@ export default class DataManager extends BotHelper {
 			"dataType"
 		);
 	};
-	getData = async (dataType, keyName, keyValue, userErrorMessage) => {
+	getData = async options => {
+		let {dataType, keyName, keyValue, userErrorMessage} = options;
 		let cachedValue = this.cache[dataType].getEntry(keyValue);
 		if (cachedValue) {
 			return cachedValue;
@@ -133,10 +134,10 @@ export default class DataManager extends BotHelper {
 		);
 		this.cache[collectionName].removeEntry(key);
 	};
-	getServerWhiteListById = async (serverId, userErrorMessage) => (await this.getData(DataManager.collectionNames.serversWhiteList, "id", serverId, userErrorMessage))[0];
+	getServerWhiteListById = async (serverId, userErrorMessage) => (await this.getData({dataType: DataManager.collectionNames.serversWhiteList, keyName: "id", keyValue: serverId, userErrorMessage}))[0];
 	addServerWhiteList = async (serverInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo, userErrorMessage);
 	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo.id, serverInfo, userErrorMessage);
-	getServerInfo = async (invitationId, userErrorMessage) => await this.getData(DataManager.serverInfoDataType, null, invitationId, userErrorMessage);
+	getServerInfo = async (invitationId, userErrorMessage) => await this.getData({dataType: DataManager.serverInfoDataType, keyValue: invitationId, userErrorMessage});
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);
 	getCachedMessagesByAuthorIds = authorIdList => this.cache[DataManager.discordMessagesDataType].getEntries(authorIdList);
