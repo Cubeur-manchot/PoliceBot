@@ -96,7 +96,7 @@ export default class DataManager extends BotHelper {
 			[],
 			userErrorMessage
 		);
-		return serverInfo.guild ? {id: parseInt(serverInfo.guild.id), name: serverInfo.guild.name} : null;
+		return serverInfo.guild ? [{id: parseInt(serverInfo.guild.id), name: serverInfo.guild.name}] : [];
 	};
 	addFirestoreData = async (collectionName, key, newData, userErrorMessage) => {
 		let addedDocument = await this.runAsync(
@@ -137,7 +137,7 @@ export default class DataManager extends BotHelper {
 	getServerWhiteListById = async (serverId, userErrorMessage) => (await this.getData({dataType: DataManager.collectionNames.serversWhiteList, keyName: "id", keyValue: serverId, userErrorMessage}))[0];
 	addServerWhiteList = async (serverInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo, userErrorMessage);
 	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo.id, serverInfo, userErrorMessage);
-	getServerInfo = async (invitationId, userErrorMessage) => await this.getData({dataType: DataManager.serverInfoDataType, keyValue: invitationId, userErrorMessage});
+	getServerInfo = async (invitationId, userErrorMessage) => await this.getData({dataType: DataManager.serverInfoDataType, keyValue: invitationId, userErrorMessage})[0];
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);
 	getCachedMessagesByAuthorIds = authorIdList => this.cache[DataManager.discordMessagesDataType].getEntries(authorIdList);
