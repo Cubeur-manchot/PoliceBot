@@ -96,7 +96,12 @@ export default class DataManager extends BotHelper {
 			[],
 			userErrorMessage
 		);
-		return serverInfo.guild ? [{id: parseInt(serverInfo.guild.id), name: serverInfo.guild.name}] : [];
+		return serverInfo.guild
+			? [{
+				id: null, // such element do not have a documentId like in Firestore database
+				data: {id: parseInt(serverInfo.guild.id), name: serverInfo.guild.name}
+			}]
+			: [];
 	};
 	addFirestoreData = async (collectionName, key, newData, userErrorMessage) => {
 		let addedDocument = await this.runAsync(
