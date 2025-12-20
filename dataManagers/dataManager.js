@@ -40,7 +40,7 @@ export default class DataManager extends BotHelper {
 		);
 	};
 	getData = async options => {
-		let {dataType, keyName, keyValue, userErrorMessage} = options;
+		let {dataType, keyName, keyValue, userErrorMessage, hydrateFunction} = options;
 		let cachedValue = this.cache[dataType].getEntry(keyValue);
 		if (cachedValue) {
 			return cachedValue;
@@ -48,8 +48,11 @@ export default class DataManager extends BotHelper {
 		let fetchedValue = dataType === DataManager.serverInfoDataType
 			? await this.fetchServerInfo(keyValue, userErrorMessage)
 			: await this.fetchFirestoreData(dataType, Object.fromEntries([[keyName, keyValue]]), null, userErrorMessage);
-		this.cache[dataType].addEntry(keyValue, fetchedValue);
-		return fetchedValue;
+		let returnValue = hydrateFunction
+			? await fetchedValue.map(async element => ({id: element.id, data: await hydrateFunction(element.data)}))
+			: fetchedValue;
+		this.cache[dataType].addEntry(keyValue, returnValue);
+		return returnValue;
 	};
 	fetchFirestoreData = async (collectionName, filters, fields, userErrorMessage) => {
 		let query = this.database.collection(collectionName);
