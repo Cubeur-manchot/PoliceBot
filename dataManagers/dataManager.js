@@ -11,7 +11,7 @@ export default class DataManager extends BotHelper {
 		channels: "channels",
 		discussions: "discussions",
 		infractions: "infractions",
-		serversWhiteList: "serversWhiteList",
+		serversWhitelist: "serversWhitelist",
 		warnings: "warnings"
 	};
 	static serverInfoDataType = "serversInfo";
@@ -49,7 +49,7 @@ export default class DataManager extends BotHelper {
 			? await this.fetchServerInfo(keyValue, userErrorMessage)
 			: await this.fetchFirestoreData(dataType, Object.fromEntries([[keyName, keyValue]]), null, userErrorMessage);
 		let returnValue = hydrateFunction
-			? await fetchedValue.map(async element => ({id: element.id, data: await hydrateFunction(element.data)}))
+			? await Promise.all(fetchedValue.map(async element => ({id: element.id, data: await hydrateFunction(element.data)})))
 			: fetchedValue;
 		this.cache[dataType].addEntry(keyValue, returnValue);
 		return returnValue;
@@ -142,10 +142,33 @@ export default class DataManager extends BotHelper {
 		);
 		this.cache[collectionName].removeEntry(key);
 	};
-	getServerWhiteListById = async (serverId, userErrorMessage) => (await this.getData({dataType: DataManager.collectionNames.serversWhiteList, keyName: "id", keyValue: serverId, userErrorMessage}))[0];
-	addServerWhiteList = async (serverInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.serversWhiteList, serverInfo.id, serverInfo, userErrorMessage);
-	updateServerWhiteList = async (documentId, serverInfo, userErrorMessage) => await this.updateFirestoreData(DataManager.collectionNames.serversWhiteList, documentId, serverInfo.id, serverInfo, userErrorMessage);
-	getServerInfo = async (invitationId, userErrorMessage) => await this.getData({dataType: DataManager.serverInfoDataType, keyValue: invitationId, userErrorMessage})[0];
+	getServerInfo = async (invitationId, userErrorMessage) => (await this.getData(
+		{
+			dataType: DataManager.serverInfoDataType,
+			keyName: "invitationId",
+			keyValue: invitationId,
+			hydrateFunction: async serverInfo => ({...serverInfo, isWhitelisted: await this.isServerWhitelisted(serverInfo.id, userErrorMessage)}),
+			userErrorMessage
+		}
+	))[0];
+	isServerWhitelisted = async (serverId, userErrorMessage) => (await this.getData(
+		{
+			dataType: DataManager.collectionNames.serversWhitelist,
+			keyName: "id",
+			keyValue: serverId,
+			userErrorMessage
+		}
+	)).length !== 0;
+	addServerWhitelist = async (serverInfo, inviteId, userErrorMessage) => {
+		await this.addFirestoreData(DataManager.collectionNames.serversWhitelist, serverInfo.id, serverInfo, userErrorMessage);
+		await this.cache[DataManager.serverInfoDataType].replaceEntry( // update second cache type because this collection is used in hydration but not directly queried
+			inviteId,
+			this.cache[DataManager.serverInfoDataType].getEntry(inviteId).map(element => ({
+				id: element.id,
+				data: {...element.data, isWhitelisted: true}
+			}))
+		);
+	};
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);
 	getCachedMessagesByAuthorIds = authorIdList => this.cache[DataManager.discordMessagesDataType].getEntries(authorIdList);
