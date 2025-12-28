@@ -56,6 +56,12 @@ export default class DiscordActionManager extends BotHelper {
 		[modal.data.title, modal.data.custom_id],
 		userErrorMessage
 	);
+	fetchChannel = async channelId => this.runAsync(
+		() => this.discordClient.channels.fetch(channelId),
+		"Channel with id {0} has been fetched successfully",
+		"Failed to fetch channel with id {0}",
+		[channelId]
+	);
 	joinThread = async thread => this.runAsync(
 		() => thread.join(),
 		"Newly created thread {0} in channel {1} has been joined successfully",

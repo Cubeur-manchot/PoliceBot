@@ -142,6 +142,15 @@ export default class DataManager extends BotHelper {
 		);
 		this.cache[collectionName].removeEntry(key);
 	};
+	getLogChannel = async nature => (await this.getData(
+		{
+			dataType: DataManager.collectionNames.channels,
+			keyName: "nature",
+			keyValue: nature,
+			additionalFilters: {environment: process.env.ENVIRONMENT},
+			hydrateFunction: async channelInfo => await this.bot.discordClientManager.discordActionManager.fetchChannel(channelInfo.id)
+		}
+	))[0];
 	getServerInfo = async (invitationId, userErrorMessage) => (await this.getData(
 		{
 			dataType: DataManager.serverInfoDataType,
