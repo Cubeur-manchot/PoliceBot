@@ -29,6 +29,20 @@ export default class DiscordActionManager extends BotHelper {
 		"Failed to update application commands of server {0}",
 		[process.env.SERVER_ID]
 	);
+	sendMessageToChannel = async (channel, message) => this.runAsync(
+		() => channel.send(message),
+		"Message has been sent to channel {0} (id = {1}) successfully",
+		"Failed to send message to channel {0} (id = {1})",
+		[channel?.name ?? "undefined", channel?.id ?? "undefined"]
+	);
+	sendInfoLogMessage = async message => {
+		let infoLogChannel = (await this.bot.dataManager.getLogChannel("infoLog")).data;
+		await this.sendMessageToChannel(infoLogChannel, message);
+	};
+	sendPoliceLogMessage = async message => {
+		let policeLogChannel = (await this.bot.dataManager.getLogChannel("policeLog")).data;
+		await this.sendMessageToChannel(policeLogChannel, message);
+	};
 	replyInteraction = async (interaction, answer) => this.runAsync(
 		() => interaction.reply(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral})),
 		"Interaction has been replied successfully",
@@ -67,6 +81,12 @@ export default class DiscordActionManager extends BotHelper {
 		"Newly created thread {0} in channel {1} has been joined successfully",
 		"Failed to join newly created thread {0} in channel {1}",
 		[thread.name, thread.parent?.name]
+	);
+	fetchMembers = async () => await this.runAsync(
+		() => this.discordClient.guilds.cache.get(process.env.SERVER_ID).members.fetch(),
+		"Members of guild {0} have been fetched successfully",
+		"Failed to fetch members of guild {0}",
+		[process.env.SERVER_ID]
 	);
 	addRoleToMember = async (member, roleId, userErrorMessage) => this.runAsync(
 		() => member.roles.add(roleId),

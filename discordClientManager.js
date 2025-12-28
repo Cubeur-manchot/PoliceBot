@@ -10,7 +10,8 @@ export default class DiscordClientManager extends BotHelper {
 		super(bot);
 		this.discordClient = new Discord.Client({
 			intents: [
-				Discord.GatewayIntentBits.Guilds
+				Discord.GatewayIntentBits.Guilds,
+				Discord.GatewayIntentBits.GuildMembers,
 			],
 			partials: [
 			]
