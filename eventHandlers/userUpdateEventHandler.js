@@ -9,9 +9,9 @@ export default class UserUpdateEventHandler extends EventHandler {
 		super(eventManager, Discord.Events.UserUpdate);
 	};
 	handleEvent = (oldUser, newUser) => {
-		let avatarChanged = oldUser.avatar !== newUser.avatar;
 		let globalNameChanged = oldUser.globalName !== newUser.globalName;
-		if (!avatarChanged && !globalNameChanged) {
+		let avatarChanged = oldUser.avatar !== newUser.avatar;
+		if (!globalNameChanged && !avatarChanged) {
 			return;
 		}
 		let differenceEmbedData = {
@@ -21,17 +21,17 @@ export default class UserUpdateEventHandler extends EventHandler {
 			description: `<@${newUser.id}> (@${newUser.username}) a modifié son profil utilisateur.`,
 			fields: []
 		};
-		if (oldUser.globalName !== newUser.globalName) {
+		if (globalNameChanged) {
 			differenceEmbedData.fields.push(
-				{name: "Ancien nom d'utilisateur", value: oldUser.globalName ? oldUser.globalName : "(pas de nom d'utilisateur)", inline: true},
-				{name: "Nouveau nom d'utilisateur", value: newUser.globalName ? newUser.globalName : "(pas de nom d'utilisateur)", inline: true},
+				{name: "Ancien nom d'utilisateur", value: oldUser.globalName ?? "(pas de nom d'utilisateur)", inline: true},
+				{name: "Nouveau nom d'utilisateur", value: newUser.globalName ?? "(pas de nom d'utilisateur)", inline: true},
 				{name: "\u200B", value: "\u200B", inline: true}
 			);
 		}
-		if (oldUser.avatar !== newUser.avatar) {
+		if (avatarChanged) {
 			differenceEmbedData.fields.push(
-				{name: "Ancien avatar", value: oldUser.avatarURL() ? `[Ancien avatar](${oldUser.avatarURL()})` : "(pas d'avatar)", inline: true},
-				{name: "Nouvel avatar", value: newUser.avatarURL() ? `[Nouvel avatar](${newUser.avatarURL()})` : "(pas d'avatar)", inline: true},
+				{name: "Ancien avatar", value: oldUser.avatar ? `[Ancien avatar](${oldUser.avatarURL()})` : "(pas d'avatar)", inline: true},
+				{name: "Nouvel avatar", value: newUser.avatar ? `[Nouvel avatar](${newUser.avatarURL()})` : "(pas d'avatar)", inline: true},
 				{name: "\u200B", value: "\u200B", inline: true}
 			);
 		}
