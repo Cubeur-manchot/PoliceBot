@@ -34,8 +34,8 @@ export default class InviteCreateEventHandler extends EventHandler {
 				{name: "Créateur", value: `<@${inviterUser.id}> (@${inviterUser.username})`, inline: true},
 				{name: "Salon", value: `<#${channel.id}> (${channel.name})`, inline: true},
 				{name: "Code", value: code, inline: true},
-				{name: "Date de création", value: `<t:${Math.floor(createdTimestamp / 1000)}:F> (${new Date(createdTimestamp).toISOString()})`, inline: true},
-				{name: "Date d'expiration", value: expiresTimestamp ? `<t:${Math.floor(expiresTimestamp / 1000)}:F> (${new Date(expiresTimestamp).toISOString()})` : "Jamais", inline: true},
+				{name: "Date de création", value: this.formatDate(createdTimestamp), inline: true},
+				{name: "Date d'expiration", value: expiresTimestamp ? this.formatDate(expiresTimestamp) : "Jamais", inline: true},
 				{name: "Limite d'utilisations", value: maxUses === 0 ? "∞" : `${maxUses}`, inline: true}
 			]
 		});
