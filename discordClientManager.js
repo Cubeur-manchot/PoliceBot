@@ -12,6 +12,7 @@ export default class DiscordClientManager extends BotHelper {
 			intents: [
 				Discord.GatewayIntentBits.Guilds,
 				Discord.GatewayIntentBits.GuildMembers,
+				Discord.GatewayIntentBits.GuildInvites
 			],
 			partials: [
 			]
