@@ -14,35 +14,36 @@ export default class DiscordEmbedMessageBuilder {
 		invite: "#03b194"
 	};
 	constructor(embedOptions) {
+		let {color, title, url, author, thumbnailUrl, description, fields, imageUrl, footer} = embedOptions;
 		let embed = new Discord.EmbedBuilder();
-		if (embedOptions.color) {
-			embed.setColor(embedOptions.color);
+		if (color) {
+			embed.setColor(color);
 		} else {
 			throw new Error("Missing embed color");
 		}
-		if (embedOptions.title) {
-			embed.setTitle(this.truncateString(embedOptions.title));
+		if (title) {
+			embed.setTitle(this.truncateString(title));
 		} else {
 			throw new Error("Missing embed title");
 		}
-		if (embedOptions.url) {
-			embed.setURL(embedOptions.url);
+		if (url) {
+			embed.setURL(url);
 		}
-		if (embedOptions.author) { // {name, iconURL, url}
+		if (author) { // {name, iconURL, url}
 			embed.setAuthor({
-				...embedOptions.author,
-				name: this.truncateString(embedOptions.author.name)
+				...author,
+				name: this.truncateString(author.name)
 			});
 		}
-		if (embedOptions.thumbnailUrl) {
-			embed.setThumbnail(embedOptions.thumbnailUrl);
+		if (thumbnailUrl) {
+			embed.setThumbnail(thumbnailUrl);
 		}
-		if (embedOptions.description) {
-			embed.setDescription(this.truncateString(embedOptions.description, 4096));
+		if (description) {
+			embed.setDescription(this.truncateString(description, 4096));
 		}
-		if (embedOptions.fields) { // [{name, value, inline}]
+		if (fields) { // [{name, value, inline}]
 			embed.addFields(
-				embedOptions.fields
+				fields
 					.slice(0, 25)
 					.map(field => ({
 						name: this.truncateString(field.name),
@@ -51,13 +52,13 @@ export default class DiscordEmbedMessageBuilder {
 					}))
 			);
 		}
-		if (embedOptions.imageUrl) {
-			embed.setImage(embedOptions.imageUrl);
+		if (imageUrl) {
+			embed.setImage(imageUrl);
 		}
-		if (embedOptions.footer) { // {text, iconURL}
+		if (footer) { // {text, iconURL}
 			embed.setFooter({
-				...embedOptions.footer,
-				text: this.truncateString(embedOptions.footer.text, 2048)
+				...footer,
+				text: this.truncateString(footer.text, 2048)
 			});
 		}
 		embed.setTimestamp(new Date());
