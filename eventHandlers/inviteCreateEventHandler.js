@@ -20,9 +20,9 @@ export default class InviteCreateEventHandler extends EventHandler {
 		if (inviterUser) {
 			try {
 				let inviterMember = await this.discordActionManager.fetchMember(inviterUser.id);
-				thumbnailUrl = inviterMember.avatarURL() ?? inviterUser.avatarURL();
+				thumbnailUrl = inviterMember.displayAvatarURL();
 			} catch {
-				thumbnailUrl = inviterUser.avatarURL();
+				thumbnailUrl = inviterUser.displayAvatarURL();
 			}
 		}
 		let inviteCreateEmbed = new DiscordEmbedMessageBuilder({

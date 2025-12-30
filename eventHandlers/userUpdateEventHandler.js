@@ -17,7 +17,7 @@ export default class UserUpdateEventHandler extends EventHandler {
 		let differenceEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.user,
 			title: "Profil utilisateur modifié",
-			thumbnailUrl: newUser.avatarURL(),
+			thumbnailUrl: newUser.displayAvatarURL(),
 			description: `<@${newUser.id}> (@${newUser.username}) a modifié son profil utilisateur.`,
 			fields: []
 		};

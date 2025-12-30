@@ -17,11 +17,10 @@ export default class GuildMemberUpdateEventHandler extends EventHandler {
 		if (!nicknameChanged && !avatarChanged && !rolesChanged) {
 			return;
 		}
-		let thumbnailUrl = newMember.avatarURL() ?? newMember.user.avatarURL();
 		let differenceEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.user,
 			title: "Profil de membre modifié",
-			thumbnailUrl: thumbnailUrl,
+			thumbnailUrl: newMember.displayAvatarURL(),
 			description: `Le profil de membre de <@${newMember.user.id}> (@${newMember.user.username}) a été modifié.`,
 			fields: []
 		};
@@ -51,7 +50,7 @@ export default class GuildMemberUpdateEventHandler extends EventHandler {
 				let prisonerFreeEmbed = new DiscordEmbedMessageBuilder({
 					color: DiscordEmbedMessageBuilder.colors.prison,
 					title: "Membre libéré de prison",
-					thumbnailUrl: thumbnailUrl,
+					thumbnailUrl: newMember.displayAvatarURL(),
 					description: `<@${newMember.user.id}> (@${newMember.user.username}) n'est plus en prison.`,
 				});
 				this.discordActionManager.sendPoliceLogMessage({
@@ -61,7 +60,7 @@ export default class GuildMemberUpdateEventHandler extends EventHandler {
 				let imprisonmentEmbed = new DiscordEmbedMessageBuilder({
 					color: DiscordEmbedMessageBuilder.colors.prison,
 					title: "Membre envoyé en prison",
-					thumbnailUrl: thumbnailUrl,
+					thumbnailUrl: newMember.displayAvatarURL(),
 					description: `<@${newMember.user.id}> (@${newMember.user.username}) est désormais en prison.`,
 				});
 				this.discordActionManager.sendPoliceLogMessage({
