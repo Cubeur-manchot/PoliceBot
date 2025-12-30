@@ -27,7 +27,7 @@ export default class ListMapCache extends BotHelper {
 		if (!(map instanceof Map)) {
 			throw new Error(`Refused to set cache for data type "${this.dataType}", because the provided data is not a instance of map.`);
 		}
-		if (map.values().some(value => !Array.isArray(value))) {
+		if ([...map.values()].some(value => !Array.isArray(value))) {
 			throw new Error(`Refused to set cache for data type "${this.dataType}", because at least one of the values of the map is not an array.`);
 		}
 		this.data = map;
