@@ -6,7 +6,7 @@ export default class BotHelper {
 		this.logger = this.bot.logger;
 		this.logArgumentReplaceRegexp = /\{(\d+)\}/g;
 	};
-	dictionnize = (array, property) => Object.fromEntries(array.map(element => [element[property], element]));
+	dictionnize = (array, property) => new Map(array.map(element => [element[property], element]));
 	runAsync = async (asyncFunction, logSuccessMessagePattern, logErrorMessagePattern, logArguments, userErrorMessage) => {
 		try {
 			let result = await asyncFunction();

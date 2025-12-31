@@ -50,7 +50,7 @@ export default class CommandManager extends BotHelper {
 				}
 				let deployedSlashCommandOptions = this.dictionnize(deployedSlashCommand.options, "name");
 				for (let commandOption of command.options ?? []) {
-					let deployedCommandOption = deployedSlashCommandOptions[commandOption.name];
+					let deployedCommandOption = deployedSlashCommandOptions.get(commandOption.name);
 					if (!deployedCommandOption) {
 						return false;
 					}
@@ -92,10 +92,15 @@ export default class CommandManager extends BotHelper {
 		).flat();
 	handleCommand = async interaction => {
 		try {
-			let answer = await this.commandHandlers
-				[this.getCommandName(interaction)]
-				[`handle${Discord.InteractionType[interaction.type]}`] // "handleApplicationCommand" | "handleModalSubmit" | "handleMessageComponent"
-				(interaction);
+			let commandHandler = this.commandHandlers.get(this.getCommandName(interaction));
+			if (!commandHandler) {
+				throw "Commande non reconnue";
+			}
+			let method = `handle${Discord.InteractionType[interaction.type]}`; // "handleApplicationCommand" | "handleModalSubmit" | "handleMessageComponent"
+			if (typeof commandHandler[method] !== "function") {
+				throw `Le type d'interaction ${Discord.InteractionType[interaction.type]} n'est pas géré pour cette commande`;
+			}
+			let answer = await commandHandler[method](interaction);
 			switch (answer?.constructor ?? answer) {
 				case String:
 					this.discordActionManager.replyInteraction(interaction, {content: answer});
@@ -112,7 +117,7 @@ export default class CommandManager extends BotHelper {
 					}
 					return;
 				default:
-					throw "Unrecognized command answer type";
+					throw "Type de retour de commande non reconnu";
 			}
 		} catch (commandError) {
 			if (typeof commandError === "string") { // custom error with error message to user

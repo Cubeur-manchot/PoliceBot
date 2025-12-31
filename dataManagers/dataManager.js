@@ -14,9 +14,9 @@ export default class DataManager extends BotHelper {
 		serversWhitelist: "serversWhitelist",
 		warnings: "warnings"
 	};
-	static serverInfoDataType = "serversInfo";
-	static discordMessagesDataType = "discordMessages";
 	static discordMembersCurrentSelectionDataType = "discordMembersCurrentSelection";
+	static discordMessagesDataType = "discordMessages";
+	static serversDataType = "servers";
 	constructor(bot) {
 		super(bot);
 		this.initializeDatabase();
@@ -32,26 +32,26 @@ export default class DataManager extends BotHelper {
 		this.cache = this.dictionnize(
 			[
 				...Object.values(DataManager.collectionNames).map(dataType => new ListMapCache(this, dataType)),
-				new ListMapCache(this, DataManager.serverInfoDataType),
+				new ListMapCache(this, DataManager.discordMembersCurrentSelectionDataType, 15),
 				new ListMapCache(this, DataManager.discordMessagesDataType, 15),
-				new ListMapCache(this, DataManager.discordMembersCurrentSelectionDataType, 15)
+				new ListMapCache(this, DataManager.serversDataType),
 			],
 			"dataType"
 		);
 	};
 	getData = async options => {
 		let {dataType, keyName, keyValue, additionalFilters, userErrorMessage, hydrateFunction} = options;
-		let cachedValue = this.cache[dataType].getEntry(keyValue);
+		let cachedValue = this.cache.get(dataType).getEntry(keyValue);
 		if (cachedValue) {
 			return cachedValue;
 		};
-		let fetchedValue = dataType === DataManager.serverInfoDataType
+		let fetchedValue = dataType === DataManager.serversDataType
 			? await this.fetchServerInfo(keyValue, userErrorMessage)
 			: await this.fetchFirestoreData(dataType, {...Object.fromEntries([[keyName, keyValue]]), ...additionalFilters}, null, userErrorMessage);
 		let returnValue = hydrateFunction
 			? await Promise.all(fetchedValue.map(async element => ({id: element.id, data: await hydrateFunction(element.data)})))
 			: fetchedValue;
-		this.cache[dataType].addEntry(keyValue, returnValue);
+		this.cache.get(dataType).addEntry(keyValue, returnValue);
 		return returnValue;
 	};
 	fetchFirestoreData = async (collectionName, filters, fields, userErrorMessage) => {
@@ -114,7 +114,7 @@ export default class DataManager extends BotHelper {
 			[JSON.stringify(newData), collectionName],
 			userErrorMessage
 		);
-		this.cache[collectionName].safePushToEntry(key, {id: addedDocument.id, data: newData});
+		this.cache.get(collectionName).safePushToEntry(key, {id: addedDocument.id, data: newData});
 	};
 	addBatchFirestoreData = async (collectionName, elements, keyName, userErrorMessage) => {
 		let batch = this.database.batch();
@@ -122,7 +122,7 @@ export default class DataManager extends BotHelper {
 		for (let element of elements) {
 			let documentId = collection.doc();
 			batch.set(documentId, element);
-			this.cache[collectionName].safePushToEntry(element[keyName], {id: documentId, data: element});
+			this.cache.get(collectionName).safePushToEntry(element[keyName], {id: documentId, data: element});
 		}
 		await this.runAsync(
 			() => batch.commit(),
@@ -140,7 +140,7 @@ export default class DataManager extends BotHelper {
 			[documentId, collectionName, JSON.stringify(newData)],
 			userErrorMessage
 		);
-		this.cache[collectionName].removeEntry(key);
+		this.cache.get(collectionName).removeEntry(key);
 	};
 	getLogChannel = async nature => (await this.getData(
 		{
@@ -153,7 +153,7 @@ export default class DataManager extends BotHelper {
 	))[0];
 	getServerInfo = async (invitationId, userErrorMessage) => (await this.getData(
 		{
-			dataType: DataManager.serverInfoDataType,
+			dataType: DataManager.serversDataType,
 			keyName: "invitationId",
 			keyValue: invitationId,
 			hydrateFunction: async serverInfo => ({...serverInfo, isWhitelisted: await this.isServerWhitelisted(serverInfo.id, userErrorMessage)}),
@@ -170,9 +170,9 @@ export default class DataManager extends BotHelper {
 	)).length !== 0;
 	addServerWhitelist = async (serverInfo, inviteId, userErrorMessage) => {
 		await this.addFirestoreData(DataManager.collectionNames.serversWhitelist, serverInfo.id, serverInfo, userErrorMessage);
-		await this.cache[DataManager.serverInfoDataType].replaceEntry( // update second cache type because this collection is used in hydration but not directly queried
+		await this.cache.get(DataManager.serversDataType).replaceEntry( // update second cache type because this collection is used in hydration but not directly queried
 			inviteId,
-			this.cache[DataManager.serverInfoDataType].getEntry(inviteId).map(element => ({
+			this.cache.get(DataManager.serversDataType).getEntry(inviteId).map(element => ({
 				id: element.id,
 				data: {...element.data, isWhitelisted: true}
 			}))
@@ -180,10 +180,10 @@ export default class DataManager extends BotHelper {
 	};
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);
-	getCachedMessagesByAuthorIds = authorIdList => this.cache[DataManager.discordMessagesDataType].getEntries(authorIdList);
-	cacheMessagesByAuthorId = map => this.cache[DataManager.discordMessagesDataType].setEntries(map);
-	clearMessagesCache = () => this.cache[DataManager.discordMessagesDataType].resetData();
-	getCachedSelectedUsers = () => this.cache[DataManager.discordMembersCurrentSelectionDataType].getKeys(list => list[0] === true);
-	cacheSelectedUsers = map => this.cache[DataManager.discordMembersCurrentSelectionDataType].setEntries(map);
-	clearSelectedUsersCache = () => this.cache[DataManager.discordMembersCurrentSelectionDataType].resetData();
+	getCachedMessagesByAuthorIds = authorIdList => this.cache.get(DataManager.discordMessagesDataType).getEntries(authorIdList);
+	cacheMessagesByAuthorId = map => this.cache.get(DataManager.discordMessagesDataType).setEntries(map);
+	clearMessagesCache = () => this.cache.get(DataManager.discordMessagesDataType).resetData();
+	getCachedSelectedUsers = () => this.cache.get(DataManager.discordMembersCurrentSelectionDataType).getKeys(list => list[0] === true);
+	cacheSelectedUsers = map => this.cache.get(DataManager.discordMembersCurrentSelectionDataType).setEntries(map);
+	clearSelectedUsersCache = () => this.cache.get(DataManager.discordMembersCurrentSelectionDataType).resetData();
 };
