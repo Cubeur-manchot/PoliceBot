@@ -16,8 +16,10 @@ export default class ListMapCache extends BotHelper {
 		this.clearTimer();
 	};
 	resetExpiration = () => {
-		this.clearTimer();
-		this.#timer = setTimeout(() => this.resetData(), this.expirationTimeMilliseconds);
+		if (this.expirationTimeMilliseconds) {
+			this.clearTimer();
+			this.#timer = setTimeout(() => this.resetData(), this.expirationTimeMilliseconds);
+		}
 	};
 	clearTimer = () => {
 		clearTimeout(this.#timer);
