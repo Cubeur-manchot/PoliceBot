@@ -2,6 +2,7 @@
 
 import BotHelper from "./botHelper.js";
 import ClientReadyEventHandler from "./eventHandlers/clientReadyEventHandler.js";
+import GuildMemberAddEventHandler from "./eventHandlers/guildMemberAddEventHandler.js";
 import GuildMemberUpdateEventHandler from "./eventHandlers/guildMemberUpdateEventHandler.js";
 import InteractionCreateEventHandler from "./eventHandlers/interactionCreateEventHandler.js";
 import InviteCreateEventHandler from "./eventHandlers/inviteCreateEventHandler.js";
@@ -16,6 +17,7 @@ export default class DiscordEventManager extends BotHelper {
 		this.discordClient = discordClientManager.discordClient;
 		let eventHandlers = [
 			new ClientReadyEventHandler(this),
+			new GuildMemberAddEventHandler(this),
 			new GuildMemberUpdateEventHandler(this),
 			new InteractionCreateEventHandler(this),
 			new InviteCreateEventHandler(this),
