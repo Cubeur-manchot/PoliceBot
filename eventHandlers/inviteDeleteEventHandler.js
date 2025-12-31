@@ -15,7 +15,7 @@ export default class InviteDeleteEventHandler extends EventHandler {
 		let inviteCreateEmbed = new DiscordEmbedMessageBuilder({
 			color: DiscordEmbedMessageBuilder.colors.invite,
 			title: "Invitation supprimée",
-			description: `L'invitation dont le code est \`${invite.code}\` a été supprimée.`,
+			description: `L'invitation \`${invite.code}\` a été supprimée.`,
 		});
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [inviteCreateEmbed.embed]
