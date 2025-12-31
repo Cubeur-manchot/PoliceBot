@@ -20,5 +20,6 @@ export default class InviteDeleteEventHandler extends EventHandler {
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [inviteCreateEmbed.embed]
 		});
+		this.dataManager.buildInvitesCache();
 	};
 };

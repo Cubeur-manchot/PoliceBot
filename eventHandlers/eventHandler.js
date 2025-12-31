@@ -7,6 +7,7 @@ export default class EventHandler extends BotHelper {
 		super(eventManager.bot);
 		this.eventManager = eventManager;
 		this.discordActionManager = eventManager.discordClientManager.discordActionManager;
+		this.dataManager = eventManager.bot.dataManager;
 		this.eventName = eventName;
 		this.triggerType = triggerType;
 	};

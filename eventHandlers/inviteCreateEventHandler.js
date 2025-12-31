@@ -42,5 +42,6 @@ export default class InviteCreateEventHandler extends EventHandler {
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [inviteCreateEmbed.embed]
 		});
+		this.dataManager.buildInvitesCache();
 	};
 };

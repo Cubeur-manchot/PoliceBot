@@ -25,6 +25,7 @@ export default class ListMapCache extends BotHelper {
 		clearTimeout(this.#timer);
 	};
 	getEntries = keys => keys.map(key => this.data.get(key)).filter(Boolean).flat();
+	getAllEntries = () => [...this.data.values()].flat();
 	setEntries = map => {
 		if (!(map instanceof Map)) {
 			throw new Error(`Refused to set cache for data type "${this.dataType}", because the provided data is not a instance of map.`);

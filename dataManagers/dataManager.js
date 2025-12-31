@@ -16,6 +16,7 @@ export default class DataManager extends BotHelper {
 	};
 	static discordMembersCurrentSelectionDataType = "discordMembersCurrentSelection";
 	static discordMessagesDataType = "discordMessages";
+	static inviteUsagesDataType = "inviteUsages";
 	static serversDataType = "servers";
 	constructor(bot) {
 		super(bot);
@@ -34,6 +35,7 @@ export default class DataManager extends BotHelper {
 				...Object.values(DataManager.collectionNames).map(dataType => new ListMapCache(this, dataType)),
 				new ListMapCache(this, DataManager.discordMembersCurrentSelectionDataType, 15),
 				new ListMapCache(this, DataManager.discordMessagesDataType, 15),
+				new ListMapCache(this, DataManager.inviteUsagesDataType, null),
 				new ListMapCache(this, DataManager.serversDataType),
 			],
 			"dataType"
@@ -178,6 +180,24 @@ export default class DataManager extends BotHelper {
 			}))
 		);
 	};
+	buildInvitesCache = async () => {
+		let invites = await this.bot.discordClientManager.discordActionManager.fetchInvites();
+		this.cacheInviteUsages(invites);
+	};
+	cacheInviteUsages = invites => {
+		let reducedInvites = invites.map(invite => ({
+			code: invite.code,
+			inviter: {id: invite.inviter.id, username: invite.inviter.username},
+			channel: {id: invite.channel.id, name: invite.channel.name},
+			createdTimestamp: invite.createdTimestamp,
+			expiresTimestamp: invite.expiresTimestamp,
+			uses: invite.uses,
+			maxUses: invite.maxUses
+		}));
+		let invitesMap = this.dictionnizeArray(reducedInvites, "code");
+		this.cache.get(DataManager.inviteUsagesDataType).setEntries(invitesMap);
+	};
+	getAllCachedInviteUsages = () => this.cache.get(DataManager.inviteUsagesDataType).getAllEntries();
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);
 	getCachedMessagesByAuthorIds = authorIdList => this.cache.get(DataManager.discordMessagesDataType).getEntries(authorIdList);
