@@ -7,10 +7,11 @@ export default class ClientReadyEventHandler extends EventHandler {
 	constructor(eventManager) {
 		super(eventManager, Discord.Events.ClientReady, "once");
 	};
-	handleEvent = () => {
+	handleEvent = async () => {
 		this.logger.info("Discord client is ready.");
 		this.discordActionManager.setActivePresence();
-		this.bot.commandManager.updateApplicationCommands();
-		this.discordActionManager.fetchMembers(); // preload server members in cache to allow the detection of updates
+		await this.bot.commandManager.updateApplicationCommands();
+		await this.discordActionManager.fetchMembers(); // preload server members in cache to allow the detection of updates
+		this.logger.info("Bot is fully ready.");
 	};
 };
