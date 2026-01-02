@@ -40,6 +40,13 @@ export default class ListMapCache extends BotHelper {
 		this.logger.info(`Cache for data type "${this.dataType}" has been set (${map.size} keys) successfully.`);
 	};
 	getEntry = key => this.data.get(key);
+	setEntry = (key, list) => {
+		if (this.data.has(key)) {
+			this.replaceEntry(key, list);
+		} else {
+			this.addEntry(key, list);
+		}
+	};
 	addEntry = (key, list) => {
 		if (!Array.isArray(list)) {
 			throw new Error(`Refused to add a new entry to the cache for data type "${this.dataType}", because the provided value is not an array.`);
