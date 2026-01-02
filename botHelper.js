@@ -11,7 +11,9 @@ export default class BotHelper {
 	runAsync = async (asyncFunction, logSuccessMessagePattern, logErrorMessagePattern, logArguments, userErrorMessage) => {
 		try {
 			let result = await asyncFunction();
-			this.logger.info(`${this.replaceLogMessage(logSuccessMessagePattern, logArguments)}.`);
+			if (logSuccessMessagePattern) {
+				this.logger.info(`${this.replaceLogMessage(logSuccessMessagePattern, logArguments)}.`);
+			}
 			return result;
 		} catch (asyncActionError) {
 			this.logger.error(`${this.replaceLogMessage(logErrorMessagePattern, logArguments)} :`, asyncActionError);
