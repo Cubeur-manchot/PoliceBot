@@ -209,6 +209,10 @@ export default class DataManager extends BotHelper {
 		}
 		this.cache.get(DataManager.pinnedMessagesDataType).setEntries(pinnedMessagesMap);
 	};
+	cachePinnedMessages = (channelId, pinnedMessages) => {
+		let reducedMessages = this.reducePinnedMessages(pinnedMessages);
+		this.cache.get(DataManager.pinnedMessagesDataType).setEntry(channelId, reducedMessages);
+	};
 	reducePinnedMessages = pinnedMessages => pinnedMessages.map(pinnedMessage => ({
 		pinnedTimestamp: pinnedMessage.pinnedTimestamp,
 		message: {
@@ -223,6 +227,7 @@ export default class DataManager extends BotHelper {
 			editedTimestamp: pinnedMessage.message.editedTimestamp
 		}
 	}));
+	getCachedPinnedMessages = channelId => this.cache.get(DataManager.pinnedMessagesDataType).getEntry(channelId);
 	getAllCachedInviteUsages = () => this.cache.get(DataManager.inviteUsagesDataType).getAllEntries();
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);

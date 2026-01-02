@@ -1,6 +1,7 @@
 "use strict";
 
 import BotHelper from "./botHelper.js";
+import ChannelPinsUpdateEventHandler from "./eventHandlers/channelPinsUpdateEventHandler.js";
 import ClientReadyEventHandler from "./eventHandlers/clientReadyEventHandler.js";
 import GuildMemberAddEventHandler from "./eventHandlers/guildMemberAddEventHandler.js";
 import GuildMemberUpdateEventHandler from "./eventHandlers/guildMemberUpdateEventHandler.js";
@@ -16,6 +17,7 @@ export default class DiscordEventManager extends BotHelper {
 		this.discordClientManager = discordClientManager;
 		this.discordClient = discordClientManager.discordClient;
 		let eventHandlers = [
+			new ChannelPinsUpdateEventHandler(this),
 			new ClientReadyEventHandler(this),
 			new GuildMemberAddEventHandler(this),
 			new GuildMemberUpdateEventHandler(this),
