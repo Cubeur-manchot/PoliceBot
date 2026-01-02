@@ -13,6 +13,7 @@ export default class ClientReadyEventHandler extends EventHandler {
 		await this.bot.commandManager.updateApplicationCommands();
 		await this.discordActionManager.fetchMembers(); // preload server members in cache to allow the detection of updates
 		await this.dataManager.buildInvitesCache();
+		await this.dataManager.buildPinnedMessagesCache(true);
 		this.logger.info("Bot is fully ready.");
 	};
 };

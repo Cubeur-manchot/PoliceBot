@@ -76,6 +76,12 @@ export default class DiscordActionManager extends BotHelper {
 		"Failed to fetch channel with id {0}",
 		[channelId]
 	);
+	fetchChannels = async () => this.runAsync(
+		() => this.discordClient.guilds.cache.get(process.env.SERVER_ID).channels.fetch(),
+		"Channels of guild {0} have been fetched successfully",
+		"Failed to fetch channels of guild {0}",
+		[process.env.SERVER_ID]
+	);
 	joinThread = async thread => this.runAsync(
 		() => thread.join(),
 		"Newly created thread {0} in channel {1} has been joined successfully",
@@ -106,6 +112,27 @@ export default class DiscordActionManager extends BotHelper {
 		"Failed to add role with id {0} to member {1} ({2})",
 		[roleId, member.nickname ?? member.user.globalName, member.user.username],
 		userErrorMessage
+	);
+	fetchPinnedMessages = async (channel, isInitialFetch = false) => this.runAsync(
+		async () => {
+			let actualPinnedMessages = [];
+			let beforeMessageId;
+			for (let i = 0; i < 5; i++) { // safety limitation of 5 requests of 50 messages = 250 messages in total
+				let response = await channel.messages.fetchPins({limit: 50, ...(beforeMessageId && {before: beforeMessageId})});
+				actualPinnedMessages.push(...response.items);
+				if (!response.hasMore) {
+					break;
+				}
+				beforeMessageId = response.items.at(-1).id;
+				if (!beforeMessageId) {
+					break;
+				}
+			};
+			return actualPinnedMessages;
+		},
+		isInitialFetch ? null : "Pinned messages have been fetched in channel {0} successfully",
+		"Failed to fetch pinned messages in channel {0}",
+		[channel.id]
 	);
 	fetchMessages = async (channel, beforeMessageId, userErrorMessage) => this.runAsync(
 		() => channel.messages.fetch({limit: 100, ...(beforeMessageId && {before: beforeMessageId})}),

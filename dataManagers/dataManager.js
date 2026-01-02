@@ -16,6 +16,7 @@ export default class DataManager extends BotHelper {
 	};
 	static discordMembersCurrentSelectionDataType = "discordMembersCurrentSelection";
 	static discordMessagesDataType = "discordMessages";
+	static pinnedMessagesDataType = "pinnedMessages";
 	static inviteUsagesDataType = "inviteUsages";
 	static serversDataType = "servers";
 	constructor(bot) {
@@ -36,6 +37,7 @@ export default class DataManager extends BotHelper {
 				new ListMapCache(this, DataManager.discordMembersCurrentSelectionDataType, 15),
 				new ListMapCache(this, DataManager.discordMessagesDataType, 15),
 				new ListMapCache(this, DataManager.inviteUsagesDataType, null),
+				new ListMapCache(this, DataManager.pinnedMessagesDataType, null),
 				new ListMapCache(this, DataManager.serversDataType),
 			],
 			"dataType"
@@ -197,6 +199,29 @@ export default class DataManager extends BotHelper {
 		let invitesMap = this.dictionnizeArray(reducedInvites, "code");
 		this.cache.get(DataManager.inviteUsagesDataType).setEntries(invitesMap);
 	};
+	buildPinnedMessagesCache = async isInitialFetch => {
+		let channels = await this.bot.discordClientManager.discordActionManager.fetchChannels();
+		let pinnedMessagesMap = new Map();
+		for (let channel of channels.filter(channel => channel.isTextBased()).values()) {
+			let pinnedMessages = await this.bot.discordClientManager.discordActionManager.fetchPinnedMessages(channel, isInitialFetch);
+			pinnedMessagesMap.set(channel.id, this.reducePinnedMessages(pinnedMessages));
+		}
+		this.cache.get(DataManager.pinnedMessagesDataType).setEntries(pinnedMessagesMap);
+	};
+	reducePinnedMessages = pinnedMessages => pinnedMessages.map(pinnedMessage => ({
+		pinnedTimestamp: pinnedMessage.pinnedTimestamp,
+		message: {
+			id: pinnedMessage.message.id,
+			channelId: pinnedMessage.message.channelId,
+			createdTimestamp: pinnedMessage.message.createdTimestamp,
+			content: pinnedMessage.message.content,
+			author: pinnedMessage.message.author,
+			embeds: pinnedMessage.message.embeds,
+			attachments: pinnedMessage.message.attachments,
+			components: pinnedMessage.message.components,
+			editedTimestamp: pinnedMessage.message.editedTimestamp
+		}
+	}));
 	getAllCachedInviteUsages = () => this.cache.get(DataManager.inviteUsagesDataType).getAllEntries();
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);
