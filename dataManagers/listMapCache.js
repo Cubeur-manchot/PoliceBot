@@ -8,11 +8,13 @@ export default class ListMapCache extends BotHelper {
 		super(dataManager.bot);
 		this.dataType = dataType;
 		this.expirationTimeMilliseconds = expirationTimeMinutes * 60 * 1000;
-		this.resetData(); // Map<key, Array> containing either all values for a given key, or be empty (no partial lists)
+		this.resetData(true); // Map<key, Array> containing either all values for a given key, or be empty (no partial lists)
 	};
-	resetData = () => {
+	resetData = (isInitialReset = false) => {
 		this.data = new Map();
-		this.logger.info(`Cache for data type "${this.dataType}" has been reset successfully.`);
+		if (!isInitialReset) {
+			this.logger.info(`Cache for data type "${this.dataType}" has been reset successfully.`);
+		}
 		this.clearTimer();
 	};
 	resetExpiration = () => {
