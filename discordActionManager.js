@@ -82,7 +82,7 @@ export default class DiscordActionManager extends BotHelper {
 		"Failed to join newly created thread {0} in channel {1}",
 		[thread.name, thread.parent?.name]
 	);
-	fetchInvites = async () => await this.runAsync(
+	fetchInvites = async () => this.runAsync(
 		() => this.discordClient.guilds.cache.get(process.env.SERVER_ID).invites.fetch(),
 		"Invites of guild {0} have been fetched successfully",
 		"Failed to fetch invites of guild {0}",
@@ -94,7 +94,7 @@ export default class DiscordActionManager extends BotHelper {
 		"Failed to fetch member with id {0} in guild {1}",
 		[memberId, process.env.SERVER_ID]
 	);
-	fetchMembers = async () => await this.runAsync(
+	fetchMembers = async () => this.runAsync(
 		() => this.discordClient.guilds.cache.get(process.env.SERVER_ID).members.fetch(),
 		"Members of guild {0} have been fetched successfully",
 		"Failed to fetch members of guild {0}",
