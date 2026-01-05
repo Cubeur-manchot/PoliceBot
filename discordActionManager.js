@@ -94,6 +94,12 @@ export default class DiscordActionManager extends BotHelper {
 		"Failed to fetch invites of guild {0}",
 		[process.env.SERVER_ID]
 	);
+	fetchBan = async userId => this.runAsync(
+		() => this.discordClient.guilds.cache.get(process.env.SERVER_ID).bans.fetch(userId),
+		"Ban for user {0} has been fetched successfully",
+		"Failed to fetch ban for user {0}",
+		[userId]
+	);
 	fetchMember = async memberId => this.runAsync(
 		() => this.discordClient.guilds.cache.get(process.env.SERVER_ID).members.fetch(memberId),
 		"Member with id {0} has been fetched in guild {1} successfully",

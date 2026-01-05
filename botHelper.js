@@ -21,5 +21,8 @@ export default class BotHelper {
 		}
 	};
 	replaceLogMessage = (message, logArguments) => message.replace(this.logArgumentReplaceRegexp, (match, index) => `"${logArguments?.[index] ?? match}"`);
-	formatDate = timestamp => `<t:${Math.floor(timestamp / 1000)}:F> (${new Date(timestamp).toISOString()})`;
+	formatDate = timestamp => {
+		let milliseconds = timestamp?.toMillis?.() ?? timestamp; // if Firestore Timestamp, convert into milliseconds
+		return `<t:${Math.floor(milliseconds / 1000)}:F> (${new Date(milliseconds).toISOString()})`;
+	};
 };

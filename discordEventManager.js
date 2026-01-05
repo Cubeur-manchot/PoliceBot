@@ -3,6 +3,8 @@
 import BotHelper from "./botHelper.js";
 import ChannelPinsUpdateEventHandler from "./eventHandlers/channelPinsUpdateEventHandler.js";
 import ClientReadyEventHandler from "./eventHandlers/clientReadyEventHandler.js";
+import GuildBanAddEventHandler from "./eventHandlers/guildBanAddEventHandler.js";
+import GuildBanRemoveEventHandler from "./eventHandlers/guildBanRemoveEventHandler.js";
 import GuildMemberAddEventHandler from "./eventHandlers/guildMemberAddEventHandler.js";
 import GuildMemberUpdateEventHandler from "./eventHandlers/guildMemberUpdateEventHandler.js";
 import InteractionCreateEventHandler from "./eventHandlers/interactionCreateEventHandler.js";
@@ -19,6 +21,8 @@ export default class DiscordEventManager extends BotHelper {
 		let eventHandlers = [
 			new ChannelPinsUpdateEventHandler(this),
 			new ClientReadyEventHandler(this),
+			new GuildBanAddEventHandler(this),
+			new GuildBanRemoveEventHandler(this),
 			new GuildMemberAddEventHandler(this),
 			new GuildMemberUpdateEventHandler(this),
 			new InteractionCreateEventHandler(this),

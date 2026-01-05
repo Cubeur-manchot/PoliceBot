@@ -226,9 +226,12 @@ export default class DataManager extends BotHelper {
 			components: pinnedMessage.message.components,
 			editedTimestamp: pinnedMessage.message.editedTimestamp
 		}
-	}));
+	}))
 	getCachedPinnedMessages = channelId => this.cache.get(DataManager.pinnedMessagesDataType).getEntry(channelId);
 	getAllCachedInviteUsages = () => this.cache.get(DataManager.inviteUsagesDataType).getAllEntries();
+	getActiveBans = async userId => await this.getData({dataType: DataManager.collectionNames.bans, keyName: "userId", keyValue: userId, additionalFilters: {endTime: null}});
+	updateBan = async (documentId, newData) => await this.updateFirestoreData(DataManager.collectionNames.bans, documentId, newData.userId, newData);
+	addBan = async banInfo => await this.addFirestoreData(DataManager.collectionNames.bans, banInfo.userId, banInfo);
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);
 	getCachedMessagesByAuthorIds = authorIdList => this.cache.get(DataManager.discordMessagesDataType).getEntries(authorIdList);
