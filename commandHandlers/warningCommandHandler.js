@@ -2,6 +2,7 @@
 
 import CommandHandler from "./commandHandler.js";
 import Command from "../command.js";
+import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
 
 export default class WarningCommandHandler extends CommandHandler {
 	static warningModalShowErrorMessage = "Une erreur s'est produite lors de l'affichage de la modale de détails. L'avertissement n'a pas pu être enregistré";
@@ -48,8 +49,8 @@ export default class WarningCommandHandler extends CommandHandler {
 	};
 	handleApplicationCommand = async interaction => {
 		if (interaction.isChatInputCommand()) { // slash command, contains all options
-			let {member, reason} = this.parseCommandOptions(interaction.options);
-			return await this.warnUser(member.id, reason);
+			let {member: user, reason} = this.parseCommandOptions(interaction.options);
+			return await this.warnUser(user, user.id, reason);
 		} else { // user context command, contains only the user
 			let member = interaction.targetMember;
 			let modalTitle = `Avertissement de ${member.displayName} (@${member.user.username})`;
@@ -63,10 +64,32 @@ export default class WarningCommandHandler extends CommandHandler {
 	};
 	handleModalSubmit = async interaction => {
 		let {userId, reason} = this.parseModalTextFields(interaction.fields);
-		return await this.warnUser(userId, reason);
+		return await this.warnUser(null, userId, reason);
 	};
-	warnUser = async (userId, reason) => {
-		await this.dataManager.addWarning({userId, reason, time: new Date()}, WarningCommandHandler.warningAddErrorMessage);
+	warnUser = async (user, userId, reason) => {
+		let warning = {userId, reason, time: new Date()};
+		await this.dataManager.addWarning(warning, WarningCommandHandler.warningAddErrorMessage);
+		this.sendWarningEmbedPoliceLog(warning, user);
 		return WarningCommandHandler.warningAddSuccessMessage;
+	};
+	sendWarningEmbedPoliceLog = async (warning, user) => {
+		if (!user) {
+			try {
+				user = (await this.discordActionManager.fetchMember(warning.userId)).user;
+			} catch {}
+		}
+		let warningEmbed = new DiscordEmbedMessageBuilder({
+			color: DiscordEmbedMessageBuilder.colors.warning,
+			title: "Un membre a reçu un avertissement",
+			thumbnailUrl: user?.displayAvatarURL(),
+			description: `<@${warning.userId}>${user ? ` (@${user.username})` : ""} a reçu un avertissement.`,
+			fields: [
+				{name: "Date", value: this.formatDate(warning.time), inline: true},
+				{name: "Motif", value: warning.reason, inline: true}
+			]
+		});
+		this.discordActionManager.sendPoliceLogMessage({
+			embeds: [warningEmbed.embed]
+		});
 	};
 };
