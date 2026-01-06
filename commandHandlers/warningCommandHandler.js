@@ -52,7 +52,7 @@ export default class WarningCommandHandler extends CommandHandler {
 			return await this.warnUser(member.id, reason);
 		} else { // user context command, contains only the user
 			let member = interaction.targetMember;
-			let modalTitle = `Avertissement de ${member.nickname ?? member.user.globalName} (@${member.user.username})`;
+			let modalTitle = `Avertissement de ${member.displayName} (@${member.user.username})`;
 			if (modalTitle.length > 45) {
 				modalTitle = `${modalTitle.slice(0, 42)}...`;
 			}
