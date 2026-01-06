@@ -9,7 +9,6 @@ export default class DataManager extends BotHelper {
 	static collectionNames = {
 		bans: "bans",
 		channels: "channels",
-		discussions: "discussions",
 		infractions: "infractions",
 		serversWhitelist: "serversWhitelist",
 		warnings: "warnings"
