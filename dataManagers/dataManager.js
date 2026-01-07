@@ -232,6 +232,9 @@ export default class DataManager extends BotHelper {
 	updateBan = async (documentId, newData) => await this.updateFirestoreData(DataManager.collectionNames.bans, documentId, newData.userId, newData);
 	addBan = async banInfo => await this.addFirestoreData(DataManager.collectionNames.bans, banInfo.userId, banInfo);
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
+	addPrison = async prisonInfo => await this.addFirestoreData(DataManager.collectionNames.prisons, prisonInfo.userId, prisonInfo);
+	getActivePrisons = async userId => await this.getData({dataType: DataManager.collectionNames.prisons, keyName: "userId", keyValue: userId, additionalFilters: {endTime: null}});
+	updatePrison = async (documentId, newData) => await this.updateFirestoreData(DataManager.collectionNames.prisons, documentId, newData.userId, newData);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);
 	getCachedMessagesByAuthorIds = authorIdList => this.cache.get(DataManager.discordMessagesDataType).getEntries(authorIdList);
 	cacheMessagesByAuthorId = map => this.cache.get(DataManager.discordMessagesDataType).setEntries(map);
