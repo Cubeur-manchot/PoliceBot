@@ -200,12 +200,14 @@ export default class DataManager extends BotHelper {
 		this.cache.get(DataManager.inviteUsagesDataType).setEntries(invitesMap);
 	};
 	buildPinnedMessagesCache = async isInitialFetch => {
-		let channels = await this.bot.discordClientManager.discordActionManager.fetchChannels();
-		let pinnedMessagesMap = new Map();
-		for (let channel of channels.filter(channel => channel.isTextBased()).values()) {
-			let pinnedMessages = await this.bot.discordClientManager.discordActionManager.fetchPinnedMessages(channel, isInitialFetch);
-			pinnedMessagesMap.set(channel.id, this.reducePinnedMessages(pinnedMessages));
-		}
+		let textChannels = (await this.bot.discordClientManager.discordActionManager.fetchChannels())
+			.filter(channel => channel.isTextBased()); // voice channels cannot have pinned messages in their text discussion
+		let pinnedMessagesMap = new Map(
+			await Promise.all(textChannels.map(async channel => [
+				channel.id,
+				this.reducePinnedMessages(await this.bot.discordClientManager.discordActionManager.fetchPinnedMessages(channel, isInitialFetch))
+			]))
+		);
 		this.cache.get(DataManager.pinnedMessagesDataType).setEntries(pinnedMessagesMap);
 	};
 	cachePinnedMessages = (channelId, pinnedMessages) => {
