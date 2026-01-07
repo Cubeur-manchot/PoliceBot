@@ -17,11 +17,13 @@ export default class GuildMemberUpdateEventHandler extends EventHandler {
 		if (!nicknameChanged && !avatarChanged && !rolesChanged) {
 			return;
 		}
+		let userId = newMember.user.id;
+		let username = newMember.user.username;
 		let differenceEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.user,
 			title: "Profil de membre modifié",
 			thumbnailUrl: newMember.displayAvatarURL(),
-			description: `Le profil de membre de <@${newMember.user.id}> (@${newMember.user.username}) a été modifié.`,
+			description: `Le profil de membre de <@${userId}> (@${username}) a été modifié.`,
 			fields: []
 		};
 		if (nicknameChanged) {
@@ -46,25 +48,25 @@ export default class GuildMemberUpdateEventHandler extends EventHandler {
 				{name: "Rôles ajoutés", value: addedRoles.size > 0 ? [...addedRoles.keys()].map(roleId => `<@&${roleId}>`).join(", ") : "(aucun rôle ajouté)", inline: true},
 				{name: "\u200B", value: "\u200B", inline: true}
 			);
-			if (removedRoles.has(process.env.PRISONER_ROLE_ID)) {
-				let prisonerFreeEmbed = new DiscordEmbedMessageBuilder({
-					color: DiscordEmbedMessageBuilder.colors.prison,
-					title: "Membre libéré de prison",
-					thumbnailUrl: newMember.displayAvatarURL(),
-					description: `<@${newMember.user.id}> (@${newMember.user.username}) n'est plus en prison.`,
-				});
-				this.discordActionManager.sendPoliceLogMessage({
-					embeds: [prisonerFreeEmbed.embed]
-				});
-			} else if (addedRoles.has(process.env.PRISONER_ROLE_ID)) {
+			if (addedRoles.has(process.env.PRISONER_ROLE_ID)) {
 				let imprisonmentEmbed = new DiscordEmbedMessageBuilder({
 					color: DiscordEmbedMessageBuilder.colors.prison,
 					title: "Membre envoyé en prison",
 					thumbnailUrl: newMember.displayAvatarURL(),
-					description: `<@${newMember.user.id}> (@${newMember.user.username}) est désormais en prison.`,
+					description: `<@${userId}> (@${username}) est désormais en prison.`,
 				});
 				this.discordActionManager.sendPoliceLogMessage({
 					embeds: [imprisonmentEmbed.embed]
+				});
+			} else if (removedRoles.has(process.env.PRISONER_ROLE_ID)) {
+				let prisonerReleaseEmbed = new DiscordEmbedMessageBuilder({
+					color: DiscordEmbedMessageBuilder.colors.prison,
+					title: "Membre libéré de prison",
+					thumbnailUrl: newMember.displayAvatarURL(),
+					description: `<@${userId}> (@${username}) n'est plus en prison.`,
+				});
+				this.discordActionManager.sendPoliceLogMessage({
+					embeds: [prisonerReleaseEmbed.embed]
 				});
 			}
 		}
