@@ -86,7 +86,7 @@ export default class OffTopicCommandHandler extends CommandHandler {
 			({
 				type: "Off-topic",
 				time: infractionDate,
-				userId: parseInt(userId),
+				userId: userId,
 				messageCount: messagesToDelete.filter(message => message.author.id === userId).length,
 				channelId: interaction.channelId
 			})
