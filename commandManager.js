@@ -2,17 +2,20 @@
 
 import Discord from "discord.js";
 import BotHelper from "./botHelper.js";
+import InfoCommandHandler from "./commandHandlers/infoCommandHandler.js";
 import OffTopicCommandHandler from "./commandHandlers/offTopicCommandHandler.js";
 import PrisonCommandHandler from "./commandHandlers/prisonCommandHandler.js";
 import WarningCommandHandler from "./commandHandlers/warningCommandHandler.js";
 import WhitelistCommandHandler from "./commandHandlers/whitelistCommandHandler.js";
 import DiscordComponentMessageBuilder from "./messageBuilders/discordComponentMessageBuilder.js";
+import DiscordEmbedMessageBuilder from "./messageBuilders/discordEmbedMessageBuilder.js";
 
 export default class CommandManager extends BotHelper {
 	constructor(bot) {
 		super(bot);
 		this.discordActionManager = this.bot.discordClientManager.discordActionManager;
 		let commandHandlers = [
+			new InfoCommandHandler(this),
 			new OffTopicCommandHandler(this),
 			new PrisonCommandHandler(this),
 			new WarningCommandHandler(this),
@@ -110,6 +113,9 @@ export default class CommandManager extends BotHelper {
 					return;
 				case DiscordComponentMessageBuilder:
 					this.discordActionManager.replyInteraction(interaction, {content: answer.textContent, components: answer.components});
+					return;
+				case DiscordEmbedMessageBuilder:
+					this.discordActionManager.replyInteraction(interaction, {embeds: [answer.embed]});
 					return;
 				case null:
 					if (!interaction.defferred && !interaction.replied) {

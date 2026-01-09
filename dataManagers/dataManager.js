@@ -10,6 +10,7 @@ export default class DataManager extends BotHelper {
 		bans: "bans",
 		channels: "channels",
 		infractions: "infractions",
+		prisons: "prisons",
 		serversWhitelist: "serversWhitelist",
 		warnings: "warnings"
 	};
@@ -230,11 +231,14 @@ export default class DataManager extends BotHelper {
 	}))
 	getCachedPinnedMessages = channelId => this.cache.get(DataManager.pinnedMessagesDataType).getEntry(channelId);
 	getAllCachedInviteUsages = () => this.cache.get(DataManager.inviteUsagesDataType).getAllEntries();
+	addBan = async banInfo => await this.addFirestoreData(DataManager.collectionNames.bans, banInfo.userId, banInfo);
+	getBans = async (userId, userErrorMessage) => await this.getData({dataType: DataManager.collectionNames.bans, keyName: "userId", keyValue: userId, userErrorMessage});
 	getActiveBans = async userId => await this.getData({dataType: DataManager.collectionNames.bans, keyName: "userId", keyValue: userId, additionalFilters: {endTime: null}});
 	updateBan = async (documentId, newData) => await this.updateFirestoreData(DataManager.collectionNames.bans, documentId, newData.userId, newData);
-	addBan = async banInfo => await this.addFirestoreData(DataManager.collectionNames.bans, banInfo.userId, banInfo);
 	addWarning = async (warningInfo, userErrorMessage) => await this.addFirestoreData(DataManager.collectionNames.warnings, warningInfo.userId, warningInfo, userErrorMessage);
+	getWarnings = async (userId, userErrorMessage) => await this.getData({dataType: DataManager.collectionNames.warnings, keyName: "userId", keyValue: userId, userErrorMessage});
 	addPrison = async prisonInfo => await this.addFirestoreData(DataManager.collectionNames.prisons, prisonInfo.userId, prisonInfo);
+	getPrisons = async (userId, userErrorMessage) => await this.getData({dataType: DataManager.collectionNames.prisons, keyName: "userId", keyValue: userId, userErrorMessage});
 	getActivePrisons = async userId => await this.getData({dataType: DataManager.collectionNames.prisons, keyName: "userId", keyValue: userId, additionalFilters: {endTime: null}});
 	updatePrison = async (documentId, newData) => await this.updateFirestoreData(DataManager.collectionNames.prisons, documentId, newData.userId, newData);
 	addInfractions = async (infractions, userErrorMessage) => await this.addBatchFirestoreData(DataManager.collectionNames.infractions, infractions, "userId", userErrorMessage);

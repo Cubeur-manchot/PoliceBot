@@ -7,7 +7,7 @@ export default class DiscordEmbedMessageBuilder {
 		helpMessage: "#a8a8a8",
 		infraction: "#cccc00",
 		prison: "#e7b306",
-		warn: "#e78a10",
+		warning: "#e78a10",
 		ban: "#fc0000",
 		message: "#550055",
 		user: "#3a05b4",
