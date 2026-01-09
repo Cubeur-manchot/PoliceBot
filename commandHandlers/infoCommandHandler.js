@@ -33,6 +33,11 @@ export default class InfoCommandHandler extends CommandHandler {
 		let member = interaction.isUserContextMenuCommand() ? interaction.targetMember : null; // if user context menu command, retrieve member and extract user
 		let user = member?.user ?? this.parseCommandOptions(interaction.options).member; // if slash command, retrieve user directly
 		let userId = user.id;
+		if (!member) {
+			try {
+				member = await this.discordActionManager.fetchMember(userId);
+			} catch {}
+		}
 		let bans = this.orderByTimeDescending(await this.dataManager.getBans(userId, InfoCommandHandler.bansGetErrorMessage));
 		let warnings = this.orderByTimeDescending(await this.dataManager.getWarnings(userId, InfoCommandHandler.warningsGetErrorMessage));
 		let prisons = this.orderByTimeDescending(await this.dataManager.getPrisons(userId, InfoCommandHandler.prisonsGetErrorMessage));
@@ -44,6 +49,8 @@ export default class InfoCommandHandler extends CommandHandler {
 			thumbnailUrl: member?.displayAvatarURL() ?? user.displayAvatarURL(),
 			description: `Voici les informations enregistrées pour <@${userId}> (@${user.username}).`,
 			fields: [
+				{name: "Arrivée sur Discord", value: this.formatDateShort(user.createdTimestamp), inline: true},
+				{name: "Arrivée sur le serveur", value: member ? this.formatDateShort(member.joinedTimestamp) : "(impossible à déterminer)", inline: true},
 				{name: `Bannissements (${bans.length})`, value: bans.length ? bans.map(this.getBanDetails).join("\n") : "(aucun bannissement)"},
 				{name: `Avertissements (${warnings.length})`, value: warnings.length ? warnings.map(this.getWarningDetails).join("\n") : "(aucun avertissement)"},
 				{name: `Emprisonnements (${prisons.length})`, value: prisons.length ? prisons.map(this.getPrisonDetails).join("\n") : "(aucun emprisonnement)"},
