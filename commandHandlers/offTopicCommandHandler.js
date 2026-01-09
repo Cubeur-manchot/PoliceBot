@@ -87,7 +87,8 @@ export default class OffTopicCommandHandler extends CommandHandler {
 				type: "Off-topic",
 				time: infractionDate,
 				userId: parseInt(userId),
-				messageCount: messagesToDelete.filter(message => message.author.id === userId).length
+				messageCount: messagesToDelete.filter(message => message.author.id === userId).length,
+				channelId: interaction.channelId
 			})
 		);
 		await this.dataManager.addInfractions(infractions, OffTopicCommandHandler.saveInfractionErrorMessage.replace("{userCount}", userCount).replace("{messageCount}", messageCount));
