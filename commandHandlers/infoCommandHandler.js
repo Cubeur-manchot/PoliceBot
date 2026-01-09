@@ -54,7 +54,7 @@ export default class InfoCommandHandler extends CommandHandler {
 				{name: `Bannissements (${bans.length})`, value: bans.length ? bans.map(this.getBanDetails).join("\n") : "(aucun bannissement)"},
 				{name: `Avertissements (${warnings.length})`, value: warnings.length ? warnings.map(this.getWarningDetails).join("\n") : "(aucun avertissement)"},
 				{name: `Emprisonnements (${prisons.length})`, value: prisons.length ? prisons.map(this.getPrisonDetails).join("\n") : "(aucun emprisonnement)"},
-				{name: `Hors-sujets (${offTopics.length})`, value: offTopics.length ? this.getOffTopicDetails(offTopics) : "(aucun hors-sujet)", inline: true},
+				{name: `Hors-sujets (${offTopics.length})`, value: offTopics.length ? this.getOffTopicDetails(offTopics) : "(aucun hors-sujet)"},
 			]
 		});
 		return userInfoEmbed;
