@@ -8,6 +8,14 @@ export default class BotHelper {
 	};
 	dictionnize = (array, property) => new Map(array.map(element => [element[property], element]));
 	dictionnizeArray = (array, property) => new Map(array.map(element => [element[property], [element]]));
+	groupBy = (array, property) => array.reduce((map, element) => {
+		if (map.has(element[property])) {
+			map.get(element[property]).push(element);
+		} else {
+			map.set(element[property], [element]);
+		}
+		return map;
+	}, new Map());
 	runAsync = async (asyncFunction, logSuccessMessagePattern, logErrorMessagePattern, logArguments, userErrorMessage) => {
 		try {
 			let result = await asyncFunction();

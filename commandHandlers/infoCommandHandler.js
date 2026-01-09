@@ -8,6 +8,7 @@ export default class InfoCommandHandler extends CommandHandler {
 	static bansGetErrorMessage = "Une erreur s'est produite lors de la récupération des bannissements";
 	static bansGetErrorMessage = "Une erreur s'est produite lors de la récupération des bannissements";
 	static prisonsGetErrorMessage = "Une erreur s'est produite lors de la récupération des emprisonnements";
+	static infractionsGetErrorMessage = "Une erreur s'est produite lors de la récupération des infractions";
 	constructor(commandManager) {
 		super(
 			commandManager,
@@ -35,6 +36,8 @@ export default class InfoCommandHandler extends CommandHandler {
 		let bans = this.orderByTimeDescending(await this.dataManager.getBans(userId, InfoCommandHandler.bansGetErrorMessage));
 		let warnings = this.orderByTimeDescending(await this.dataManager.getWarnings(userId, InfoCommandHandler.warningsGetErrorMessage));
 		let prisons = this.orderByTimeDescending(await this.dataManager.getPrisons(userId, InfoCommandHandler.prisonsGetErrorMessage));
+		let infractionsMap = this.groupBy((await this.dataManager.getInfractions(userId, InfoCommandHandler.infractionsGetErrorMessage)).map(infraction => infraction.data), "type");
+		let offTopics = infractionsMap.get("Off-topic") ?? [];
 		let userInfoEmbed = new DiscordEmbedMessageBuilder({
 			color: DiscordEmbedMessageBuilder.colors.user,
 			title: `Détails d'un membre`,
@@ -44,6 +47,7 @@ export default class InfoCommandHandler extends CommandHandler {
 				{name: `Bannissements (${bans.length})`, value: bans.length ? bans.map(this.getBanDetails).join("\n") : "(aucun bannissement)"},
 				{name: `Avertissements (${warnings.length})`, value: warnings.length ? warnings.map(this.getWarningDetails).join("\n") : "(aucun avertissement)"},
 				{name: `Emprisonnements (${prisons.length})`, value: prisons.length ? prisons.map(this.getPrisonDetails).join("\n") : "(aucun emprisonnement)"},
+				{name: `Hors-sujets (${offTopics.length})`, value: offTopics.length ? this.getOffTopicDetails(offTopics) : "(aucun hors-sujet)", inline: true},
 			]
 		});
 		return userInfoEmbed;
@@ -51,6 +55,10 @@ export default class InfoCommandHandler extends CommandHandler {
 	getBanDetails = ban => `- ${this.formatDateShort(ban.startTime)} - ${ban.endTime ? this.formatDateShort(ban.endTime) : "(pas de date de fin)"} : ${ban.reason}`;
 	getWarningDetails = warning => `- ${this.formatDateShort(warning.time)} : ${warning.reason}`;
 	getPrisonDetails = prison => `- ${this.formatDateShort(prison.startTime)} - ${prison.endTime ? this.formatDateShort(prison.endTime) : "(pas de date de fin)"}`
+	getOffTopicDetails = offTopics =>
+		[...this.groupBy(offTopics, "channelId")]
+		.map(([channelId, channelOffTopics]) => `- <#${channelId}> : ${channelOffTopics.length} hors-sujets (${this.getTotalMessageCount(channelOffTopics)} messages au total)`)
+		.join("\n");
 	orderByTimeDescending = elements =>
 		[...elements]
 		.map(element => element.data)
@@ -58,4 +66,5 @@ export default class InfoCommandHandler extends CommandHandler {
 			(firstElement, secondElement) => this.compareTimestamps(firstElement.startTime ?? firstElement.time, secondElement.startTime ?? secondElement.time)
 		);
 	compareTimestamps = (firstTimestamp, secondTimestamp) => (secondTimestamp.toMillis?.() ?? secondTimestamp) - (firstTimestamp.toMillis?.() ?? firstTimestamp);
+	getTotalMessageCount = offTopics => offTopics.reduce((sum, offTopic) => sum + (offTopic.messageCount ?? 0), 0);
 };
