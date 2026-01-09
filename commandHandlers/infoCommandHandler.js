@@ -44,6 +44,10 @@ export default class InfoCommandHandler extends CommandHandler {
 				{name: `Bannissements (${bans.length})`, value: bans.length ? bans.map(this.getBanDetails).join("\n") : "(aucun bannissement)"},
 				{name: `Avertissements (${warnings.length})`, value: warnings.length ? warnings.map(this.getWarningDetails).join("\n") : "(aucun avertissement)"},
 				{name: `Emprisonnements (${prisons.length})`, value: prisons.length ? prisons.map(this.getPrisonDetails).join("\n") : "(aucun emprisonnement)"},
+			]
+		});
+		return userInfoEmbed;
+	};
 	getBanDetails = ban => `- ${this.formatDateShort(ban.startTime)} - ${ban.endTime ? this.formatDateShort(ban.endTime) : "(pas de date de fin)"} : ${ban.reason}`;
 	getWarningDetails = warning => `- ${this.formatDateShort(warning.time)} : ${warning.reason}`;
 	getPrisonDetails = prison => `- ${this.formatDateShort(prison.startTime)} - ${prison.endTime ? this.formatDateShort(prison.endTime) : "(pas de date de fin)"}`
