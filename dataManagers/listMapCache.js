@@ -5,7 +5,7 @@ import BotHelper from "../botHelper.js";
 export default class ListMapCache extends BotHelper {
 	#timer;
 	#entryTimers;
-	constructor(dataManager, dataType, expirationTimeMinutes = 1440, entryExpirationTimeMinutes) {
+	constructor(dataManager, {name: dataType, expirationTimeMinutes = 1440, entryExpirationTimeMinutes}) {
 		super(dataManager.bot);
 		this.dataType = dataType;
 		this.expirationTimeMilliseconds = expirationTimeMinutes * 60 * 1000;
