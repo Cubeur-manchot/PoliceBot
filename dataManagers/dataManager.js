@@ -222,6 +222,7 @@ export default class DataManager extends BotHelper {
 			createdTimestamp: pinnedMessage.message.createdTimestamp,
 			content: pinnedMessage.message.content,
 			author: pinnedMessage.message.author,
+			url: pinnedMessage.message.url,
 			embeds: pinnedMessage.message.embeds,
 			attachments: pinnedMessage.message.attachments,
 			components: pinnedMessage.message.components,

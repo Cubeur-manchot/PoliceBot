@@ -57,7 +57,7 @@ export default class ChannelPinsUpdateEventHandler extends EventHandler {
 			fields: [
 				{name: "Créateur", value: `<@${affectedMessage.message.author.id}> (@${affectedMessage.message.author.username})`, inline: true},
 				{name: "Salon", value: `<#${channel.id}> (${channel.name})`, inline: true},
-				{name: "\u200B", value: "\u200B", inline: true},
+				{name: "Lien", value: affectedMessage.message.url, inline: true},
 				{name: "Texte", value: affectedMessage.message.content.length ? affectedMessage.message.content : "(pas de texte)", inline: true},
 				{name: "Contenu enrichi", value: richContentDescription, inline: true},
 				{name: "\u200B", value: "\u200B", inline: true},
