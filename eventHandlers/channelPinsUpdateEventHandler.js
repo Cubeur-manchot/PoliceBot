@@ -68,7 +68,7 @@ export default class ChannelPinsUpdateEventHandler extends EventHandler {
 		});
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [channelPinsUpdateEmbed.embed],
-			attachments: affectedMessage.attachments
+			files: [...affectedMessage.message.attachments.values()]
 		});
 	};
 	findExtraElement = (completeList, incompleteList) => {
