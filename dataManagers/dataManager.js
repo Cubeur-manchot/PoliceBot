@@ -21,6 +21,8 @@ export default class DataManager extends BotHelper {
 		discordMembersCurrentSelection: {name: "discordMembersCurrentSelection", type: DataManager.dataTypeTypes.cache, expirationTimeMinutes: 15},
 		discordMessages: {name: "discordMessages", type: DataManager.dataTypeTypes.cache, expirationTimeMinutes: 15},
 		pinnedMessages: {name: "pinnedMessages", type: DataManager.dataTypeTypes.cache, expirationTimeMinutes: null},
+		messageAttachments: {name: "messageAttachments", type: DataManager.dataTypeTypes.cache, expirationTimeMinutes: null, entryExpirationTimeMinutes: 1440},
+		messageMentions: {name: "messageMentions", type: DataManager.dataTypeTypes.cache, expirationTimeMinutes: null, entryExpirationTimeMinutes: 1440},
 		inviteUsages: {name: "inviteUsages", type: DataManager.dataTypeTypes.cache, expirationTimeMinutes: null},
 		servers: {name: "servers", type: DataManager.dataTypeTypes.hydrated},
 	};
@@ -249,4 +251,8 @@ export default class DataManager extends BotHelper {
 	getCachedSelectedUsers = () => this.cache.get(DataManager.dataTypes.discordMembersCurrentSelection.name).getKeys(list => list[0] === true);
 	cacheSelectedUsers = map => this.cache.get(DataManager.dataTypes.discordMembersCurrentSelection.name).setEntries(map);
 	clearSelectedUsersCache = () => this.cache.get(DataManager.dataTypes.discordMembersCurrentSelection.name).resetData();
+	getCachedMessageAttachments = messageId => this.cache.get(DataManager.dataTypes.messageAttachments.name).getEntry(messageId);
+	cacheMessageAttachments = (messageId, attachments) => this.cache.get(DataManager.dataTypes.messageAttachments.name).addEntry(messageId, attachments);
+	getCachedMessageMentions = messageId => this.cache.get(DataManager.dataTypes.messageMentions.name).getEntry(messageId);
+	cacheMessageMentions = (messageId, mentions) => this.cache.get(DataManager.dataTypes.messageMentions.name).addEntry(messageId, mentions);
 };
