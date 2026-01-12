@@ -2,43 +2,30 @@
 
 import Discord from "discord.js";
 import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
-import EventHandler from "./eventHandler.js";
+import MessageEventHandler from "./messageEventHandler.js";
 
-export default class CreateEventHandler extends EventHandler {
+export default class CreateEventHandler extends MessageEventHandler {
 	constructor(eventManager) {
 		super(eventManager, Discord.Events.MessageCreate);
 	};
 	handleEvent = async message => {
-		if (!message.inGuild()) {
-			return;
-		}
-		if (message.guild.id !== process.env.SERVER_ID) {
-			return;
-		}
-		if (message.author.bot) {
-			return;
-		}
-		if (message.system) { // includes messages for new pinned message
+		if (this.ignoreMessage(message)) {
 			return;
 		}
 		let mentions = [
 			...message.mentions.users.map(user => ({type: "user", id: user.id, name: user.username})),
 			...message.mentions.roles.map(role => ({type: "role", id: role.id, name: role.name}))
 		];
-		let authorUser = message.author;
-		let authorMember;
-		try {
-			authorMember = await this.discordActionManager.fetchMember(authorUser.id);
-		} catch {}
 		let hasAttachments = message.attachments.size !== 0;
 		let hasMentions = mentions.length !== 0;
 		if (!hasAttachments && !hasMentions) {
 			return;
 		}
+		let {user, member} = await this.getAuthor(message);
 		let messageCreateEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.message,
 			title: "Un message a été envoyé",
-			thumbnailUrl: authorMember?.displayAvatarURL() ?? authorUser.displayAvatarURL(),
+			thumbnailUrl: member?.displayAvatarURL() ?? user.displayAvatarURL(),
 			description: `**Texte du message** :\n${message.content?.length ? message.content : "(texte vide)"}`,
 			fields: [
 				{name: "Salon", value: `<#${message.channelId}> (${message.channel.name})`, inline: true},
