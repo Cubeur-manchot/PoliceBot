@@ -29,8 +29,11 @@ export default class CreateEventHandler extends MessageEventHandler {
 			description: `**Texte du message** :\n${message.content?.length ? message.content : "(texte vide)"}`,
 			fields: [
 				{name: "Salon", value: `<#${message.channelId}> (${message.channel.name})`, inline: true},
+				{name: "Auteur", value: `<@${user.id}> (@${user.username})`, inline: true},
+				{name: "\u200B", value: "\u200B", inline: true},
 				{name: "Date d'envoi", value: this.formatDate(message.createdTimestamp), inline: true},
-				{name: "Lien", value: message.url, inline: true}
+				{name: "Lien", value: message.url, inline: true},
+				{name: "\u200B", value: "\u200B", inline: true}
 			]
 		};
 		if (hasAttachments) {
@@ -53,6 +56,7 @@ export default class CreateEventHandler extends MessageEventHandler {
 					value: mentionsMap.get("role")?.map(roleMention => `- <@&${roleMention.id}> (@${roleMention.name})`).join("\n") ?? "(aucun rôle mentionné)",
 					inline: true
 				},
+				{name: "\u200B", value: "\u200B", inline: true}
 			);
 		}
 		let messageCreateEmbed = new DiscordEmbedMessageBuilder(messageCreateEmbedData);
