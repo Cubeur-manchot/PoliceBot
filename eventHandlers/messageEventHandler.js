@@ -15,7 +15,7 @@ export default class MessageEventHandler extends EventHandler {
 		if (message.guild.id !== process.env.SERVER_ID) {
 			return true;
 		}
-		if (message.author.bot) {
+		if (message.author?.bot) {
 			return true;
 		}
 		if (message.system) { // includes messages for new pinned message
@@ -28,10 +28,11 @@ export default class MessageEventHandler extends EventHandler {
 		let messageEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.message,
 			title: `Un message a été ${this.action}`,
-			thumbnailUrl: member?.displayAvatarURL() ?? user.displayAvatarURL(),
+			thumbnailUrl: member?.displayAvatarURL() ?? user?.displayAvatarURL(),
 			description: `**Texte du message** :\n${message.content?.length ? message.content : "(texte vide)"}`,
 			fields: [
 				{name: "Date d'envoi", value: this.formatDate(message.createdTimestamp)},
+				...(message.editedTimestamp ? [{name: "Date de dernière modification", value: this.formatDate(message.editedTimestamp)}] : []),
 				{name: "Salon", value: `<#${message.channelId}> (${message.channel.name})`, inline: true},
 				deleted
 					? {name: "\u200B", value: "\u200B", inline: true}
@@ -59,6 +60,9 @@ export default class MessageEventHandler extends EventHandler {
 				},
 				{name: "\u200B", value: "\u200B", inline: true}
 			);
+		}
+		if (message.partial) {
+			messageEmbedData.footer = {text: "Les informations sur le message supprimé sont partielles, certains champs peuvent être manquants."};
 		}
 		let messageEmbed = new DiscordEmbedMessageBuilder(messageEmbedData);
 		this.discordActionManager.sendInfoLogMessage({

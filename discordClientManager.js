@@ -18,6 +18,7 @@ export default class DiscordClientManager extends BotHelper {
 				Discord.GatewayIntentBits.MessageContent
 			],
 			partials: [
+				Discord.Partials.Message
 			]
 		});
 		this.discordActionManager = new DiscordActionManager(this);
