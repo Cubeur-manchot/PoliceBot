@@ -16,7 +16,7 @@ export default class MessageCreateEventHandler extends MessageEventHandler {
 		if (!hasAttachments && !hasMentions) {
 			return;
 		}
-		let messageEmbedInput = {message};
+		let messageEmbedInput = {message, deleted: false};
 		if (hasAttachments) {
 			this.dataManager.cacheMessageAttachments(message.id, [...message.attachments.keys()]);
 			messageEmbedInput.attachments = [...message.attachments.values()];
