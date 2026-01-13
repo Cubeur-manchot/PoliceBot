@@ -1,68 +1,36 @@
 "use strict";
 
 import Discord from "discord.js";
-import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
 import MessageEventHandler from "./messageEventHandler.js";
 
 export default class CreateEventHandler extends MessageEventHandler {
 	constructor(eventManager) {
-		super(eventManager, Discord.Events.MessageCreate);
+		super(eventManager, Discord.Events.MessageCreate, "envoyé");
 	};
 	handleEvent = async message => {
 		if (this.ignoreMessage(message)) {
 			return;
 		}
-		let mentions = [
-			...message.mentions.users.map(user => ({type: "user", id: user.id, name: user.username})),
-			...message.mentions.roles.map(role => ({type: "role", id: role.id, name: role.name}))
-		];
+		
 		let hasAttachments = message.attachments.size !== 0;
-		let hasMentions = mentions.length !== 0;
+		let hasMentions = message.mentions.users.size !== 0 || message.mentions.roles.size !== 0;
 		if (!hasAttachments && !hasMentions) {
 			return;
 		}
-		let {user, member} = await this.getAuthor(message);
-		let messageCreateEmbedData = {
-			color: DiscordEmbedMessageBuilder.colors.message,
-			title: "Un message a été envoyé",
-			thumbnailUrl: member?.displayAvatarURL() ?? user.displayAvatarURL(),
-			description: `**Texte du message** :\n${message.content?.length ? message.content : "(texte vide)"}`,
-			fields: [
-				{name: "Salon", value: `<#${message.channelId}> (${message.channel.name})`, inline: true},
-				{name: "Auteur", value: `<@${user.id}> (@${user.username})`, inline: true},
-				{name: "\u200B", value: "\u200B", inline: true},
-				{name: "Date d'envoi", value: this.formatDate(message.createdTimestamp), inline: true},
-				{name: "Lien", value: message.url, inline: true},
-				{name: "\u200B", value: "\u200B", inline: true}
-			]
-		};
+		let messageEmbedInput = {message};
 		if (hasAttachments) {
 			this.dataManager.cacheMessageAttachments(message.id, [...message.attachments.keys()]);
-			messageCreateEmbedData.fields.push(
-				{name: "Pièces jointes", value: `${message.attachments.size} fichier(s) (voir ci-joint)`}
-			);
+			messageEmbedInput.attachments = [...message.attachments.values()];
+			messageEmbedInput.attachmentCount = message.attachments.size;
 		}
 		if (hasMentions) {
+			let mentions = [
+				...message.mentions.users.map(user => ({type: "user", id: user.id, name: user.username})),
+				...message.mentions.roles.map(role => ({type: "role", id: role.id, name: role.name}))
+			];
 			this.dataManager.cacheMessageMentions(message.id, mentions);
-			let mentionsMap = this.groupBy(mentions, "type");
-			messageCreateEmbedData.fields.push(
-				{
-					name: "Mentions (membres)",
-					value: mentionsMap.get("user")?.map(userMention => `- <@${userMention.id}> (@${userMention.name})`).join("\n") ?? "(aucun membre mentionné)",
-					inline: true
-				},
-				{
-					name: "Mentions (roles)",
-					value: mentionsMap.get("role")?.map(roleMention => `- <@&${roleMention.id}> (@${roleMention.name})`).join("\n") ?? "(aucun rôle mentionné)",
-					inline: true
-				},
-				{name: "\u200B", value: "\u200B", inline: true}
-			);
+			messageEmbedInput.mentions = mentions;
 		}
-		let messageCreateEmbed = new DiscordEmbedMessageBuilder(messageCreateEmbedData);
-		this.discordActionManager.sendInfoLogMessage({
-			embeds: [messageCreateEmbed.embed],
-			files: [...message.attachments.values()]
-		});
+		this.sendMessageEmbedData(messageEmbedInput);
 	};
 };
