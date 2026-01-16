@@ -61,9 +61,7 @@ export default class MessageEventHandler extends EventHandler {
 				{name: "\u200B", value: "\u200B", inline: true}
 			);
 		}
-		if (message.partial) {
-			messageEmbedData.footer = {text: "Les informations sur le message supprimé sont partielles, certains champs peuvent être manquants."};
-		}
+		this.addPartialMessageFooter(messageEmbedData, message);
 		let messageEmbed = new DiscordEmbedMessageBuilder(messageEmbedData);
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [messageEmbed.embed],
@@ -80,6 +78,11 @@ export default class MessageEventHandler extends EventHandler {
 			return {user: authorUser, member: authorMember};
 		} catch {
 			return {user: authorUser};
+		}
+	};
+	addPartialMessageFooter = (messageEmbedData, message) => {
+		if (message.partial) {
+			messageEmbedData.footer = {text: "Les informations sur le message supprimé sont partielles, certains champs peuvent être manquants."};
 		}
 	};
 };
