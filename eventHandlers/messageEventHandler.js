@@ -50,12 +50,12 @@ export default class MessageEventHandler extends EventHandler {
 			messageEmbedData.fields.push(
 				{
 					name: "Mentions (membres)",
-					value: mentionsMap.get("user")?.map(userMention => `- <@${userMention.id}> (@${userMention.name})`).join("\n") ?? "(aucun membre mentionné)",
+					value: mentionsMap.get("user")?.map(this.formatMention).join("\n") ?? "(aucun membre mentionné)",
 					inline: true
 				},
 				{
-					value: mentionsMap.get("role")?.map(roleMention => `- <@&${roleMention.id}> (@${roleMention.name})`).join("\n") ?? "(aucun rôle mentionné)",
 					name: "Mentions (rôles)",
+					value: mentionsMap.get("role")?.map(this.formatMention).join("\n") ?? "(aucun rôle mentionné)",
 					inline: true
 				},
 				{name: "\u200B", value: "\u200B", inline: true}
@@ -85,4 +85,5 @@ export default class MessageEventHandler extends EventHandler {
 			messageEmbedData.footer = {text: "Les informations sur le message supprimé sont partielles, certains champs peuvent être manquants."};
 		}
 	};
+	formatMention = mention => `- <@${mention.id}> (@${mention.name})`;
 };
