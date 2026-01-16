@@ -24,8 +24,8 @@ export default class MessageCreateEventHandler extends MessageEventHandler {
 		}
 		if (hasMentions) {
 			let mentions = [
-				...message.mentions.users.map(user => ({type: "user", id: user.id, name: user.username})),
-				...message.mentions.roles.map(role => ({type: "role", id: role.id, name: role.name}))
+				...message.mentions.users.map(this.reduceUserMention),
+				...message.mentions.roles.map(this.reduceRoleMention)
 			];
 			this.dataManager.cacheMessageMentions(message.id, mentions);
 			messageEmbedInput.mentions = mentions;

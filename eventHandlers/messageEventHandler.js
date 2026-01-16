@@ -86,4 +86,6 @@ export default class MessageEventHandler extends EventHandler {
 		}
 	};
 	formatMention = mention => `- <@${mention.id}> (@${mention.name})`;
+	reduceUserMention = user => ({type: "user", id: user.id, name: user.username});
+	reduceRoleMention = role => ({type: "role", id: role.id, name: role.name});
 };
