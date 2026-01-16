@@ -252,7 +252,7 @@ export default class DataManager extends BotHelper {
 	cacheSelectedUsers = map => this.cache.get(DataManager.dataTypes.discordMembersCurrentSelection.name).setEntries(map);
 	clearSelectedUsersCache = () => this.cache.get(DataManager.dataTypes.discordMembersCurrentSelection.name).resetData();
 	getCachedMessageAttachments = messageId => this.cache.get(DataManager.dataTypes.messageAttachments.name).getEntry(messageId);
-	cacheMessageAttachments = (messageId, attachments) => this.cache.get(DataManager.dataTypes.messageAttachments.name).addEntry(messageId, attachments);
+	cacheMessageAttachments = (messageId, attachments) => this.cache.get(DataManager.dataTypes.messageAttachments.name).setEntry(messageId, attachments);
 	getCachedMessageMentions = messageId => this.cache.get(DataManager.dataTypes.messageMentions.name).getEntry(messageId);
-	cacheMessageMentions = (messageId, mentions) => this.cache.get(DataManager.dataTypes.messageMentions.name).addEntry(messageId, mentions);
+	cacheMessageMentions = (messageId, mentions) => this.cache.get(DataManager.dataTypes.messageMentions.name).setEntry(messageId, mentions);
 };

@@ -12,6 +12,7 @@ import InviteCreateEventHandler from "./eventHandlers/inviteCreateEventHandler.j
 import InviteDeleteEventHandler from "./eventHandlers/inviteDeleteEventHandler.js";
 import MessageCreateEventHandler from "./eventHandlers/messageCreateEventHandler.js";
 import MessageDeleteEventHandler from "./eventHandlers/messageDeleteEventHandler.js";
+import MessageUpdateEventHandler from "./eventHandlers/messageUpdateEventHandler.js";
 import ThreadCreateEventHandler from "./eventHandlers/threadCreateEventHandler.js";
 import UserUpdateEventHandler from "./eventHandlers/userUpdateEventHandler.js";
 
@@ -32,6 +33,7 @@ export default class DiscordEventManager extends BotHelper {
 			new InviteDeleteEventHandler(this),
 			new MessageCreateEventHandler(this),
 			new MessageDeleteEventHandler(this),
+			new MessageUpdateEventHandler(this),
 			new ThreadCreateEventHandler(this),
 			new UserUpdateEventHandler(this)
 		];
