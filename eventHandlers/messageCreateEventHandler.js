@@ -11,8 +11,8 @@ export default class MessageCreateEventHandler extends MessageEventHandler {
 		if (this.ignoreMessage(message)) {
 			return;
 		}
-		let hasAttachments = message.attachments.size !== 0;
-		let hasMentions = message.mentions.users.size !== 0 || message.mentions.roles.size !== 0;
+		let hasAttachments = message.attachments.size > 0;
+		let hasMentions = message.mentions.users.size > 0 || message.mentions.roles.size > 0;
 		if (!hasAttachments && !hasMentions) {
 			return;
 		}
