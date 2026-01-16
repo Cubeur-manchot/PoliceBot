@@ -54,8 +54,8 @@ export default class MessageEventHandler extends EventHandler {
 					inline: true
 				},
 				{
-					name: "Mentions (roles)",
 					value: mentionsMap.get("role")?.map(roleMention => `- <@&${roleMention.id}> (@${roleMention.name})`).join("\n") ?? "(aucun rôle mentionné)",
+					name: "Mentions (rôles)",
 					inline: true
 				},
 				{name: "\u200B", value: "\u200B", inline: true}
