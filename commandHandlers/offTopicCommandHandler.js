@@ -1,6 +1,7 @@
 "use strict";
 
 import CommandHandler from "./commandHandler.js";
+import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
 
 export default class OffTopicCommandHandler extends CommandHandler {
 	static incorrectDateFormatErrorMessage = "Le format de date est incorrect. Veuillez entrer une date au format ISO";
@@ -96,6 +97,22 @@ export default class OffTopicCommandHandler extends CommandHandler {
 			interaction,
 			{content: OffTopicCommandHandler.saveInfractionSuccessMessage.replace("{userCount}", userCount).replace("{messageCount}", messageCount)}
 		);
+		let oldestCreatedTimestamp = Math.min(...messagesToDelete.map(message => message.createdTimestamp));
+		let channel = messagesToDelete[0].channel;
+		let offTopicEmbed = new DiscordEmbedMessageBuilder({
+			color: DiscordEmbedMessageBuilder.colors.infraction,
+			title: "Un hors-sujet a été enregistré",
+			thumbnailUrl: interaction.member?.avatarURL(),
+			description: `Un hors-sujet a été enregistré dans <#${channel.id}> (${channel.name}) à partir de ${this.formatDate(oldestCreatedTimestamp)}.`,
+			fields: infractions.map(infraction => ({
+				name: `<@${infraction.userId}> (@${interaction.guild.members.cache.get(`${infraction.userId}`)?.user.username})`,
+				value: `${infraction.messageCount} message(s)`,
+				inline: true
+			}))
+		});
+		this.discordActionManager.sendPoliceLogMessage({
+			embeds: [offTopicEmbed.embed]
+		});
 		return null;
 	};
 	getOffTopicStartTime = interaction => {
