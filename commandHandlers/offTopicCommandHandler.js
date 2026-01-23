@@ -63,7 +63,7 @@ export default class OffTopicCommandHandler extends CommandHandler {
 		let messageCount = messagesToDelete.length;
 		this.dataManager.clearSelectedUsersCache();
 		this.dataManager.clearMessagesCache();
-		if (messageCount === 0) {
+		if (!messageCount) {
 			await this.discordActionManager.updateInteractionMessage(
 				interaction,
 				{
