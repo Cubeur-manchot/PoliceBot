@@ -104,6 +104,32 @@ export default class MessageEventHandler extends EventHandler {
 			}
 		}));
 		this.dataManager.addInfractions(infractions);
+		let thumbnailUrl;
+		try {
+			let authorMember = await this.discordActionManager.fetchMember(message.author.id);
+			thumbnailUrl = authorMember.displayAvatarURL();
+		} catch {
+			thumbnailUrl = message.author.displayAvatarURL();
+		}
+		for (let infraction of infractions) {
+			let forbiddenInviteEmbed = new DiscordEmbedMessageBuilder({
+				color: DiscordEmbedMessageBuilder.colors.infraction,
+				title: "Une invitation vers un serveur non whitelisté a été envoyée",
+				thumbnailUrl,
+				...(message.content.length !== 0 && {description: `Texte du message :\n${message.content}`}),
+				fields: [
+					{name: "Membre", value: `<@${infraction.userId}> (@${message.guild.members.cache.get(`${infraction.userId}`)?.user.username})`, inline: true},
+					{name: "Date", value: this.formatDate(message.createdTimestamp), inline: true},
+					{name: "Salon", value: `<#${message.channelId}> (${message.channel.name})`, inline: true},
+					{name: "Invitation", value: infraction.invite.url, inline: true},
+					{name: "Serveur", value: infraction.server.name, inline: true},
+					{name: "`\u200B`", value: "`\u200B`", inline: true}
+				]
+			});
+			await this.discordActionManager.sendPoliceLogMessage({
+				embeds: [forbiddenInviteEmbed.embed]
+			});
+		}
 	};
 	findForbiddenInvites = async textContent => {
 		this.logger.debug("find forbidden invites")
