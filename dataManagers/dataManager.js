@@ -43,7 +43,7 @@ export default class DataManager extends BotHelper {
 				.map(dataType => new ListMapCache(this, dataType)),
 			"dataType"
 		);
-		this.logger.info(`Cache for has been set for ${this.cache.size} data types successfully.`)
+		this.logger.info(`Cache has been set for ${this.cache.size} data types successfully.`)
 	};
 	getData = async options => {
 		let {dataType, keyName, keyValue, additionalFilters, userErrorMessage, hydrateFunction} = options;
