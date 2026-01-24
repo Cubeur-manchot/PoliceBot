@@ -12,6 +12,9 @@ export default class MessageUpdateEventHandler extends MessageEventHandler {
 		if (this.ignoreMessage(newMessage)) {
 			return;
 		}
+		this.handleAttachmentsAndMentions(oldMessage, newMessage);
+	};
+	handleAttachmentsAndMentions = async (oldMessage, newMessage) => {
 		let {user, member} = await this.getAuthor(newMessage);
 		let messageUpdateEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.message,
