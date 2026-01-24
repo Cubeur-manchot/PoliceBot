@@ -95,8 +95,13 @@ export default class DataManager extends BotHelper {
 			userErrorMessage
 		);
 		if (!response.ok) {
-			this.logger.error(`HTTP error while fetching Discord API (${url}) :`, response.status);
-			throw userErrorMessage;
+			let errorMessage = `HTTP error while fetching Discord API (${url}) : ${response.status}.`;
+			if (response.status === 404) {
+				this.logger.warn(errorMessage);
+			} else {
+				this.logger.error(errorMessage);
+			}
+			throw userErrorMessage ?? errorMessage;
 		}
 		let serverInfo = await this.runAsync(
 			() => response.json(),
