@@ -88,4 +88,52 @@ export default class MessageEventHandler extends EventHandler {
 	formatMention = mention => `- <@${mention.id}> (@${mention.name})`;
 	reduceUserMention = user => ({type: "user", id: user.id, name: user.username});
 	reduceRoleMention = role => ({type: "role", id: role.id, name: role.name});
+	handleForbiddenInfractions = async message => {
+		let forbiddenInvites = await this.findForbiddenInvites(message.content);
+		if (!forbiddenInvites.length) {
+			return;
+		}
+		let infractions = forbiddenInvites.map(invite => ({
+			userId: message.author.id,
+			type: "Forbidden invite",
+			time: new Date(),
+			invite: invite.invite,
+			server: {
+				id: invite.server.id,
+				name: invite.server.name
+			}
+		}));
+		this.dataManager.addInfractions(infractions);
+	};
+	findForbiddenInvites = async textContent => {
+		this.logger.debug("find forbidden invites")
+		let inviteUrls = textContent.match(/https?:\/\/discord\.(?:gg|com\/invite)\/[0-9a-z-]+/gi);
+		let forbiddenInvites = [];
+		for (let inviteUrl of inviteUrls ?? []) {
+			let inviteId = inviteUrl.match(new RegExp("(?<=https?:\/\/discord\.(?:gg|com\/invite)\/)[0-9a-z-]+", "gi"))[0];
+			if (!inviteId) {
+				continue;
+			}
+			let serverInfo;
+			try {
+				serverInfo = (await this.dataManager.getServerInfo(inviteId)).data;
+			} catch { // if any issue with the invite, ignore it
+				continue;
+			}
+			if (serverInfo.isWhitelisted) {
+				continue;
+			}
+			forbiddenInvites.push({
+				invite: {
+					id: inviteId,
+					url: inviteUrl
+				},
+				server: {
+					id: serverInfo.id,
+					name: serverInfo.name
+				}
+			});
+		}
+		return forbiddenInvites;
+	};
 };

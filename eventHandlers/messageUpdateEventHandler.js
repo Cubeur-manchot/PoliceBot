@@ -12,6 +12,7 @@ export default class MessageUpdateEventHandler extends MessageEventHandler {
 		if (this.ignoreMessage(newMessage)) {
 			return;
 		}
+		this.handleForbiddenInfractions(newMessage);
 		this.handleAttachmentsAndMentions(oldMessage, newMessage);
 	};
 	handleAttachmentsAndMentions = async (oldMessage, newMessage) => {

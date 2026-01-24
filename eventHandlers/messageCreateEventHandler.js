@@ -11,6 +11,7 @@ export default class MessageCreateEventHandler extends MessageEventHandler {
 		if (this.ignoreMessage(message)) {
 			return;
 		}
+		this.handleForbiddenInfractions(message);
 		this.handleAttachmentsAndMentions(message);
 	};
 	handleAttachmentsAndMentions = message => {
