@@ -43,6 +43,7 @@ export default class InfoCommandHandler extends CommandHandler {
 		let prisons = this.orderByTimeDescending(await this.dataManager.getPrisons(userId, InfoCommandHandler.prisonsGetErrorMessage));
 		let infractionsMap = this.groupBy((await this.dataManager.getInfractions(userId, InfoCommandHandler.infractionsGetErrorMessage)).map(infraction => infraction.data), "type");
 		let offTopics = infractionsMap.get("Off-topic") ?? [];
+		let forbiddenInvites = infractionsMap.get("Forbidden invite") ?? [];
 		let userInfoEmbed = new DiscordEmbedMessageBuilder({
 			color: DiscordEmbedMessageBuilder.colors.user,
 			title: `Détails d'un membre`,
@@ -55,6 +56,7 @@ export default class InfoCommandHandler extends CommandHandler {
 				{name: `Avertissements (${warnings.length})`, value: warnings.length ? warnings.map(this.getWarningDetails).join("\n") : "(aucun avertissement)"},
 				{name: `Emprisonnements (${prisons.length})`, value: prisons.length ? prisons.map(this.getPrisonDetails).join("\n") : "(aucun emprisonnement)"},
 				{name: `Hors-sujets (${offTopics.length})`, value: offTopics.length ? this.getOffTopicDetails(offTopics) : "(aucun hors-sujet)"},
+				{name: `Invitations censurées (${forbiddenInvites.length})`, value: forbiddenInvites.length ? this.getForbiddenInvitesDetails(forbiddenInvites) : "(aucune invitation censurée)"}
 			]
 		});
 		return userInfoEmbed;
@@ -65,6 +67,10 @@ export default class InfoCommandHandler extends CommandHandler {
 	getOffTopicDetails = offTopics =>
 		[...this.groupBy(offTopics, "channelId")]
 		.map(([channelId, channelOffTopics]) => `- <#${channelId}> : ${channelOffTopics.length} hors-sujets (${this.getTotalMessageCount(channelOffTopics)} messages au total)`)
+		.join("\n");
+	getForbiddenInvitesDetails = forbiddenInvites =>
+		[...this.groupBy(forbiddenInvites.map(forbiddenInvite => ({...forbiddenInvite, invite: `${forbiddenInvite.invite.url} (${forbiddenInvite.server.name})`})), "invite")]
+		.map(([invite, serverInvites]) => `- ${invite} : ${serverInvites.length} invitations censurées`)
 		.join("\n");
 	orderByTimeDescending = elements =>
 		[...elements]
