@@ -23,6 +23,81 @@ export default class MessageEventHandler extends EventHandler {
 		}
 		return false;
 	};
+	handleMessage = async message => {
+		let {forbiddenInviteInfractions, forbiddenInviteEmbeds} = await this.handleForbiddenInvites(message);
+		if (forbiddenInviteInfractions.length) {
+			this.dataManager.addInfractions(forbiddenInviteInfractions);
+			this.discordActionManager.sendPoliceLogMessage({
+				embeds: forbiddenInviteEmbeds.slice(0, 10).map(embed => embed.embed)
+			});
+			return false;
+		}
+		return true;
+	};
+	handleForbiddenInvites = async message => {
+		let forbiddenInvites = await this.findForbiddenInvites(message.content);
+		if (!forbiddenInvites.length) {
+			return {forbiddenInviteInfractions: [], forbiddenInviteEmbeds: []};
+		}
+		let forbiddenInviteInfractions = forbiddenInvites.map(invite => this.createForbiddenInviteInfraction(invite, message));
+		let thumbnailUrl = await this.getThumbnailUrl(message);
+		let forbiddenInviteEmbeds = forbiddenInviteInfractions.map(infraction => this.createForbiddenInviteEmbed(infraction, message, thumbnailUrl));
+		return {forbiddenInviteInfractions, forbiddenInviteEmbeds};
+	};
+	findForbiddenInvites = async textContent => {
+		let inviteUrls = textContent.match(/https?:\/\/discord\.(?:gg|com\/invite)\/[0-9a-z-]+/gi);
+		let forbiddenInvites = [];
+		for (let inviteUrl of inviteUrls ?? []) {
+			let inviteId = inviteUrl.match(new RegExp("(?<=https?:\/\/discord\.(?:gg|com\/invite)\/)[0-9a-z-]+", "gi"))[0];
+			if (!inviteId) {
+				continue;
+			}
+			let serverInfo;
+			try {
+				serverInfo = (await this.dataManager.getServerInfo(inviteId)).data;
+			} catch { // if any issue with the invite, ignore it
+				continue;
+			}
+			if (serverInfo.isWhitelisted) {
+				continue;
+			}
+			forbiddenInvites.push({
+				invite: {
+					id: inviteId,
+					url: inviteUrl
+				},
+				server: {
+					id: serverInfo.id,
+					name: serverInfo.name
+				}
+			});
+		}
+		return forbiddenInvites;
+	};
+	createForbiddenInviteInfraction = (invite, message) => ({
+		userId: message.author.id,
+		type: "Forbidden invite",
+		time: new Date(),
+		invite: invite.invite,
+		server: {
+			id: invite.server.id,
+			name: invite.server.name
+		}
+	});
+	createForbiddenInviteEmbed = (infraction, message, thumbnailUrl) => new DiscordEmbedMessageBuilder({
+		color: DiscordEmbedMessageBuilder.colors.infraction,
+		title: "Une invitation vers un serveur non whitelisté a été envoyée",
+		thumbnailUrl,
+		...(message.content.length !== 0 && {description: `Texte du message :\n${message.content}`}),
+		fields: [
+			{name: "Membre", value: `<@${infraction.userId}> (@${message.guild.members.cache.get(`${infraction.userId}`)?.user.username})`, inline: true},
+			{name: "Date", value: this.formatDate(message.createdTimestamp), inline: true},
+			{name: "Salon", value: `<#${message.channelId}> (${message.channel.name})`, inline: true},
+			{name: "Invitation", value: infraction.invite.url, inline: true},
+			{name: "Serveur", value: infraction.server.name, inline: true},
+			{name: "\u200B", value: "\u200B", inline: true}
+		]
+	});
 	sendMessageEmbedData = async ({message, attachments, attachmentCount, mentions, deleted}) => {
 		let {user, member} = await this.getAuthor(message);
 		let messageEmbedData = {
@@ -68,6 +143,10 @@ export default class MessageEventHandler extends EventHandler {
 			files: attachments
 		});
 	};
+	getThumbnailUrl = async message => {
+		let {user, member} = await this.getAuthor(message);
+		return member?.displayAvatarURL() ?? user?.displayAvatarURL();
+	};
 	getAuthor = async message => {
 		let authorUser = message.author;
 		if (!authorUser) {
@@ -88,78 +167,4 @@ export default class MessageEventHandler extends EventHandler {
 	formatMention = mention => `- <@${mention.id}> (@${mention.name})`;
 	reduceUserMention = user => ({type: "user", id: user.id, name: user.username});
 	reduceRoleMention = role => ({type: "role", id: role.id, name: role.name});
-	handleForbiddenInfractions = async message => {
-		let forbiddenInvites = await this.findForbiddenInvites(message.content);
-		if (!forbiddenInvites.length) {
-			return;
-		}
-		let infractions = forbiddenInvites.map(invite => ({
-			userId: message.author.id,
-			type: "Forbidden invite",
-			time: new Date(),
-			invite: invite.invite,
-			server: {
-				id: invite.server.id,
-				name: invite.server.name
-			}
-		}));
-		this.dataManager.addInfractions(infractions);
-		let thumbnailUrl;
-		try {
-			let authorMember = await this.discordActionManager.fetchMember(message.author.id);
-			thumbnailUrl = authorMember.displayAvatarURL();
-		} catch {
-			thumbnailUrl = message.author.displayAvatarURL();
-		}
-		for (let infraction of infractions) {
-			let forbiddenInviteEmbed = new DiscordEmbedMessageBuilder({
-				color: DiscordEmbedMessageBuilder.colors.infraction,
-				title: "Une invitation vers un serveur non whitelisté a été envoyée",
-				thumbnailUrl,
-				...(message.content.length !== 0 && {description: `Texte du message :\n${message.content}`}),
-				fields: [
-					{name: "Membre", value: `<@${infraction.userId}> (@${message.guild.members.cache.get(`${infraction.userId}`)?.user.username})`, inline: true},
-					{name: "Date", value: this.formatDate(message.createdTimestamp), inline: true},
-					{name: "Salon", value: `<#${message.channelId}> (${message.channel.name})`, inline: true},
-					{name: "Invitation", value: infraction.invite.url, inline: true},
-					{name: "Serveur", value: infraction.server.name, inline: true},
-					{name: "`\u200B`", value: "`\u200B`", inline: true}
-				]
-			});
-			await this.discordActionManager.sendPoliceLogMessage({
-				embeds: [forbiddenInviteEmbed.embed]
-			});
-		}
-	};
-	findForbiddenInvites = async textContent => {
-		this.logger.debug("find forbidden invites")
-		let inviteUrls = textContent.match(/https?:\/\/discord\.(?:gg|com\/invite)\/[0-9a-z-]+/gi);
-		let forbiddenInvites = [];
-		for (let inviteUrl of inviteUrls ?? []) {
-			let inviteId = inviteUrl.match(new RegExp("(?<=https?:\/\/discord\.(?:gg|com\/invite)\/)[0-9a-z-]+", "gi"))[0];
-			if (!inviteId) {
-				continue;
-			}
-			let serverInfo;
-			try {
-				serverInfo = (await this.dataManager.getServerInfo(inviteId)).data;
-			} catch { // if any issue with the invite, ignore it
-				continue;
-			}
-			if (serverInfo.isWhitelisted) {
-				continue;
-			}
-			forbiddenInvites.push({
-				invite: {
-					id: inviteId,
-					url: inviteUrl
-				},
-				server: {
-					id: serverInfo.id,
-					name: serverInfo.name
-				}
-			});
-		}
-		return forbiddenInvites;
-	};
 };

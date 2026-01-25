@@ -11,7 +11,10 @@ export default class MessageCreateEventHandler extends MessageEventHandler {
 		if (this.ignoreMessage(message)) {
 			return;
 		}
-		this.handleForbiddenInfractions(message);
+		let isMessageDeleted = !await this.handleMessage(message);
+		if (isMessageDeleted) {
+			return;
+		}
 		this.handleAttachmentsAndMentions(message);
 	};
 	handleAttachmentsAndMentions = message => {
