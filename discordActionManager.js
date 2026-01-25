@@ -153,6 +153,12 @@ export default class DiscordActionManager extends BotHelper {
 		[channel.name, beforeMessageId],
 		userErrorMessage
 	);
+	deleteMessage = async message => this.runAsync(
+		() => message.delete(),
+		"Message with id {0} in channel {1} (id = {2}) has been deleted successfully",
+		"Failed to delete message with id {0} in channel {1} (id = {2})",
+		[message.id, message.channel?.name, message.channelId]
+	);
 	bulkDeleteMessages = async (channel, messagesToDelete, userErrorMessage) => {
 		let bulkDeletes = await Promise.allSettled(
 			Array.from(
