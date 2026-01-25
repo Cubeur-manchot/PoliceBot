@@ -113,7 +113,7 @@ export default class DataManager extends BotHelper {
 		return serverInfo.guild
 			? [{
 				id: null, // such element do not have a documentId like in Firestore database
-				data: {id: parseInt(serverInfo.guild.id), name: serverInfo.guild.name}
+				data: {id: serverInfo.guild.id, name: serverInfo.guild.name}
 			}]
 			: [];
 	};
