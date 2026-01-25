@@ -30,6 +30,16 @@ export default class MessageEventHandler extends EventHandler {
 			this.discordActionManager.sendPoliceLogMessage({
 				embeds: forbiddenInviteEmbeds.slice(0, 10).map(embed => embed.embed)
 			});
+			this.discordActionManager.sendPrivateMessage(
+				message.author,
+				{
+					content: [
+						`Ton message dans le salon <#${message.channelId}> (${message.channel.name}) a été supprimé car il contenait une ou plusieurs invitations vers des serveurs non whitelistés :`,
+						...forbiddenInviteInfractions.map(infraction => `- ${infraction.invite.url} (serveur : ${infraction.server.name})`),
+					].join("\n")
+				}
+			);
+			this.discordActionManager.deleteMessage(message);
 			return false;
 		}
 		return true;
