@@ -43,6 +43,12 @@ export default class DiscordActionManager extends BotHelper {
 		let policeLogChannel = (await this.bot.dataManager.getLogChannel("policeLog")).data;
 		await this.sendMessageToChannel(policeLogChannel, message);
 	};
+	sendPrivateMessage = async (user, message) => this.runAsync(
+		() => user.send(message),
+		"Private message has been sent to user @{0} successfully",
+		"Failed to send private message to user @{0}",
+		[user.username]
+	);
 	replyInteraction = async (interaction, answer) => this.runAsync(
 		() => interaction.reply(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral})),
 		"Interaction has been replied successfully",
