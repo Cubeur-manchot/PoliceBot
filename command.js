@@ -42,5 +42,7 @@ export default class Command {
 	getContextMenuApplicationCommand = type =>
 		new Discord.ContextMenuCommandBuilder()
 			.setType(type)
-			.setName(this.name);
+			.setName(this.name)
+			.setDefaultMemberPermissions(Discord.PermissionsBitField.Flags.BanMembers)
+			.setDMPermission(false);
 };
