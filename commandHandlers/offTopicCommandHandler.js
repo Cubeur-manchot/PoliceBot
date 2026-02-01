@@ -105,12 +105,10 @@ export default class OffTopicCommandHandler extends CommandHandler {
 			color: DiscordEmbedMessageBuilder.colors.infraction,
 			title: "Un hors-sujet a été enregistré",
 			thumbnailUrl: interaction.member?.avatarURL(),
-			description: `Un hors-sujet a été enregistré dans <#${channel.id}> (${channel.name}) à partir de ${this.formatDate(oldestCreatedTimestamp)}.`,
-			fields: infractions.map(infraction => ({
-				name: `<@${infraction.userId}> (@${interaction.guild.members.cache.get(`${infraction.userId}`)?.user.username})`,
-				value: `${infraction.messageCount} message(s)`,
-				inline: true
-			}))
+			description: [
+				`Un hors-sujet a été enregistré dans <#${channel.id}> (${channel.name}) à partir de ${this.formatDate(oldestCreatedTimestamp)}. Voici la liste des membres y ayant participé :`,
+				...infractions.map(infraction => `- <@${infraction.userId}> (@${interaction.guild.members.cache.get(`${infraction.userId}`)?.user.username}) : ${infraction.messageCount} message(s)`)
+			].join("\n")
 		});
 		this.discordActionManager.sendPoliceLogMessage({
 			embeds: [offTopicEmbed.embed]
