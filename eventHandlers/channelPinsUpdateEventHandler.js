@@ -20,55 +20,50 @@ export default class ChannelPinsUpdateEventHandler extends EventHandler {
 			return;
 		}
 		let action;
-		let affectedMessage;
+		let affectedPinnedMessage;
 		switch (actualPinnedMessages.length - cachedPinnedMessages.length) {
 			case 0:
 				this.logger.warn(`Event ChannelPinsUpdate was fired in channel "${channel.id}" (${channel.name}) but the cache and the fetch are both returning ${actualPinnedMessages.length} messages. Ignoring the event.`);
 				return;
 			case -1:
 				action = "désépinglé";
-				affectedMessage = this.findExtraElement(cachedPinnedMessages, actualPinnedMessages);
+				affectedPinnedMessage = this.findExtraElement(cachedPinnedMessages, actualPinnedMessages);
 				break;
 			case 1:
 				action = "épinglé";
-				affectedMessage = this.findExtraElement(actualPinnedMessages, cachedPinnedMessages);
+				affectedPinnedMessage = this.findExtraElement(actualPinnedMessages, cachedPinnedMessages);
 				break;
 			default:
 				this.logger.warn(`Event ChannelPinsUpdate was fired in channel "${channel.id}" (${channel.name}) but there is more than 1 message difference (${actualPinnedMessages.length} vs ${cachedPinnedMessages?.length}). Ignoring the event.`);
 				return;
 		};
-		let thumbnailUrl;
-		try {
-			let authorMember = await this.discordActionManager.fetchMember(affectedMessage.message.author.id);
-			thumbnailUrl = authorMember.displayAvatarURL();
-		} catch {
-			thumbnailUrl = affectedMessage.message.author.displayAvatarURL();
-		}
+		let affectedMessage = affectedPinnedMessage.message;
+		let authorMember = affectedMessage.member;
 		let richContentDescription = [
-			`Fichiers joints: ${affectedMessage.message.attachments.size}`,
-			`Embeds: ${affectedMessage.message.embeds.length}`,
-			`Composants: ${affectedMessage.message.components.length}`
+			`Fichiers joints: ${affectedMessage.attachments.size}`,
+			`Embeds: ${affectedMessage.embeds.length}`,
+			`Composants: ${affectedMessage.components.length}`
 		].join("\n");
 		let channelPinsUpdateEmbed = new DiscordEmbedMessageBuilder({
 			color: DiscordEmbedMessageBuilder.colors.message,
 			title: `Message ${action}`,
-			thumbnailUrl: thumbnailUrl,
+			thumbnailUrl: authorMember?.displayAvatarURL() ?? authorMember?.user.displayAvatarURL(),
 			description: `Le message suivant a été ${action}.`,
 			fields: [
-				{name: "Créateur", value: `<@${affectedMessage.message.author.id}> (@${affectedMessage.message.author.username})`, inline: true},
+				{name: "Créateur", value: `<@${authorMember.id}> (@${authorMember.user.username})`, inline: true},
 				{name: "Salon", value: `<#${channel.id}> (${channel.name})`, inline: true},
-				{name: "Lien", value: affectedMessage.message.url, inline: true},
-				{name: "Texte", value: affectedMessage.message.content.length ? affectedMessage.message.content : "(pas de texte)", inline: true},
+				{name: "Lien", value: affectedMessage.url, inline: true},
+				{name: "Texte", value: affectedMessage.content.length ? affectedMessage.content : "(pas de texte)", inline: true},
 				{name: "Contenu enrichi", value: richContentDescription, inline: true},
 				{name: "\u200B", value: "\u200B", inline: true},
-				{name: "Date de création", value: this.formatDate(affectedMessage.message.createdTimestamp), inline: true},
-				{name: "Date de modification", value: affectedMessage.message.editedTimestamp ? this.formatDate(affectedMessage.message.editedTimestamp) : "(jamais modifié)", inline: true},
-				{name: "Date d'épinglage", value: this.formatDate(affectedMessage.pinnedTimestamp), inline: true}
+				{name: "Date de création", value: this.formatDate(affectedMessage.createdTimestamp), inline: true},
+				{name: "Date de modification", value: affectedMessage.editedTimestamp ? this.formatDate(affectedMessage.editedTimestamp) : "(jamais modifié)", inline: true},
+				{name: "Date d'épinglage", value: this.formatDate(affectedPinnedMessage.pinnedTimestamp), inline: true}
 			]
 		});
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [channelPinsUpdateEmbed.embed],
-			files: [...affectedMessage.message.attachments.values()]
+			files: [...affectedMessage.attachments.values()]
 		});
 	};
 	findExtraElement = (completeList, incompleteList) => {
