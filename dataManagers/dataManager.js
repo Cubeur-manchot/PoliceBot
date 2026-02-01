@@ -241,7 +241,7 @@ export default class DataManager extends BotHelper {
 			components: pinnedMessage.message.components,
 			editedTimestamp: pinnedMessage.message.editedTimestamp
 		}
-	}))
+	}));
 	getCachedPinnedMessages = channelId => this.cache.get(DataManager.dataTypes.pinnedMessages.name).getEntry(channelId);
 	getAllCachedInviteUsages = () => this.cache.get(DataManager.dataTypes.inviteUsages.name).getAllEntries();
 	addBan = async banInfo => await this.addFirestoreData(DataManager.dataTypes.bans.name, banInfo.userId, banInfo);
