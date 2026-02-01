@@ -51,14 +51,20 @@ export default class DataManager extends BotHelper {
 		if (cachedValue) {
 			return cachedValue;
 		};
-		let fetchedValue = dataType === DataManager.dataTypes.servers.name
-			? await this.fetchServerInfo(keyValue, userErrorMessage)
-			: await this.fetchFirestoreData(dataType, {...Object.fromEntries([[keyName, keyValue]]), ...additionalFilters}, null, userErrorMessage);
+		let fetchedValue = await this.fetchValue(dataType, keyName, keyValue, additionalFilters, userErrorMessage);
 		let returnValue = hydrateFunction
 			? await Promise.all(fetchedValue.map(async element => ({id: element.id, data: await hydrateFunction(element.data)})))
 			: fetchedValue;
 		this.cache.get(dataType).addEntry(keyValue, returnValue);
 		return returnValue;
+	};
+	fetchValue = async (dataType, keyName, keyValue, additionalFilters, userErrorMessage) => {
+		switch (dataType) {
+			case DataManager.dataTypes.servers.name:
+				return await this.fetchServerInfo(keyValue, userErrorMessage);
+			default:
+				return await this.fetchFirestoreData(dataType, {...(keyName && {[keyName]: keyValue}), ...additionalFilters}, null, userErrorMessage);
+		}
 	};
 	fetchFirestoreData = async (collectionName, filters, fields, userErrorMessage) => {
 		let query = this.database.collection(collectionName);
