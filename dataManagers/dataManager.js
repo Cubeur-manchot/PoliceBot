@@ -79,7 +79,7 @@ export default class DataManager extends BotHelper {
 				() => query.get(),
 				"Collection {0} has been fetched with filters {1} and fields {2} successfully",
 				"Failed to fetch collection {0} with filters {1} and fields {2}",
-				[collectionName, JSON.stringify(filters), JSON.stringify(fields)],
+				[collectionName, JSON.stringify(filters), JSON.stringify(fields) ?? "all fields"],
 				userErrorMessage
 			)
 		).docs.map(document => ({id: document.id, data: document.data()}));
