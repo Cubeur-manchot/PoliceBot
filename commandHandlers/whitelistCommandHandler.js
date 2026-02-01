@@ -1,5 +1,6 @@
 "use strict";
 
+import Command from "../command.js";
 import CommandHandler from "./commandHandler.js";
 
 export default class WhitelistCommandHandler extends CommandHandler {
@@ -22,6 +23,7 @@ export default class WhitelistCommandHandler extends CommandHandler {
 				{
 					name: "link",
 					description: "Lien d'invitation complet",
+					type: Command.optionTypes.string,
 					required: true
 				}
 			]

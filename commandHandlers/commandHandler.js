@@ -16,7 +16,7 @@ export default class CommandHandler extends BotHelper {
 	};
 	handleApplicationCommand = () => this.logger.error("Invoking \"handleApplicationCommand()\" on an abstract class.");
 	handleModalSubmit = () => this.logger.error("Invoking \"handleModalSubmit()\" on an abstract class.");
-	parseCommandOptions = options => Object.fromEntries(this.command.options.map(option => [option.name, options[`get${option.type ?? Command.optionTypes.string}`](option.name)]));
+	parseCommandOptions = options => Object.fromEntries(this.command.options.map(option => [option.name, options[option.type.getMethod](option.name)]));
 	parseModalTextFields = fields => Object.fromEntries(this.command.modalFields.map(field => [field.name, fields.getTextInputValue(field.name)]));
 	buildDiscordModal = (title, fields) => {
 		let modal = new Discord.ModalBuilder()

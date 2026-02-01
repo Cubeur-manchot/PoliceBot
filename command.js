@@ -4,8 +4,8 @@ import Discord from "discord.js";
 
 export default class Command {
 	static optionTypes = {
-		string: "String",
-		user: "User"
+		string: {name: "String", addOptionMethod: "AddStringOption", getMethod: "getString"},
+		user: {name: "User", addOptionMethod: "addUserOption", getMethod: "getMember"}
 	};
 	constructor(commandHandler, name, contexts, description, options, modalFields) {
 		this.commandHandler = commandHandler;
@@ -24,7 +24,7 @@ export default class Command {
 			.setDefaultMemberPermissions(Discord.PermissionsBitField.Flags.BanMembers)
 			.setDMPermission(false);
 		for (let commandOption of this.options ?? []) {
-			applicationCommand[`add${commandOption.type ?? Command.optionTypes.string}Option`](option => {
+			applicationCommand[commandOption.type.addOptionMethod](option => {
 				option
 					.setName(commandOption.name)
 					.setDescription(commandOption.description)

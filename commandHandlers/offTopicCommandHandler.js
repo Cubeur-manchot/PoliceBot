@@ -1,5 +1,6 @@
 "use strict";
 
+import Command from "../command.js";
 import CommandHandler from "./commandHandler.js";
 import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
 
@@ -26,6 +27,7 @@ export default class OffTopicCommandHandler extends CommandHandler {
 				{
 					name: "starttime",
 					description: "Moment du début du HS au format ISO",
+					type: Command.optionTypes.string,
 					required: true
 				}
 			]

@@ -28,6 +28,7 @@ export default class WarningCommandHandler extends CommandHandler {
 				{
 					name: "reason",
 					description: "Motif de l'avertissement",
+					type: Command.optionTypes.string,
 					required: true
 				}
 			],
@@ -49,8 +50,8 @@ export default class WarningCommandHandler extends CommandHandler {
 	};
 	handleApplicationCommand = async interaction => {
 		if (interaction.isChatInputCommand()) { // slash command, contains all options
-			let {member: user, reason} = this.parseCommandOptions(interaction.options);
-			return await this.warnUser(user, user.id, reason);
+			let {member, reason} = this.parseCommandOptions(interaction.options);
+			return await this.warnMember(member, member.id, reason);
 		} else { // user context command, contains only the user
 			let member = interaction.targetMember;
 			let modalTitle = `Avertissement de ${member.displayName} (@${member.user.username})`;
@@ -64,25 +65,21 @@ export default class WarningCommandHandler extends CommandHandler {
 	};
 	handleModalSubmit = async interaction => {
 		let {userId, reason} = this.parseModalTextFields(interaction.fields);
-		return await this.warnUser(null, userId, reason);
+		let member = interaction.guild.members.cache.get(userId);
+		return await this.warnMember(member, userId, reason);
 	};
-	warnUser = async (user, userId, reason) => {
+	warnMember = async (member, userId, reason) => {
 		let warning = {userId, reason, time: new Date()};
 		await this.dataManager.addWarning(warning, WarningCommandHandler.warningAddErrorMessage);
-		this.sendWarningEmbedPoliceLog(warning, user);
+		this.sendWarningEmbedPoliceLog(warning, member);
 		return WarningCommandHandler.warningAddSuccessMessage;
 	};
-	sendWarningEmbedPoliceLog = async (warning, user) => {
-		if (!user) {
-			try {
-				user = (await this.discordActionManager.fetchMember(warning.userId)).user;
-			} catch {}
-		}
+	sendWarningEmbedPoliceLog = async (warning, member) => {
 		let warningEmbed = new DiscordEmbedMessageBuilder({
 			color: DiscordEmbedMessageBuilder.colors.warning,
 			title: "Un membre a reçu un avertissement",
-			thumbnailUrl: user?.displayAvatarURL(),
-			description: `<@${warning.userId}>${user ? ` (@${user.username})` : ""} a reçu un avertissement.`,
+			thumbnailUrl: member?.displayAvatarURL() ?? member?.user.displayAvatarURL(),
+			description: `<@${warning.userId}>${member.user ? ` (@${member.user.username})` : ""} a reçu un avertissement.`,
 			fields: [
 				{name: "Date", value: this.formatDate(warning.time), inline: true},
 				{name: "Motif", value: warning.reason, inline: true}

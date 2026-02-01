@@ -30,14 +30,9 @@ export default class InfoCommandHandler extends CommandHandler {
 		);
 	};
 	handleApplicationCommand = async interaction => {
-		let member = interaction.isUserContextMenuCommand() ? interaction.targetMember : null; // if user context menu command, retrieve member and extract user
-		let user = member?.user ?? this.parseCommandOptions(interaction.options).member; // if slash command, retrieve user directly
+		let member = interaction.isUserContextMenuCommand() ? interaction.targetMember : this.parseCommandOptions(interaction.options).member;
+		let user = member.user;
 		let userId = user.id;
-		if (!member) {
-			try {
-				member = await this.discordActionManager.fetchMember(userId);
-			} catch {}
-		}
 		let bans = this.orderByTimeDescending(await this.dataManager.getBans(userId, InfoCommandHandler.bansGetErrorMessage));
 		let warnings = this.orderByTimeDescending(await this.dataManager.getWarnings(userId, InfoCommandHandler.warningsGetErrorMessage));
 		let prisons = this.orderByTimeDescending(await this.dataManager.getPrisons(userId, InfoCommandHandler.prisonsGetErrorMessage));
