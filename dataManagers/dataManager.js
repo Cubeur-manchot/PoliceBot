@@ -14,6 +14,7 @@ export default class DataManager extends BotHelper {
 	static dataTypes = {
 		bans: {name: "bans", type: DataManager.dataTypeTypes.collection},
 		channels: {name: "channels", type: DataManager.dataTypeTypes.collection, entryExpirationTimeMinutes: 1440},
+		forbiddenExpressions: {name: "forbiddenExpressions", type: DataManager.dataTypeTypes.collection, cacheable: false},
 		infractions: {name: "infractions", type: DataManager.dataTypeTypes.collection},
 		prisons: {name: "prisons", type: DataManager.dataTypeTypes.collection},
 		serversWhitelist: {name: "serversWhitelist", type: DataManager.dataTypeTypes.collection},
@@ -24,6 +25,7 @@ export default class DataManager extends BotHelper {
 		messageAttachments: {name: "messageAttachments", type: DataManager.dataTypeTypes.cache, expirationTimeMinutes: null, entryExpirationTimeMinutes: 1440},
 		messageMentions: {name: "messageMentions", type: DataManager.dataTypeTypes.cache, expirationTimeMinutes: null, entryExpirationTimeMinutes: 1440},
 		inviteUsages: {name: "inviteUsages", type: DataManager.dataTypeTypes.cache, expirationTimeMinutes: null},
+		forbiddenExpressionsPattern: {name: "forbiddenExpressionsPattern", type: DataManager.dataTypeTypes.hydrated},
 		servers: {name: "servers", type: DataManager.dataTypeTypes.hydrated},
 	};
 	constructor(bot) {
@@ -40,6 +42,7 @@ export default class DataManager extends BotHelper {
 	initializeCache = () => {
 		this.cache = this.dictionnize(
 			Object.values(DataManager.dataTypes)
+				.filter(dataType => dataType.cacheable ?? true)
 				.map(dataType => new ListMapCache(this, dataType)),
 			"dataType"
 		);
@@ -62,6 +65,8 @@ export default class DataManager extends BotHelper {
 		switch (dataType) {
 			case DataManager.dataTypes.servers.name:
 				return await this.fetchServerInfo(keyValue, userErrorMessage);
+			case DataManager.dataTypes.forbiddenExpressionsPattern.name:
+				return await this.fetchAndBuildForbiddenExpressionsPattern();
 			default:
 				return await this.fetchFirestoreData(dataType, {...(keyName && {[keyName]: keyValue}), ...additionalFilters}, null, userErrorMessage);
 		}
@@ -122,6 +127,19 @@ export default class DataManager extends BotHelper {
 				data: {id: serverInfo.guild.id, name: serverInfo.guild.name}
 			}]
 			: [];
+	};
+	fetchAndBuildForbiddenExpressionsPattern = async () => {
+		let forbiddenExpressions = await this.fetchFirestoreData(DataManager.dataTypes.forbiddenExpressions.name, {});
+		let pattern = new RegExp(
+			forbiddenExpressions
+			.map(forbiddenExpression => `(?<${forbiddenExpression.data.expression.replace(/\s+/g, "_")}>${forbiddenExpression.data.pattern})`)
+			.join("|"),
+			"gi"
+		);
+		return [{
+			id: null, // no documentId in Firestore database
+			data: pattern
+		}];
 	};
 	addFirestoreData = async (collectionName, key, newData, userErrorMessage) => {
 		let addedDocument = await this.runAsync(
@@ -212,6 +230,7 @@ export default class DataManager extends BotHelper {
 		let invitesMap = this.dictionnizeArray(reducedInvites, "code");
 		this.cache.get(DataManager.dataTypes.inviteUsages.name).setEntries(invitesMap);
 	};
+	getForbiddenExpressionsPatterns = async () => this.getData({dataType: DataManager.dataTypes.forbiddenExpressionsPattern.name});
 	buildPinnedMessagesCache = async isInitialFetch => {
 		let textChannels = (await this.bot.discordClientManager.discordActionManager.fetchChannels())
 			.filter(channel => channel.isTextBased()); // voice channels cannot have pinned messages in their text discussion
