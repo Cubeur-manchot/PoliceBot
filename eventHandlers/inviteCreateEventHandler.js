@@ -13,7 +13,7 @@ export default class InviteCreateEventHandler extends EventHandler {
 		if (serverId !== process.env.SERVER_ID) {
 			return;
 		}
-		if (type !== 0) { // standard invite to channel
+		if (type !== 0) { // consider only standard invites to a channel
 			return;
 		}
 		let inviterMember = guild.members.cache.get(inviterUser.id);
