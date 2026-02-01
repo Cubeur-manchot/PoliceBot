@@ -16,19 +16,11 @@ export default class InviteCreateEventHandler extends EventHandler {
 		if (type !== 0) { // standard invite to channel
 			return;
 		}
-		let thumbnailUrl;
-		if (inviterUser) {
-			try {
-				let inviterMember = await this.discordActionManager.fetchMember(inviterUser.id);
-				thumbnailUrl = inviterMember.displayAvatarURL();
-			} catch {
-				thumbnailUrl = inviterUser.displayAvatarURL();
-			}
-		}
+		let inviterMember = guild.members.cache.get(inviterUser.id);
 		let inviteCreateEmbed = new DiscordEmbedMessageBuilder({
 			color: DiscordEmbedMessageBuilder.colors.invite,
 			title: "Invitation créée",
-			thumbnailUrl: thumbnailUrl,
+			thumbnailUrl: inviterMember?.displayAvatarURL() ?? inviterUser.displayAvatarURL(),
 			description: `<@${inviterUser.id}> (@${inviterUser.username}) a créé une nouvelle invitation.`,
 			fields: [
 				{name: "Créateur", value: `<@${inviterUser.id}> (@${inviterUser.username})`, inline: true},
