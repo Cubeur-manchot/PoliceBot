@@ -13,7 +13,7 @@ export default class DataManager extends BotHelper {
 	};
 	static dataTypes = {
 		bans: {name: "bans", type: DataManager.dataTypeTypes.collection},
-		channels: {name: "channels", type: DataManager.dataTypeTypes.collection},
+		channels: {name: "channels", type: DataManager.dataTypeTypes.collection, entryExpirationTimeMinutes: 1440},
 		infractions: {name: "infractions", type: DataManager.dataTypeTypes.collection},
 		prisons: {name: "prisons", type: DataManager.dataTypeTypes.collection},
 		serversWhitelist: {name: "serversWhitelist", type: DataManager.dataTypeTypes.collection},
