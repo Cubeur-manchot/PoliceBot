@@ -116,7 +116,7 @@ export default class MessageEventHandler extends EventHandler {
 		color: DiscordEmbedMessageBuilder.colors.infraction,
 		title: "Une invitation vers un serveur non whitelisté a été envoyée",
 		thumbnailUrl,
-		...(message.content.length !== 0 && {description: `Texte du message :\n${message.content}`}),
+		description: `Texte du message :\n${message.content}`,
 		fields: [
 			{name: "Membre", value: `<@${infraction.userId}> (@${message.guild.members.cache.get(`${infraction.userId}`)?.user.username})`, inline: true},
 			{name: "Date", value: this.formatDate(message.createdTimestamp), inline: true},
