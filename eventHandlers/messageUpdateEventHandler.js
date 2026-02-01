@@ -19,11 +19,10 @@ export default class MessageUpdateEventHandler extends MessageEventHandler {
 		this.handleAttachmentsAndMentions(oldMessage, newMessage);
 	};
 	handleAttachmentsAndMentions = async (oldMessage, newMessage) => {
-		let {user, member} = await this.getAuthor(newMessage);
 		let messageUpdateEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.message,
 			title: `Un message a été modifié`,
-			thumbnailUrl: member?.displayAvatarURL() ?? user?.displayAvatarURL(),
+			thumbnailUrl: this.getThumbnailUrl(newMessage),
 			...(oldMessage.content !== newMessage.content && {description: [
 				"**Ancien texte** :",
 				oldMessage.content?.length ? this.escapeMarkdownBlocks(oldMessage.content) : "(texte vide)",
@@ -35,7 +34,7 @@ export default class MessageUpdateEventHandler extends MessageEventHandler {
 				{name: "Date de modification", value: this.formatDate(newMessage.editedTimestamp)},
 				{name: "Salon", value: `<#${newMessage.channelId}> (${newMessage.channel.name})`, inline: true},
 				{name: "Lien", value: newMessage.url, inline: true},
-				{name: "Auteur", value: user ? `<@${user.id}> (@${user.username})` : "(auteur inconnu)", inline: true},
+				{name: "Auteur", value: newMessage.author ? `<@${newMessage.author.id}> (@${newMessage.author.username})` : "(auteur inconnu)", inline: true},
 			]
 		};
 		let removedAttachments; // when updating a message, attachments can only be removed (not added or replaced)

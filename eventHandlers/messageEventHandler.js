@@ -68,8 +68,7 @@ export default class MessageEventHandler extends EventHandler {
 			return {forbiddenInviteInfractions: [], forbiddenInviteEmbeds: []};
 		}
 		let forbiddenInviteInfractions = forbiddenInvites.map(invite => this.createForbiddenInviteInfraction(invite, message));
-		let thumbnailUrl = await this.getThumbnailUrl(message);
-		let forbiddenInviteEmbeds = forbiddenInviteInfractions.map(infraction => this.createForbiddenInviteEmbed(infraction, message, thumbnailUrl));
+		let forbiddenInviteEmbeds = forbiddenInviteInfractions.map(infraction => this.createForbiddenInviteEmbed(infraction, message));
 		return {forbiddenInviteInfractions, forbiddenInviteEmbeds};
 	};
 	findForbiddenInvites = async textContent => {
@@ -112,10 +111,10 @@ export default class MessageEventHandler extends EventHandler {
 			name: invite.server.name
 		}
 	});
-	createForbiddenInviteEmbed = (infraction, message, thumbnailUrl) => new DiscordEmbedMessageBuilder({
+	createForbiddenInviteEmbed = (infraction, message) => new DiscordEmbedMessageBuilder({
 		color: DiscordEmbedMessageBuilder.colors.infraction,
 		title: "Une invitation vers un serveur non whitelisté a été envoyée",
-		thumbnailUrl,
+		thumbnailUrl: this.getThumbnailUrl(message),
 		description: `Texte du message :\n${message.content}`,
 		fields: [
 			{name: "Membre", value: `<@${infraction.userId}> (@${message.guild.members.cache.get(`${infraction.userId}`)?.user.username})`, inline: true},
@@ -137,8 +136,7 @@ export default class MessageEventHandler extends EventHandler {
 			return {forbiddenExpressionInfractions: [], forbiddenExpressionEmbeds: []};
 		}
 		let forbiddenExpressionInfractions = matches.map(match => this.createForbiddenExpressionInfraction(match, message));
-		let thumbnailUrl = await this.getThumbnailUrl(message);
-		let forbiddenExpressionEmbeds = forbiddenExpressionInfractions.map(infraction => this.createForbiddenExpressionEmbed(infraction, message, thumbnailUrl));
+		let forbiddenExpressionEmbeds = forbiddenExpressionInfractions.map(infraction => this.createForbiddenExpressionEmbed(infraction, message));
 		return {forbiddenExpressionInfractions, forbiddenExpressionEmbeds};
 	};
 	createForbiddenExpressionInfraction = (expression, message) => ({
@@ -147,10 +145,10 @@ export default class MessageEventHandler extends EventHandler {
 		time: new Date(),
 		expression
 	});
-	createForbiddenExpressionEmbed = (infraction, message, thumbnailUrl) => new DiscordEmbedMessageBuilder({
+	createForbiddenExpressionEmbed = (infraction, message) => new DiscordEmbedMessageBuilder({
 		color: DiscordEmbedMessageBuilder.colors.infraction,
 		title: "Une expression interdite a été envoyée",
-		thumbnailUrl,
+		thumbnailUrl: this.getThumbnailUrl(message),
 		description: `Texte du message :\n${message.content}`,
 		fields: [
 			{name: "Membre", value: `<@${infraction.userId}> (@${message.guild.members.cache.get(`${infraction.userId}`)?.user.username})`, inline: true},
@@ -162,11 +160,10 @@ export default class MessageEventHandler extends EventHandler {
 		]
 	});
 	sendMessageEmbedData = async ({message, attachments, attachmentCount, mentions, deleted}) => {
-		let {user, member} = await this.getAuthor(message);
 		let messageEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.message,
 			title: `Un message a été ${this.action}`,
-			thumbnailUrl: member?.displayAvatarURL() ?? user?.displayAvatarURL(),
+			thumbnailUrl: this.getThumbnailUrl(message),
 			description: `**Texte du message** :\n${message.content?.length ? message.content : "(texte vide)"}`,
 			fields: [
 				{name: "Date d'envoi", value: this.formatDate(message.createdTimestamp)},
@@ -176,7 +173,7 @@ export default class MessageEventHandler extends EventHandler {
 					? {name: "\u200B", value: "\u200B", inline: true}
 					: {name: "Lien", value: message.url, inline: true},
 				{name: "\u200B", value: "\u200B", inline: true},
-				{name: "Auteur", value: user ? `<@${user.id}> (@${user.username})` : "(auteur inconnu)", inline: true},
+				{name: "Auteur", value: message.author ? `<@${message.author.id}> (@${message.author.username})` : "(auteur inconnu)", inline: true},
 				attachmentCount
 					? {name: "Pièces jointes", value: `${attachmentCount}`, inline: true}
 					: {name: "\u200B", value: "\u200B", inline: true},
@@ -206,22 +203,7 @@ export default class MessageEventHandler extends EventHandler {
 			files: attachments
 		});
 	};
-	getThumbnailUrl = async message => {
-		let {user, member} = await this.getAuthor(message);
-		return member?.displayAvatarURL() ?? user?.displayAvatarURL();
-	};
-	getAuthor = async message => {
-		let authorUser = message.author;
-		if (!authorUser) {
-			return {};
-		}
-		try {
-			let authorMember = await this.discordActionManager.fetchMember(authorUser.id);
-			return {user: authorUser, member: authorMember};
-		} catch {
-			return {user: authorUser};
-		}
-	};
+	getThumbnailUrl = message => message.member?.displayAvatarURL() ?? message.author?.displayAvatarURL();
 	addPartialMessageFooter = (messageEmbedData, message) => {
 		if (message.partial) {
 			messageEmbedData.footer = {text: "Les informations sur le message supprimé sont partielles, certains champs peuvent être manquants."};
