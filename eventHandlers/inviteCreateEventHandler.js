@@ -9,8 +9,8 @@ export default class InviteCreateEventHandler extends EventHandler {
 		super(eventManager, Discord.Events.InviteCreate);
 	};
 	handleEvent = async invite => {
-		let {type, guild: {id: serverId} = {}, inviter: inviterUser, createdTimestamp, channel, code, expiresTimestamp, maxUses} = invite;
-		if (serverId !== process.env.SERVER_ID) {
+		let {type, guild, inviter: inviterUser, createdTimestamp, channel, code, expiresTimestamp, maxUses} = invite;
+		if (guild?.id !== process.env.SERVER_ID) {
 			return;
 		}
 		if (type !== 0) { // consider only standard invites to a channel
