@@ -65,7 +65,7 @@ export default class InfoCommandHandler extends CommandHandler {
 		.join("\n");
 	getForbiddenInvitesDetails = forbiddenInvites =>
 		[...this.groupBy(forbiddenInvites.map(forbiddenInvite => ({...forbiddenInvite, invite: `${forbiddenInvite.invite.url} (${forbiddenInvite.server.name})`})), "invite")]
-		.map(([invite, serverInvites]) => `- ${invite} : ${serverInvites.length} invitations censurées`)
+		.map(([invite, serverInvites]) => `- ${invite} : ${serverInvites.length} occurrences censurées`)
 		.join("\n");
 	orderByTimeDescending = elements =>
 		[...elements]
