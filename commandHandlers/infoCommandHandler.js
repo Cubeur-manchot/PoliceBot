@@ -18,7 +18,7 @@ export default class InfoCommandHandler extends CommandHandler {
 				user: true,
 				message: false
 			},
-			"Affiche les informations d'un membre'",
+			"Affiche les informations d'un membre",
 			[
 				{
 					name: "member",
