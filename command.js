@@ -4,7 +4,7 @@ import Discord from "discord.js";
 
 export default class Command {
 	static optionTypes = {
-		string: {name: "String", addOptionMethod: "AddStringOption", getMethod: "getString"},
+		string: {name: "String", addOptionMethod: "addStringOption", getMethod: "getString"},
 		user: {name: "User", addOptionMethod: "addUserOption", getMethod: "getMember"}
 	};
 	constructor(commandHandler, name, contexts, description, options, modalFields) {
