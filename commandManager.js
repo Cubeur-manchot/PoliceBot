@@ -51,7 +51,7 @@ export default class CommandManager extends BotHelper {
 				if (deployedSlashCommand.description !== command.description) {
 					return false;
 				}
-				let deployedSlashCommandOptions = this.dictionnize(deployedSlashCommand.options, "name");
+				let deployedSlashCommandOptions = this.dictionnize(deployedSlashCommand.options ?? [], "name");
 				for (let commandOption of command.options ?? []) {
 					let deployedCommandOption = deployedSlashCommandOptions.get(commandOption.name);
 					if (!deployedCommandOption) {
@@ -64,7 +64,7 @@ export default class CommandManager extends BotHelper {
 						return false;
 					}
 				}
-				if (deployedSlashCommand.options.length !== command.options.length) {
+				if (deployedSlashCommandOptions.size !== (command.options?.length ?? 0)) {
 					return false;
 				}
 			}
