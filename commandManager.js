@@ -117,6 +117,9 @@ export default class CommandManager extends BotHelper {
 				case DiscordEmbedMessageBuilder:
 					this.discordActionManager.replyInteraction(interaction, {embeds: [answer.embed]});
 					return;
+				case Array:
+					this.discordActionManager.replyInteraction(interaction, {embeds: answer.map(embedBuilder => embedBuilder.embed)});
+					return;
 				case null:
 					if (!interaction.defferred && !interaction.replied) {
 						this.discordActionManager.deferUpdateInteraction(interaction);
