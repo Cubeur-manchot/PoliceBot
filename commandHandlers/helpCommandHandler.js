@@ -37,28 +37,15 @@ export default class HelpCommandHandler extends CommandHandler {
             color: DiscordEmbedMessageBuilder.colors.helpMessage,
             title: "Détections",
             description: [
-                "PoliceBot surveille les messages qui sont envoyés ou modifiés. Lorsqu'un message ne respecte pas une ou plusieurs règles :",
+                "PoliceBot surveille les messages qui sont envoyés ou modifiés, et vérifie qu'il ne contient :",
+				"- Aucune expression interdite",
+				"- Aucune invitation vers un serveur qui n'est pas whitelisté (un serveur peut être rajouté à la whitelist à l'aide de la commande `whitelist`)",
+				"Lorsqu'un message ne respecte pas une ou plusieurs de ces règles :",
                 "- Le message original sera supprimé",
                 "- Une infraction sera enregistrée pour l'auteur du message",
                 "- Un message privé sera envoyé à l'utilisateur pour lui indiquer la raison de la suppression du message",
-                "La liste exhaustive des règles est présentée ci-dessous."
+				`Ces règles ne sont pas appliquées aux messages des <@&${process.env.MODERATOR_ROLE_ID}>.`
             ].join("\n"),
-            fields: [
-                {
-                    name: "Invitations",
-                    value: [
-                        "Les invitations dont le serveur n'est pas whitelisté seront censurées.",
-                        "Un serveur peut être rajouté à la whitelist à l'aide de la commande `whitelist`."
-                    ].join("\n")
-                },
-                {
-                    name: "Expressions interdites",
-                    value: [
-                        "Voici la liste des expressions interdites :"
-                        // todo list expressions
-                    ].join("\n")
-                }
-            ]
         });
         return [commandsEmbed, detectionsEmbed];
     };
