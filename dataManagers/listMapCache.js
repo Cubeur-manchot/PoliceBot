@@ -42,7 +42,7 @@ export default class ListMapCache extends BotHelper {
 		}, this.entryExpirationTimeMilliseconds));
 	};
 	clearTimer = key => {
-		clearTimeout(key ? this.#entryTimers.get(key) : this.#timer);
+		clearTimeout(this.#entryTimers?.get(key) ?? this.#timer);
 	};
 	getEntries = keys => keys.map(key => this.data.get(key)).filter(Boolean).flat();
 	getAllEntries = () => [...this.data.values()].flat();
