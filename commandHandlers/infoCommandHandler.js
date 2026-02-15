@@ -79,6 +79,6 @@ export default class InfoCommandHandler extends CommandHandler {
 		.sort(
 			(firstElement, secondElement) => this.compareTimestamps(firstElement.startTime ?? firstElement.time, secondElement.startTime ?? secondElement.time)
 		);
-	compareTimestamps = (firstTimestamp, secondTimestamp) => (secondTimestamp.toMillis?.() ?? secondTimestamp) - (firstTimestamp.toMillis?.() ?? firstTimestamp);
+	compareTimestamps = (firstTimestamp, secondTimestamp) => (this.getMilliseconds(secondTimestamp) - this.getMilliseconds(firstTimestamp));
 	getTotalMessageCount = offTopics => offTopics.reduce((sum, offTopic) => sum + (offTopic.messageCount ?? 0), 0);
 };

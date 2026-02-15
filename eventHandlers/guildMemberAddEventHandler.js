@@ -12,7 +12,8 @@ export default class GuildMemberAddEventHandler extends EventHandler {
 		if (member.guild.id !== process.env.SERVER_ID) {
 			return;
 		}
-		let isUserRecent = (Date.now() - member.user.createdTimestamp) < 1000 * 60 * 60 * 24 * 7; // account created less than 7 days ago
+		let sevenDays = 1000 * 60 * 60 * 24 * 7;
+		let isUserRecent = this.isTimestampGreater(member.user.createdTimestamp, new Date(), sevenDays);
 		let memberJoinedEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.invite,
 			title: "Un membre a rejoint le serveur",

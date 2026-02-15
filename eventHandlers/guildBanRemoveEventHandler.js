@@ -30,5 +30,5 @@ export default class GuildBanRemoveEventHandler extends GuildBanEventHandler {
 		}
 		this.sendBanEmbedPoliceLog(banData, ban.user);
 	};
-	getMostRecentActiveBan = activeBans => activeBans.reduce((mostRecentBan, currentBan) => mostRecentBan.startTime > currentBan.startTime ? mostRecentBan : currentBan);
+	getMostRecentActiveBan = activeBans => activeBans.reduce((mostRecentBan, currentBan) => this.isTimestampGreater(currentBan.startTime, mostRecentBan.startTime) ? currentBan : mostRecentBan);
 };

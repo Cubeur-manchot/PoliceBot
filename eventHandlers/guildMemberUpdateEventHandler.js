@@ -102,5 +102,5 @@ export default class GuildMemberUpdateEventHandler extends EventHandler {
 			embeds: [differenceEmbed.embed]
 		});
 	};
-	getMostRecentActivePrison = activePrisons => activePrisons.reduce((mostRecentPrison, currentPrison) => mostRecentPrison.startTime > currentPrison.startTime ? mostRecentPrison : currentPrison);
+	getMostRecentActivePrison = activePrisons => activePrisons.reduce((mostRecentPrison, currentPrison) => this.isTimestampGreater(currentPrison.startTime, mostRecentPrison.startTime) ? currentPrison : mostRecentPrison);
 };

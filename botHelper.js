@@ -29,12 +29,17 @@ export default class BotHelper {
 		}
 	};
 	replaceLogMessage = (message, logArguments) => message.replace(this.logArgumentReplaceRegexp, (match, index) => `"${logArguments?.[index] ?? match}"`);
+	getMilliseconds = timestamp =>
+		timestamp.getTime?.() // Date
+		?? timestamp?.toMillis?.() // Firestore Timestamp
+		?? timestamp; // number
 	formatDate = timestamp => {
-		let milliseconds = timestamp?.toMillis?.() ?? timestamp; // if Firestore Timestamp, convert into milliseconds
+		let milliseconds = this.getMilliseconds(timestamp);
 		return `<t:${Math.floor(milliseconds / 1000)}:F> (${new Date(milliseconds).toISOString()})`;
 	};
 	formatDateShort = timestamp => {
-		let milliseconds = timestamp?.toMillis?.() ?? timestamp; // if Firestore Timestamp, convert into milliseconds
+		let milliseconds = this.getMilliseconds(timestamp);
 		return `<t:${Math.floor(milliseconds / 1000)}:F>`;
 	};
+	isTimestampGreater = (timestamp1, timestamp2, pastMargin = 0) => this.getMilliseconds(timestamp1) >= this.getMilliseconds(timestamp2) - pastMargin;
 };
