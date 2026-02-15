@@ -31,17 +31,20 @@ export default class MessageEventHandler extends EventHandler {
 		for (let infractionHandler of infractionHandlers) {
 			let {infractions, embeds, dmMessageDetails} = await infractionHandler(message);
 			if (infractions.length) {
-				this.dataManager.addInfractions(infractions);
-				this.discordActionManager.sendPoliceLogMessage({
+				this.discordActionManager.deleteMessage(message);
+				await this.dataManager.addInfractions(infractions);
+				await this.discordActionManager.sendPoliceLogMessage({
 					embeds: embeds.slice(0, 10).map(embed => embed.embed)
 				});
+				if (await this.countRecentInfractions(message.author.id) >= 3) {
+					this.discordActionManager.addRoleToMember(message.member, process.env.PRISONER_ROLE_ID);
+				}
 				this.discordActionManager.sendPrivateMessage(
 					message.author,
 					{
 						content: `Ton message dans le salon <#${message.channelId}> (${message.channel.name}) a été supprimé car il contenait ${dmMessageDetails}`
 					}
 				);
-				this.discordActionManager.deleteMessage(message);
 				return false;
 			}
 		}
@@ -157,6 +160,11 @@ export default class MessageEventHandler extends EventHandler {
 			{name: "\u200B", value: "\u200B", inline: true}
 		]
 	});
+	countRecentInfractions = async userId => {
+		let infractions = await this.dataManager.getInfractions(userId);
+		let fiveMinutes = 5 * 60 * 1000;
+		return infractions.filter(infraction => this.isTimestampGreater(infraction.data.time, new Date(), fiveMinutes)).length;
+	};
 	sendMessageEmbedData = async ({message, attachments, attachmentCount, mentions, deleted}) => {
 		let messageEmbedData = {
 			color: DiscordEmbedMessageBuilder.colors.message,
