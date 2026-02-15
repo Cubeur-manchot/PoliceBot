@@ -24,52 +24,41 @@ export default class MessageEventHandler extends EventHandler {
 		return false;
 	};
 	handleMessage = async message => {
-		let {forbiddenInviteInfractions, forbiddenInviteEmbeds} = await this.handleForbiddenInvites(message);
-		if (forbiddenInviteInfractions.length) {
-			this.dataManager.addInfractions(forbiddenInviteInfractions);
-			this.discordActionManager.sendPoliceLogMessage({
-				embeds: forbiddenInviteEmbeds.slice(0, 10).map(embed => embed.embed)
-			});
-			this.discordActionManager.sendPrivateMessage(
-				message.author,
-				{
-					content: [
-						`Ton message dans le salon <#${message.channelId}> (${message.channel.name}) a été supprimé car il contenait une ou plusieurs invitations vers des serveurs non whitelistés :`,
-						...forbiddenInviteInfractions.map(infraction => `- ${infraction.invite.url} (serveur : ${infraction.server.name})`),
-					].join("\n")
-				}
-			);
-			this.discordActionManager.deleteMessage(message);
-			return false;
-		}
-		let {forbiddenExpressionInfractions, forbiddenExpressionEmbeds} = await this.handleForbiddenExpressions(message);
-		if (forbiddenExpressionInfractions.length) {
-			this.dataManager.addInfractions(forbiddenExpressionInfractions);
-			this.discordActionManager.sendPoliceLogMessage({
-				embeds: forbiddenExpressionEmbeds.slice(0, 10).map(embed => embed.embed)
-			});
-			this.discordActionManager.sendPrivateMessage(
-				message.author,
-				{
-					content: [
-						`Ton message dans le salon <#${message.channelId}> (${message.channel.name}) a été supprimé car il contenait une ou plusieurs expressions interdites :`,
-						...forbiddenExpressionInfractions.map(infraction => `- ${infraction.expression}`),
-					].join("\n")
-				}
-			);
-			this.discordActionManager.deleteMessage(message);
-			return false;
+		let infractionHandlers = [
+			this.handleForbiddenInvites,
+			this.handleForbiddenExpressions
+		];
+		for (let infractionHandler of infractionHandlers) {
+			let {infractions, embeds, dmMessageDetails} = await infractionHandler(message);
+			if (infractions.length) {
+				this.dataManager.addInfractions(infractions);
+				this.discordActionManager.sendPoliceLogMessage({
+					embeds: embeds.slice(0, 10).map(embed => embed.embed)
+				});
+				this.discordActionManager.sendPrivateMessage(
+					message.author,
+					{
+						content: `Ton message dans le salon <#${message.channelId}> (${message.channel.name}) a été supprimé car il contenait ${dmMessageDetails}`
+					}
+				);
+				this.discordActionManager.deleteMessage(message);
+				return false;
+			}
 		}
 		return true;
 	};
 	handleForbiddenInvites = async message => {
 		let forbiddenInvites = await this.findForbiddenInvites(message.content);
-		if (!forbiddenInvites.length) {
-			return {forbiddenInviteInfractions: [], forbiddenInviteEmbeds: []};
-		}
-		let forbiddenInviteInfractions = forbiddenInvites.map(invite => this.createForbiddenInviteInfraction(invite, message));
-		let forbiddenInviteEmbeds = forbiddenInviteInfractions.map(infraction => this.createForbiddenInviteEmbed(infraction, message));
-		return {forbiddenInviteInfractions, forbiddenInviteEmbeds};
+		return {
+			infractions: forbiddenInvites.map(forbiddenInvite => this.createForbiddenInviteInfraction(forbiddenInvite, message)),
+			embeds: forbiddenInvites.map(forbiddenInvite => this.createForbiddenInviteEmbed(forbiddenInvite, message)),
+			dmMessageDetails: forbiddenInvites.length
+				? [
+					"une ou plusieurs invitations vers des serveurs non autorisé :",
+					...forbiddenInvites.map(forbiddenInvite => `- ${forbiddenInvite.invite.url} (serveur : ${forbiddenInvite.server.name})`)
+				].join("\n")
+				: null
+		};
 	};
 	findForbiddenInvites = async textContent => {
 		let inviteUrls = textContent.match(/https?:\/\/discord\.(?:gg|com\/invite)\/[0-9a-z-]+/gi);
@@ -111,33 +100,42 @@ export default class MessageEventHandler extends EventHandler {
 			name: invite.server.name
 		}
 	});
-	createForbiddenInviteEmbed = (infraction, message) => new DiscordEmbedMessageBuilder({
+	createForbiddenInviteEmbed = (invite, message) => new DiscordEmbedMessageBuilder({
 		color: DiscordEmbedMessageBuilder.colors.infraction,
-		title: "Une invitation vers un serveur non whitelisté a été envoyée",
+		title: "Une invitation vers un serveur non autorisé a été envoyée",
 		thumbnailUrl: this.getThumbnailUrl(message),
 		description: `Texte du message :\n${message.content}`,
 		fields: [
-			{name: "Membre", value: `<@${infraction.userId}> (@${message.guild.members.cache.get(`${infraction.userId}`)?.user.username})`, inline: true},
+			{name: "Membre", value: `<@${message.author.id}> (@${message.guild.members.cache.get(`${message.author.id}`)?.user.username})`, inline: true},
 			{name: "Date", value: this.formatDate(message.createdTimestamp), inline: true},
 			{name: "Salon", value: `<#${message.channelId}> (${message.channel.name})`, inline: true},
-			{name: "Invitation", value: infraction.invite.url, inline: true},
-			{name: "Serveur", value: infraction.server.name, inline: true},
+			{name: "Invitation", value: invite.invite.url, inline: true},
+			{name: "Serveur", value: invite.server.name, inline: true},
 			{name: "\u200B", value: "\u200B", inline: true}
 		]
 	});
 	handleForbiddenExpressions = async message => {
-		let forbiddenExpressionsPattern = (await this.dataManager.getForbiddenExpressionsPatterns())[0]?.data;
-		if (!forbiddenExpressionsPattern) {
+		let forbiddenExpressions = await this.findForbiddenExpressions(message.content);
+		return {
+			infractions: forbiddenExpressions.map(expression => this.createForbiddenExpressionInfraction(expression, message)),
+			embeds: forbiddenExpressions.map(expression => this.createForbiddenExpressionEmbed(expression, message)),
+			dmMessageDetails: forbiddenExpressions.length
+				? [
+					"une ou plusieurs expressions interdites :",
+					...forbiddenExpressions.map(expression => `- ${expression}`)
+				].join("\n")
+				: null
+		};
+	};
+	findForbiddenExpressions = async textContent => {
+		let forbiddenExpressions = [];
+		try {
+			let forbiddenExpressionsPattern = (await this.dataManager.getForbiddenExpressionsPatterns())[0]?.data;
+			forbiddenExpressions.push(...textContent.match(forbiddenExpressionsPattern) ?? []);
+		} catch {
 			this.logger.error("Cannot get forbidden expressions pattern.");
-			return {forbiddenExpressionInfractions: [], forbiddenExpressionEmbeds: []};
 		}
-		let matches = message.content.match(forbiddenExpressionsPattern) ?? [];
-		if (!matches.length) {
-			return {forbiddenExpressionInfractions: [], forbiddenExpressionEmbeds: []};
-		}
-		let forbiddenExpressionInfractions = matches.map(match => this.createForbiddenExpressionInfraction(match, message));
-		let forbiddenExpressionEmbeds = forbiddenExpressionInfractions.map(infraction => this.createForbiddenExpressionEmbed(infraction, message));
-		return {forbiddenExpressionInfractions, forbiddenExpressionEmbeds};
+		return forbiddenExpressions;
 	};
 	createForbiddenExpressionInfraction = (expression, message) => ({
 		userId: message.author.id,
@@ -145,16 +143,16 @@ export default class MessageEventHandler extends EventHandler {
 		time: new Date(),
 		expression
 	});
-	createForbiddenExpressionEmbed = (infraction, message) => new DiscordEmbedMessageBuilder({
+	createForbiddenExpressionEmbed = (expression, message) => new DiscordEmbedMessageBuilder({
 		color: DiscordEmbedMessageBuilder.colors.infraction,
 		title: "Une expression interdite a été envoyée",
 		thumbnailUrl: this.getThumbnailUrl(message),
 		description: `Texte du message :\n${message.content}`,
 		fields: [
-			{name: "Membre", value: `<@${infraction.userId}> (@${message.guild.members.cache.get(`${infraction.userId}`)?.user.username})`, inline: true},
+			{name: "Membre", value: `<@${message.author.id}> (@${message.guild.members.cache.get(`${message.author.id}`)?.user.username})`, inline: true},
 			{name: "Date", value: this.formatDate(message.createdTimestamp), inline: true},
 			{name: "Salon", value: `<#${message.channelId}> (${message.channel.name})`, inline: true},
-			{name: "Expression interdite", value: infraction.expression, inline: true},
+			{name: "Expression interdite", value: expression, inline: true},
 			{name: "\u200B", value: "\u200B", inline: true},
 			{name: "\u200B", value: "\u200B", inline: true}
 		]
