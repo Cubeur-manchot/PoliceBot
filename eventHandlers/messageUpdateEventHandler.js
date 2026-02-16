@@ -12,6 +12,9 @@ export default class MessageUpdateEventHandler extends MessageEventHandler {
 		if (this.ignoreMessage(newMessage)) {
 			return;
 		}
+		if (!newMessage.editedTimestamp) { // ignore message pins and unpins which also generate MessageUpdate events
+			return;
+		}
 		let isMessageDeleted = !await this.handleMessage(newMessage);
 		if (isMessageDeleted) {
 			return;
