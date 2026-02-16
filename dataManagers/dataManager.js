@@ -58,7 +58,7 @@ export default class DataManager extends BotHelper {
 		let returnValue = hydrateFunction
 			? await Promise.all(fetchedValue.map(async element => ({id: element.id, data: await hydrateFunction(element.data)})))
 			: fetchedValue;
-		this.cache.get(dataType).addEntry(keyValue, returnValue);
+		this.cache.get(dataType).setEntry(keyValue, returnValue);
 		return returnValue;
 	};
 	fetchValue = async (dataType, keyName, keyValue, additionalFilters, userErrorMessage) => {
