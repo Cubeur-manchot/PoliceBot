@@ -164,10 +164,20 @@ export default class DiscordActionManager extends BotHelper {
 			throw userErrorMessage;
 		}
 	};
-	bulkDeleteMessagesBatch = async (channel, messagesToDelete) => this.runAsync(
-		() => channel.bulkDelete(messagesToDelete),
-		"{0} messages in channel {1} have been bulk deleted successfully",
-		"Failed to bulk delete {0} messages in channel {1}",
-		[messagesToDelete.length, channel.name]
-	);
+	bulkDeleteMessagesBatch = async (channel, messagesToDelete) => {
+		try {
+			await this.runAsync(
+				() => channel.bulkDelete(messagesToDelete),
+				"{0} messages in channel {1} have been bulk deleted successfully",
+				"Failed to bulk delete {0} messages in channel {1}",
+				[messagesToDelete.length, channel.name]
+			);
+		} catch (bulkDeleteError) { // fallback to individual deletions
+			this.logger.info("Bulk delete failed, falling back to individual deletes.");
+			let individualDeletes = await Promise.allSettled(messagesToDelete.map(this.deleteMessage));
+			if (individualDeletes.some(individualDelete => individualDelete.status === "rejected")) {
+				throw new Error(`Error when deleting ${messagesToDelete.length} messages individually in channel ${channel.name} as fallback to bulk delete failure.`);
+			}
+		}
+	};
 };
