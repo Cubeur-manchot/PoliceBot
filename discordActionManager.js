@@ -163,6 +163,40 @@ export default class DiscordActionManager extends BotHelper {
 		}
 		return messages;
 	};
+	fetchMessagesBeforeTimestamp = async (channel, endTime, userErrorMessage) => { // message.createdTimestamp < endTime
+		let messages = [];
+		let beforeMessageId;
+		// step 1 : find the first message before endTime
+		for (let i = 0; i < 100; i++) { // safety limitation of 100 pages of 100 messages = 10000 messages in total
+			let messagePage = await this.fetchMessagePage(channel, beforeMessageId, userErrorMessage);
+			let oldestMessage = messagePage.last();
+			if (!oldestMessage) {
+				return messages;
+			}
+			beforeMessageId = oldestMessage.id;
+			if (this.isTimestampGreater(oldestMessage.createdTimestamp, endTime)) { // all messages are more recent than endTime
+				continue;
+			} else {
+				let olderMessageFound = false;
+				for (let message of messagePage.values()) {
+					if (olderMessageFound ||= !this.isTimestampGreater(message.createdTimestamp, endTime)) { // find latest message before endTime
+						messages.push(message);
+					}
+				}
+			}
+		}
+		// step 2 : fetch all messages before this message
+		for (let i = 0; i < 100; i++) { // safety limitation of 100 pages of 100 messages = 10000 messages in total
+			let messagePage = await this.fetchMessagePage(channel, beforeMessageId, userErrorMessage);
+			let oldestMessage = messagePage.last();
+			if (!oldestMessage) {
+				return messages;
+			}
+			beforeMessageId = oldestMessage.id;
+			messages.push(...messagePage.values());
+		}
+		return messages;
+	};
 	fetchMessagePage = async (channel, beforeMessageId, userErrorMessage) => this.runAsync(
 		() => channel.messages.fetch({limit: 100, ...(beforeMessageId && {before: beforeMessageId})}),
 		"Messages were fetched in channel {0} before message with id {1} successfully",
