@@ -187,7 +187,7 @@ export default class MessageEventHandler extends EventHandler {
 			]
 		};
 		if (mentions) {
-			let mentionsMap = this.groupBy(mentions, "type");
+			let mentionsMap = this.groupBy(mentions, mention => mention.type);
 			messageEmbedData.fields.push(
 				{
 					name: "Mentions (membres)",

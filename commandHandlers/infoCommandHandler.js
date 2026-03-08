@@ -36,7 +36,10 @@ export default class InfoCommandHandler extends CommandHandler {
 		let bans = this.orderByTimeDescending(await this.dataManager.getBans(userId, InfoCommandHandler.bansGetErrorMessage));
 		let warnings = this.orderByTimeDescending(await this.dataManager.getWarnings(userId, InfoCommandHandler.warningsGetErrorMessage));
 		let prisons = this.orderByTimeDescending(await this.dataManager.getPrisons(userId, InfoCommandHandler.prisonsGetErrorMessage));
-		let infractionsMap = this.groupBy((await this.dataManager.getInfractions(userId, InfoCommandHandler.infractionsGetErrorMessage)).map(infraction => infraction.data), "type");
+		let infractionsMap = this.groupBy(
+			(await this.dataManager.getInfractions(userId, InfoCommandHandler.infractionsGetErrorMessage)).map(infraction => infraction.data),
+			infraction => infraction.type
+		);
 		let offTopics = infractionsMap.get("Off-topic") ?? [];
 		let forbiddenInvites = infractionsMap.get("Forbidden invite") ?? [];
 		let forbiddenExpressions = infractionsMap.get("Forbidden expression") ?? [];
@@ -62,15 +65,18 @@ export default class InfoCommandHandler extends CommandHandler {
 	getWarningDetails = warning => `- ${this.formatDateShort(warning.time)} : ${warning.reason}`;
 	getPrisonDetails = prison => `- ${this.formatDateShort(prison.startTime)} - ${prison.endTime ? this.formatDateShort(prison.endTime) : "(pas de date de fin)"}`
 	getOffTopicDetails = offTopics =>
-		[...this.groupBy(offTopics, "channelId")]
+		[...this.groupBy(offTopics, offTopic => offTopic.channelId)]
 		.map(([channelId, channelOffTopics]) => `- <#${channelId}> : ${channelOffTopics.length} hors-sujets (${this.getTotalMessageCount(channelOffTopics)} messages au total)`)
 		.join("\n");
 	getForbiddenInvitesDetails = forbiddenInvites =>
-		[...this.groupBy(forbiddenInvites.map(forbiddenInvite => ({...forbiddenInvite, invite: `${forbiddenInvite.invite.url} (${forbiddenInvite.server.name})`})), "invite")]
+		[...this.groupBy(
+			forbiddenInvites.map(forbiddenInvite => ({...forbiddenInvite, invite: `${forbiddenInvite.invite.url} (${forbiddenInvite.server.name})`})),
+			forbiddenInvite => forbiddenInvite.invite
+		)]
 		.map(([invite, serverInvites]) => `- ${invite} : ${serverInvites.length} occurrences censurées`)
 		.join("\n");
 	getForbiddenExpressionsDetails = forbiddenExpressions =>
-		[...this.groupBy(forbiddenExpressions, "expression")]
+		[...this.groupBy(forbiddenExpressions, forbiddenExpression => forbiddenExpression.expression)]
 		.map(([expression, expressionOccurrences]) => `- \`${expression}\` : ${expressionOccurrences.length} occurrences censurées`)
 		.join("\n");
 	orderByTimeDescending = elements =>
