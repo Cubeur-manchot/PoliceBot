@@ -13,6 +13,7 @@ import InviteDeleteEventHandler from "./eventHandlers/inviteDeleteEventHandler.j
 import MessageCreateEventHandler from "./eventHandlers/messageCreateEventHandler.js";
 import MessageDeleteEventHandler from "./eventHandlers/messageDeleteEventHandler.js";
 import MessageUpdateEventHandler from "./eventHandlers/messageUpdateEventHandler.js";
+import TickEventHandler from "./eventHandlers/tickEventHandler.js";
 import ThreadCreateEventHandler from "./eventHandlers/threadCreateEventHandler.js";
 import UserUpdateEventHandler from "./eventHandlers/userUpdateEventHandler.js";
 
@@ -34,10 +35,12 @@ export default class DiscordEventManager extends BotHelper {
 			new MessageCreateEventHandler(this),
 			new MessageDeleteEventHandler(this),
 			new MessageUpdateEventHandler(this),
+			new TickEventHandler(this),
 			new ThreadCreateEventHandler(this),
 			new UserUpdateEventHandler(this)
 		];
 		this.eventHandlers = this.dictionnize(eventHandlers, "eventName");
 		eventHandlers.forEach(eventHandler => eventHandler.attachEventToClient());
 	};
+	setupScheduledTickEvent = () => setInterval(this.discordClientManager.discordActionManager.emitTickEvent, parseInt(process.env.TICK_INTERVAL_HOURS) * 60 * 60 * 1000);
 };

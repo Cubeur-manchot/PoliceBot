@@ -15,5 +15,7 @@ export default class ClientReadyEventHandler extends EventHandler {
 		await this.dataManager.buildInvitesCache();
 		await this.dataManager.buildPinnedMessagesCache(true);
 		this.logger.info("Bot is fully ready.");
+		this.discordActionManager.emitTickEvent();
+		this.eventManager.setupScheduledTickEvent();
 	};
 };

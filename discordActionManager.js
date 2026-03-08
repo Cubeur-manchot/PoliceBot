@@ -203,4 +203,7 @@ export default class DiscordActionManager extends BotHelper {
 			}
 		}
 	};
+	emitTickEvent = () => {
+		this.discordClient.emit("tick");
+	};
 };
