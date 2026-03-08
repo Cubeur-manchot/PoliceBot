@@ -140,7 +140,30 @@ export default class DiscordActionManager extends BotHelper {
 		"Failed to fetch pinned messages in channel {0}",
 		[channel.id]
 	);
-	fetchMessages = async (channel, beforeMessageId, userErrorMessage) => this.runAsync(
+	fetchMessagesAfterTimestamp = async (channel, startTime, userErrorMessage) => { // message.createdTimestamp >= startTime
+		let messages = [];
+		let beforeMessageId;
+		for (let i = 0; i < 100; i++) { // safety limitation of 100 pages of 100 messages = 10000 messages in total
+			let messagePage = await this.fetchMessagePage(channel, beforeMessageId, userErrorMessage);
+			if (messagePage.size === 0) {
+				return messages;
+			}
+			let oldestMessage = messagePage.last();
+			if (this.isTimestampGreater(oldestMessage.createdTimestamp, startTime)) { // all messages are more recent than startTime
+				messages.push(...messagePage.values());
+			} else {
+				for (let message of messagePage.values()) {
+					if (!this.isTimestampGreater(message.createdTimestamp, startTime)) {
+						return messages;
+					}
+					messages.push(message);
+				}
+			}
+			beforeMessageId = oldestMessage.id;
+		}
+		return messages;
+	};
+	fetchMessagePage = async (channel, beforeMessageId, userErrorMessage) => this.runAsync(
 		() => channel.messages.fetch({limit: 100, ...(beforeMessageId && {before: beforeMessageId})}),
 		"Messages were fetched in channel {0} before message with id {1} successfully",
 		"Failed to fetch messages in channel {0} before message with id {1}",

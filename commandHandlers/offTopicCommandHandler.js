@@ -36,7 +36,8 @@ export default class OffTopicCommandHandler extends CommandHandler {
 	handleApplicationCommand = async interaction => {
 		let startTime = this.getOffTopicStartTime(interaction);
 		let channel = interaction.channel;
-		let messagesGroupedByAuthor = await this.fetchMessagesFromDate(channel, startTime);
+		let messages = await this.discordActionManager.fetchMessagesAfterTimestamp(channel, startTime, OffTopicCommandHandler.fetchMessagesErrorMessage);
+		let messagesGroupedByAuthor = this.groupBy(messages, message => message.author.id);
 		this.dataManager.cacheMessagesByAuthorId(messagesGroupedByAuthor);
 		let uniqueAuthorIds = [...messagesGroupedByAuthor.keys()];
 		this.dataManager.cacheSelectedUsers(new Map(uniqueAuthorIds.map(userId => [userId, [true]])));
@@ -126,34 +127,5 @@ export default class OffTopicCommandHandler extends CommandHandler {
 		} else {
 			throw OffTopicCommandHandler.incorrectDateFormatErrorMessage;
 		}
-	};
-	fetchMessagesFromDate = async (channel, startDate) => {
-		let startTimestamp = startDate.getTime();
-		let messagesGroupedByAuthor = new Map();
-		let addMessageToGroupingMap = message => {
-			let authorId = message.author.id;
-			if (messagesGroupedByAuthor.has(authorId)) {
-				messagesGroupedByAuthor.get(authorId).push(message);
-			} else {
-				messagesGroupedByAuthor.set(authorId, [message]);
-			}
-		};
-		let beforeMessageId;
-		for (let i = 0; i < 100; i++) { // safety limitation of 100 requests of 100 messages = 10000 messages in total
-			let messages = await this.discordActionManager.fetchMessages(channel, beforeMessageId, OffTopicCommandHandler.fetchMessagesErrorMessage);
-			let oldestMessage = messages.last();
-			if (this.isTimestampGreater(oldestMessage.createdTimestamp, startTimestamp)) { // all messages are more recent than startTimestamp
-				messages.forEach(addMessageToGroupingMap);
-			} else {
-				for (let message of messages.values()) {
-					if (!this.isTimestampGreater(message.createdTimestamp, startTimestamp)) {
-						return messagesGroupedByAuthor;
-					}
-					addMessageToGroupingMap(message);
-				}
-			}
-			beforeMessageId = oldestMessage.id;
-		}
-		return messagesGroupedByAuthor;
 	};
 };
