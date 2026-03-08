@@ -9,7 +9,7 @@ export default class MessageUpdateEventHandler extends MessageEventHandler {
 		super(eventManager, Discord.Events.MessageUpdate);
 	};
 	handleEvent = async (oldMessage, newMessage) => {
-		if (this.ignoreMessage(newMessage)) {
+		if (await this.ignoreMessage(newMessage)) {
 			return;
 		}
 		if (!newMessage.editedTimestamp) { // ignore message pins and unpins which also generate MessageUpdate events

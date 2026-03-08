@@ -8,13 +8,20 @@ export default class MessageEventHandler extends EventHandler {
 		super(eventManager, event);
 		this.action = action;
 	};
-	ignoreMessage = message => {
+	ignoreMessage = async message => {
 		if (!message.inGuild()) {
 			return true;
 		}
 		if (message.guild.id !== process.env.SERVER_ID) {
 			return true;
 		}
+		try {
+			let infoLogChannel = (await this.dataManager.getLogChannel("infoLog")).data;
+			let policeLogChannel = (await this.dataManager.getLogChannel("policeLog")).data;
+			if (message.channelId === infoLogChannel.id || message.channelId === policeLogChannel.id) {
+				return true;
+			}
+		} catch (error) {} // if log channels cannot be fetched, skip this condition
 		if (message.author?.bot) {
 			return true;
 		}

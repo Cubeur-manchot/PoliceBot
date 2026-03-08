@@ -8,7 +8,7 @@ export default class MessageCreateEventHandler extends MessageEventHandler {
 		super(eventManager, Discord.Events.MessageCreate, "envoyé");
 	};
 	handleEvent = async message => {
-		if (this.ignoreMessage(message)) {
+		if (await this.ignoreMessage(message)) {
 			return;
 		}
 		let isMessageDeleted = !await this.handleMessage(message);

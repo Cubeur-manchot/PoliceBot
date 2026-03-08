@@ -8,7 +8,7 @@ export default class MessageDeleteEventHandler extends MessageEventHandler {
 		super(eventManager, Discord.Events.MessageDelete, "supprimé");
 	};
 	handleEvent = async message => {
-		if (this.ignoreMessage(message)) {
+		if (await this.ignoreMessage(message)) {
 			return;
 		}
 		let messageEmbedInput = {
