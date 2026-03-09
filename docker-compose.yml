@@ -23,6 +23,7 @@ services:
     stop_grace_period: 3s
     environment:
       - ENVIRONMENT=development
+      - DEVELOPMENT_TIMEOUT_SECONDS=15
       - SERVER_ID=422718228913979392
       - MODERATOR_ROLE_ID=424959068092891137
       - PRISONER_ROLE_ID=1404943453078687764

@@ -11,12 +11,12 @@ process.on("SIGTERM", async () => {
 });
 
 if (process.env.ENVIRONMENT === "development") {
-	setTimeout( // auto-shutdown after 100 seconds
+	setTimeout( // auto-shutdown after timeout
 		() => {
-			bot.logger.info("Development timeout is reached, the application will stop.");
+			bot.logger.info(`Development timeout of ${process.env.DEVELOPMENT_TIMEOUT_SECONDS} seconds is reached, the application will stop.`);
 			process.exit(0);
 		},
-		100000
+		parseInt(process.env.DEVELOPMENT_TIMEOUT_SECONDS) * 1000
 	);
 };
 
