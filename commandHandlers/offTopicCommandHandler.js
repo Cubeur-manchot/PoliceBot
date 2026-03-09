@@ -1,0 +1,131 @@
+"use strict";
+
+import Command from "../command.js";
+import CommandHandler from "./commandHandler.js";
+import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
+
+export default class OffTopicCommandHandler extends CommandHandler {
+	static incorrectDateFormatErrorMessage = "Le format de date est incorrect. Veuillez entrer une date au format ISO";
+	static fetchMessagesErrorMessage = "Une erreur s'est produite lors de la récupération des messages du salon";
+	static usersSelectionPromptMessage = "Veuillez sélectionner les utilisateurs ayant participé au HS dans <#{channelId}> depuis {startTime}.";
+	static noMessageToDeleteInformationMessage = ":information: Aucun message à supprimer pour les utilisateurs sélectionnés.";
+	static bulkDeleteMessagesDeferMessage = ":wastebasket: {messageCount} messages vont être supprimés.";
+	static bulkDeleteMessagesErrorMessage = "Une erreur s'est produite lors de la suppression des messages. Certains messages n'ont peut-être pas été supprimés";
+	static saveInfractionErrorMessage = "Les {messageCount} messages ont été supprimés, mais une erreur s'est produite lors de l'enregistrement de l'infraction pour les {userCount} utilisateurs sélectionnés";
+	static saveInfractionSuccessMessage = ":white_check_mark: {messageCount} messages ont été supprimés et l'infraction a été enregistrée pour les {userCount} utilisateurs.";
+	constructor(commandManager) {
+		super(
+			commandManager,
+			"offtopic",
+			{
+				slash: true,
+				user: false,
+				message: true
+			},
+			"Déclare un hors-sujet commis par un ou plusieurs membres, et supprime les messages correspondants",
+			[
+				{
+					name: "starttime",
+					description: "Moment du début du HS au format ISO",
+					type: Command.optionTypes.string,
+					required: true
+				}
+			]
+		);
+	};
+	handleApplicationCommand = async interaction => {
+		let startTime = this.getOffTopicStartTime(interaction);
+		let channel = interaction.channel;
+		let messages = await this.discordActionManager.fetchMessagesAfterTimestamp(channel, startTime, OffTopicCommandHandler.fetchMessagesErrorMessage);
+		let messagesGroupedByAuthor = this.groupBy(messages, message => message.author.id);
+		this.dataManager.cacheMessagesByAuthorId(messagesGroupedByAuthor);
+		let uniqueAuthorIds = [...messagesGroupedByAuthor.keys()];
+		this.dataManager.cacheSelectedUsers(new Map(uniqueAuthorIds.map(userId => [userId, [true]])));
+		let answer = this.buildDiscordMessageWithUsersSelectComponents(
+			OffTopicCommandHandler.usersSelectionPromptMessage.replace("{channelId}", channel.id).replace("{startTime}", startTime.toISOString()),
+			uniqueAuthorIds,
+			this.commandName
+		);
+		return answer;
+	};
+	handleMessageComponent = async interaction => {
+		if (interaction.isUserSelectMenu()) {
+			return this.handleUserSelection(interaction);
+		} else if (interaction.isButton()) {
+			return this.handleValidateButtonClick(interaction);
+		}
+	};
+	handleUserSelection = async interaction => {
+		let selectedUsersMap = new Map(interaction.values.map(userId => [userId, [true]]));
+		this.dataManager.cacheSelectedUsers(selectedUsersMap);
+		return null;
+	};
+	handleValidateButtonClick = async interaction => {
+		let selectedUserIds = this.dataManager.getCachedSelectedUsers();
+		let userCount = selectedUserIds.length;
+		let messagesToDelete = this.dataManager.getCachedMessagesByAuthorIds(selectedUserIds);
+		let messageCount = messagesToDelete.length;
+		this.dataManager.clearSelectedUsersCache();
+		this.dataManager.clearMessagesCache();
+		if (!messageCount) {
+			await this.discordActionManager.updateInteractionMessage(
+				interaction,
+				{
+					content: OffTopicCommandHandler.noMessageToDeleteInformationMessage,
+					components: []
+				}
+			);
+			return null;
+		};
+		await this.discordActionManager.updateInteractionMessage(
+			interaction,
+			{
+				content: OffTopicCommandHandler.bulkDeleteMessagesDeferMessage.replace("{messageCount}", messageCount),
+				components: []
+			}
+		);
+		await this.discordActionManager.bulkDeleteMessages(interaction.channel, messagesToDelete, OffTopicCommandHandler.bulkDeleteMessagesErrorMessage);
+		let infractionDate = new Date();
+		let infractions = selectedUserIds.map(userId =>
+			({
+				type: "Off-topic",
+				time: infractionDate,
+				userId: userId,
+				messageCount: messagesToDelete.filter(message => message.author.id === userId).length,
+				channelId: interaction.channelId
+			})
+		);
+		await this.dataManager.addInfractions(infractions, OffTopicCommandHandler.saveInfractionErrorMessage.replace("{userCount}", userCount).replace("{messageCount}", messageCount));
+		await this.discordActionManager.followUpInteraction(
+			interaction,
+			{content: OffTopicCommandHandler.saveInfractionSuccessMessage.replace("{userCount}", userCount).replace("{messageCount}", messageCount)}
+		);
+		let oldestCreatedTimestamp = Math.min(...messagesToDelete.map(message => message.createdTimestamp));
+		let channel = messagesToDelete[0].channel;
+		let offTopicEmbed = new DiscordEmbedMessageBuilder({
+			color: DiscordEmbedMessageBuilder.colors.infraction,
+			title: "Un hors-sujet a été enregistré",
+			thumbnailUrl: interaction.member?.avatarURL(),
+			description: [
+				`Un hors-sujet a été enregistré dans <#${channel.id}> (${channel.name}) à partir de ${this.formatDate(oldestCreatedTimestamp)}. Voici la liste des membres y ayant participé :`,
+				...infractions.map(infraction => `- <@${infraction.userId}> (@${interaction.guild.members.cache.get(`${infraction.userId}`)?.user.username}) : ${infraction.messageCount} message(s)`)
+			].join("\n")
+		});
+		this.discordActionManager.sendPoliceLogMessage({
+			embeds: [offTopicEmbed.embed]
+		});
+		return null;
+	};
+	getOffTopicStartTime = interaction => {
+		let startTime = new Date(
+			interaction.isChatInputCommand()
+				? this.parseCommandOptions(interaction.options).starttime
+				: interaction.targetMessage.createdTimestamp
+		);
+		if (!isNaN(startTime.getTime())) {
+			return startTime;
+		} else {
+			throw OffTopicCommandHandler.incorrectDateFormatErrorMessage;
+		}
+	};
+};

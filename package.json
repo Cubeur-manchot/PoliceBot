@@ -4,6 +4,7 @@
   "description": "Discord bot to help moderators on a french-speaking server.",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "homepage": "https://github.com/Cubeur-manchot/PoliceBot#readme",
   "repository": {
     "type": "git",
@@ -13,10 +14,8 @@
     "url": "https://github.com/Cubeur-manchot/PoliceBot/issues"
   },
   "dependencies": {
-    "discord.js": "^12.5.1",
-    "dotenv": "^8.2.0",
-    "fs": "0.0.1-security",
-    "googleapis": "89.0.0"
+    "discord.js": "^14.25.0",
+	"firebase-admin": "^13.4.0"
   },
   "license": "ISC"
 }

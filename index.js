@@ -1,20 +1,21 @@
 "use strict";
 
-const Discord = require("discord.js");
+import PoliceBot from "./policebot.js";
 
-const {onReady, onMessage, onMessageUpdate, onMessageDelete, onUserUpdate, onGuildMemberUpdate, onGuildBanAdd, onGuildBanRemove} = require("./eventHandler.js");
+const bot = new PoliceBot(process.env.LOG_LEVELS.split(","), process.env.TOKEN);
 
-const PoliceBot = new Discord.Client();
+process.on("SIGTERM", async () => {
+	bot.logger.info("SIGTERM has been received, the application will stop.");
+	await bot.shutDown();
+	process.exit(0);
+});
 
-PoliceBot.on("ready", () => onReady(PoliceBot));
-PoliceBot.on("message", onMessage);
-PoliceBot.on("messageUpdate", onMessageUpdate);
-PoliceBot.on("messageDelete", onMessageDelete);
-PoliceBot.on("userUpdate", onUserUpdate);
-PoliceBot.on("guildMemberUpdate", onGuildMemberUpdate);
-PoliceBot.on("guildBanAdd", (guild, user) => onGuildBanAdd(user));
-PoliceBot.on("guildBanRemove", (guild, user) => onGuildBanRemove(user));
-
-PoliceBot.login(process.env.TOKEN)
-	.then(() => console.log("PoliceBot is logged in !"))
-	.catch(console.error);
+if (process.env.ENVIRONMENT === "development") {
+	setTimeout( // auto-shutdown after timeout
+		() => {
+			bot.logger.info(`Development timeout of ${process.env.DEVELOPMENT_TIMEOUT_SECONDS} seconds is reached, the application will stop.`);
+			process.exit(0);
+		},
+		parseInt(process.env.DEVELOPMENT_TIMEOUT_SECONDS) * 1000
+	);
+};

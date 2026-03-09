@@ -1,0 +1,48 @@
+"use strict";
+
+import Discord from "discord.js";
+
+export default class Command {
+	static optionTypes = {
+		string: {name: "String", addOptionMethod: "addStringOption", getMethod: "getString"},
+		user: {name: "User", addOptionMethod: "addUserOption", getMethod: "getMember"}
+	};
+	constructor(commandHandler, name, contexts, description, options, modalFields) {
+		this.commandHandler = commandHandler;
+		this.name = name;
+		this.contexts = contexts;
+		this.description = description;
+		if (contexts.slash) {
+			this.options = options;
+			this.modalFields = modalFields;
+		}
+	};
+	getSlashApplicationCommand = () => {
+		let applicationCommand = new Discord.SlashCommandBuilder()
+			.setName(this.name)
+			.setDescription(this.description)
+			.setDefaultMemberPermissions(Discord.PermissionsBitField.Flags.BanMembers)
+			.setDMPermission(false);
+		for (let commandOption of this.options ?? []) {
+			applicationCommand[commandOption.type.addOptionMethod](option => {
+				option
+					.setName(commandOption.name)
+					.setDescription(commandOption.description)
+					.setRequired(commandOption.required);
+				if (commandOption.choices) {
+					option.addChoices(...commandOption.choices);
+				}
+				return option;
+			});
+		}
+		return applicationCommand;
+	};
+	getUserContextApplicationCommand = () => this.getContextMenuApplicationCommand(Discord.ApplicationCommandType.User);
+	getMessageContextApplicationCommand = () => this.getContextMenuApplicationCommand(Discord.ApplicationCommandType.Message);
+	getContextMenuApplicationCommand = type =>
+		new Discord.ContextMenuCommandBuilder()
+			.setType(type)
+			.setName(this.name)
+			.setDefaultMemberPermissions(Discord.PermissionsBitField.Flags.BanMembers)
+			.setDMPermission(false);
+};
