@@ -4,6 +4,22 @@ Discord bot to help moderators.
 
 It is primarily designed for the Discord server named "Cubeurs Francophones". If you would like to use it for a different server, you will need to update the environment variables `SERVER_ID`, `MODERATOR_ROLE_ID` and `PRISONER_ROLE_ID` in the `docker-compose.yml`.
 
+The list of features below is a simplified overview. Use the `/help` command for the full and up-to-date description.
+- Commands
+  - `help`
+  - `offtopic` to declare an off-topic and clean messages from appropriate members in a channel
+  - `prison` to send a member to prison
+  - `warning` to declare a warning for a member
+  - Banning a member can be done natively in Discord
+  - `info` to list all information about a member, including the history of infractions, warnings and bans
+- Detections on messages sent or updated
+  - Forbidden expressions, usually insulting or sexually explicit
+  - Invites to servers that are not whitelisted
+- Detections for logs only
+  - Updates and deletions of messages, including message attachments and ghost pings
+  - Creation of an infraction for one or multiple members, warning of a member
+  - Ban or unban of a member
+
 ## Environment variables
 
 ### `.env` file
