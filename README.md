@@ -11,7 +11,7 @@ The list of features below is a simplified overview. Use the `/help` command for
   - `prison` to send a member to prison
   - `warning` to declare a warning for a member
   - Banning a member can be done natively in Discord
-  - `info` to list all information about a member, including the history of infractions, warnings and bans
+  - `info` to list all information about a member, including the history of infractions, inprisonments, warnings and bans
 - Detections on messages sent or updated
   - Forbidden expressions, usually insulting or sexually explicit
   - Invites to servers that are not whitelisted
