@@ -19,20 +19,3 @@ if (process.env.ENVIRONMENT === "development") {
 		parseInt(process.env.DEVELOPMENT_TIMEOUT_SECONDS) * 1000
 	);
 };
-
-/*
-const Discord = require("discord.js");
-
-const {onMessage, onMessageUpdate, onMessageDelete, onUserUpdate, onGuildMemberUpdate, onGuildBanAdd, onGuildBanRemove} = require("./eventHandler.js");
-
-const PoliceBot = new Discord.Client();
-
-PoliceBot.on("message", onMessage);
-PoliceBot.on("messageUpdate", onMessageUpdate);
-PoliceBot.on("messageDelete", onMessageDelete);
-PoliceBot.on("userUpdate", onUserUpdate);
-PoliceBot.on("guildMemberUpdate", onGuildMemberUpdate);
-PoliceBot.on("guildBanAdd", (guild, user) => onGuildBanAdd(user));
-PoliceBot.on("guildBanRemove", (guild, user) => onGuildBanRemove(user));
-
-*/
