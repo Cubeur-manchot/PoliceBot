@@ -25,7 +25,7 @@ export default class BotHelper {
 			}
 			return result;
 		} catch (asyncActionError) {
-			this.logger.error(`${this.replaceLogMessage(logErrorMessagePattern, logArguments)} :`, asyncActionError);
+			this.logger.error(`${this.replaceLogMessage(logErrorMessagePattern, logArguments)} : ${asyncActionError.stack ?? asyncActionError}`);
 			throw userErrorMessage ?? asyncActionError;
 		}
 	};
