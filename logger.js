@@ -3,8 +3,7 @@
 export default class Logger {
 	static levels = ["debug", "info", "warn", "error"];
 	constructor(allowedLevels = []) {
-		const levelIsAllowed = Object.fromEntries(allowedLevels.map(level => [level, true]));
-		Logger.levels.forEach(logLevel => this[logLevel] = levelIsAllowed[logLevel]
+		Logger.levels.forEach(logLevel => this[logLevel] = allowedLevels.includes(logLevel)
 			? (message, error) => console[logLevel](`[${new Date().toISOString()}][${logLevel}] ${message}`, error ?? "")
 			: () => {}
 		);
