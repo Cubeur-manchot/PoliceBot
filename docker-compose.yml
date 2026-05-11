@@ -1,5 +1,4 @@
 x-common-config: &common-config
-  env_file: .env
   volumes:
     - ./secrets/firebase_serviceAccountKey.json:/run/secrets/firebase_serviceAccountKey.json:ro
 
@@ -10,17 +9,22 @@ services:
     <<: *common-config
     image: ghcr.io/cubeur-manchot/policebot:latest
     restart: unless-stopped
+    env_file: config.env
     environment:
       - ENVIRONMENT=production
       - SERVER_ID=329175643877015553
       - MODERATOR_ROLE_ID=332427771286519808
       - PRISONER_ROLE_ID=664224270381219870
+      - TOKEN=${TOKEN}
   policebot-dev:
     profiles: ["dev"]
     container_name: policebot-dev
     <<: *common-config
     build: .
     stop_grace_period: 3s
+    env_file:
+      - config.env
+      - .env
     environment:
       - ENVIRONMENT=development
       - DEVELOPMENT_TIMEOUT_SECONDS=15

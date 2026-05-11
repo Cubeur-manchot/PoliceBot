@@ -22,24 +22,29 @@ The list of features below is a simplified overview. Use the `/help` command for
 
 ## Environment variables
 
-### `.env` file
-
-Create the `.env` file at root level :
+### `config.env` file (non-sensitive variables)
+Create the `config.env` file at root level :
 ```env
 # Active log levels
 LOG_LEVELS=debug,info,warn,error
 
 # Configuration of purge of info log channel : at which frequency it occurs and how much time messages are conserved
 TICK_INTERVAL_HOURS=6
-LOG_INFO_RETENTION_DURATION_DAYS=11
-
-# Application token from Discord developer portal (https://discord.com/developers/applications)
-TOKEN=xxx
+LOG_INFO_RENTENTION_DURATION_DAYS=11
 
 # Path to Firebase service account key file
 GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/firebase_serviceAccountKey.json
 ```
-If environment variables are injected using a different method, adjust the `docker-compose.yml` accordingly.
+
+### `.env` file (sensitive variables)
+todo update with config.env
+
+Create the `.env` file at root level :
+```env
+# Application token from Discord developer portal (https://discord.com/developers/applications)
+TOKEN=xxx
+```
+In production, the `TOKEN` variable is injected at the runtime from the parent shell environment.
 
 ### Firebase service account key
 
