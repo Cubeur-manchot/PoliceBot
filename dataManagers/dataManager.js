@@ -35,7 +35,7 @@ export default class DataManager extends BotHelper {
 	};
 	initializeDatabase = () => {
 		if (!firebase.getApps().length) {
-			firebase.initializeApp({credential: firebase.applicationDefault()});
+			firebase.initializeApp();
 		}
 		this.database = firestore.getFirestore();
 	};

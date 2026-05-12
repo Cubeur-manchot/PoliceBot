@@ -1,12 +1,7 @@
-x-common-config: &common-config
-  volumes:
-    - ./secrets/firebase_serviceAccountKey.json:/run/secrets/firebase_serviceAccountKey.json:ro
-
 services:
   policebot:
     profiles: ["prod"]
     container_name: policebot
-    <<: *common-config
     image: ghcr.io/cubeur-manchot/policebot:latest
     restart: unless-stopped
     env_file: config.env
@@ -19,9 +14,10 @@ services:
   policebot-dev:
     profiles: ["dev"]
     container_name: policebot-dev
-    <<: *common-config
     build: .
     stop_grace_period: 3s
+    volumes:
+      - ./secrets/firebase_serviceAccountKey.json:/run/secrets/firebase_serviceAccountKey.json:ro
     env_file:
       - config.env
       - .env

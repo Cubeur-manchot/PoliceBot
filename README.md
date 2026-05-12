@@ -32,7 +32,7 @@ LOG_LEVELS=debug,info,warn,error
 TICK_INTERVAL_HOURS=6
 LOG_INFO_RENTENTION_DURATION_DAYS=11
 
-# Path to Firebase service account key file
+# Path to Firebase service account key file (only on development, not on production)
 GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/firebase_serviceAccountKey.json
 ```
 
