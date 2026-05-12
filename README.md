@@ -37,9 +37,7 @@ GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/firebase_serviceAccountKey.json
 ```
 
 ### `.env` file (sensitive variables)
-todo update with config.env
-
-Create the `.env` file at root level :
+In development, create the `.env` file at root level :
 ```env
 # Application token from Discord developer portal (https://discord.com/developers/applications)
 TOKEN=xxx
@@ -77,7 +75,6 @@ docker compose logs policebot-dev
 # or
 docker compose logs policebot-dev -f
 ```
-
 
 Stop the application :
 ```bash
