@@ -234,6 +234,9 @@ export default class DataManager extends BotHelper {
 	buildPinnedMessagesCache = async isInitialFetch => {
 		let textChannels = (await this.bot.discordClientManager.discordActionManager.fetchChannels())
 			.filter(channel => channel.isTextBased()); // voice channels cannot have pinned messages in their text discussion
+		if (process.env.EXCLUDED_CHANNEL_ID) {
+			textChannels = textChannels.filter(channel => channel.id !== process.env.EXCLUDED_CHANNEL_ID);
+		}
 		let pinnedMessagesMap = new Map(
 			await Promise.all(textChannels.map(async channel => [
 				channel.id,

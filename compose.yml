@@ -11,6 +11,7 @@ services:
       - MODERATOR_ROLE_ID=332427771286519808
       - PRISONER_ROLE_ID=664224270381219870
       - TOKEN=${TOKEN}
+      - EXCLUDED_CHANNEL_ID=359983567712944129
   policebot-dev:
     profiles: ["dev"]
     container_name: policebot-dev
