@@ -38,6 +38,7 @@ export default class DataManager extends BotHelper {
 			firebase.initializeApp();
 		}
 		this.database = firestore.getFirestore();
+		this.logger.info("Connection to Firestore database has been established successfully.");
 	};
 	initializeCache = () => {
 		this.cache = this.dictionnize(

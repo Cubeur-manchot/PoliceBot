@@ -23,6 +23,7 @@ services:
       - config.env
       - .env
     environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/firebase_serviceAccountKey.json
       - ENVIRONMENT=development
       - DEVELOPMENT_TIMEOUT_SECONDS=15
       - SERVER_ID=422718228913979392
