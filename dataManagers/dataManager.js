@@ -221,7 +221,7 @@ export default class DataManager extends BotHelper {
 	cacheInviteUsages = invites => {
 		let reducedInvites = invites.map(invite => ({
 			code: invite.code,
-			inviter: {id: invite.inviter.id, username: invite.inviter.username},
+			inviter: invite.inviter ? {id: invite.inviter.id, username: invite.inviter.username} : null,
 			channel: {id: invite.channel.id, name: invite.channel.name},
 			createdTimestamp: invite.createdTimestamp,
 			expiresTimestamp: invite.expiresTimestamp,

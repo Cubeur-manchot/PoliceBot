@@ -44,7 +44,7 @@ export default class GuildMemberAddEventHandler extends EventHandler {
 			let usedInvite = potentiallyUsedInvites[0];
 			usedInviteDescription = [
 				`Code : ${usedInvite.code}`,
-				`Créateur : <@${usedInvite.inviter.id}> (@${usedInvite.inviter.username})`,
+				`Créateur : ${usedInvite.inviter ? `<@${usedInvite.inviter.id}> (@${usedInvite.inviter.username})` : "(impossible à déterminer)"}`,
 				`Salon : <#${usedInvite.channel.id}> (${usedInvite.channel.name})`,
 				`Date de création : ${this.formatDate(usedInvite.createdTimestamp)}`,
 				`Date d'expiration : ${usedInvite.expiresTimestamp ? this.formatDate(usedInvite.expiresTimestamp) : "Jamais"}`,
