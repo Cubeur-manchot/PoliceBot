@@ -211,6 +211,10 @@ export default class MessageEventHandler extends EventHandler {
 		}
 		this.addPartialMessageFooter(messageEmbedData, message);
 		let messageEmbed = new DiscordEmbedMessageBuilder(messageEmbedData);
+		if (attachmentCount) {
+			this.logger.debug(`Sending message with ${attachmentCount} attachment(s)`
+				+ ` for a total size of ${attachments.reduce((totalSize, attachment) => totalSize + attachment.size, 0)} bytes.`);
+		}
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [messageEmbed.embed],
 			files: attachments

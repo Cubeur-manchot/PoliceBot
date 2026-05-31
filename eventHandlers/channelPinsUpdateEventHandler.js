@@ -61,6 +61,10 @@ export default class ChannelPinsUpdateEventHandler extends EventHandler {
 				{name: "Date d'épinglage", value: this.formatDate(affectedPinnedMessage.pinnedTimestamp), inline: true}
 			]
 		});
+		if (affectedMessage.attachments.size > 0) {
+			this.logger.debug(`Sending message with ${affectedMessage.attachments.size} attachment(s)`
+				+ ` for a total size of ${affectedMessage.attachments.reduce((totalSize, attachment) => totalSize + attachment.size, 0)} bytes.`);
+		}
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [channelPinsUpdateEmbed.embed],
 			files: [...affectedMessage.attachments.values()]
