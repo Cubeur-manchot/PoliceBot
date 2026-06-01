@@ -58,6 +58,9 @@ export default class MessageEventHandler extends EventHandler {
 		return true;
 	};
 	handleForbiddenInvites = async message => {
+		if (message.member?.roles.cache.has(process.env.MODERATOR_ROLE_ID)) { // moderators are exemopt from invite rules
+			return {infractions: [], embeds: []};
+		}
 		let forbiddenInvites = await this.findForbiddenInvites(message.content);
 		return {
 			infractions: forbiddenInvites.map(forbiddenInvite => this.createForbiddenInviteInfraction(forbiddenInvite, message)),
