@@ -47,7 +47,9 @@ export default class DiscordActionManager extends BotHelper {
 		() => user.send(message),
 		"Private message has been sent to user @{0} successfully",
 		"Failed to send private message to user @{0}",
-		[user.username]
+		[user.username],
+		null,
+		true
 	);
 	replyInteraction = async (interaction, answer) => this.runAsync(
 		() => interaction.reply(Object.assign(answer, {flags: Discord.MessageFlags.Ephemeral})),

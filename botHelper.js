@@ -17,7 +17,7 @@ export default class BotHelper {
 		}
 		return map;
 	}, new Map());
-	runAsync = async (asyncFunction, logSuccessMessagePattern, logErrorMessagePattern, logArguments, userErrorMessage) => {
+	runAsync = async (asyncFunction, logSuccessMessagePattern, logErrorMessagePattern, logArguments, userErrorMessage, isWarning = false) => {
 		try {
 			let result = await asyncFunction();
 			if (logSuccessMessagePattern) {
@@ -25,8 +25,13 @@ export default class BotHelper {
 			}
 			return result;
 		} catch (asyncActionError) {
-			this.logger.error(`${this.replaceLogMessage(logErrorMessagePattern, logArguments)} : ${asyncActionError.stack ?? asyncActionError}`);
-			throw userErrorMessage ?? asyncActionError;
+			let logMessage = `${this.replaceLogMessage(logErrorMessagePattern, logArguments)} : ${asyncActionError.stack ?? asyncActionError}`;
+			if (isWarning) {
+				this.logger.warn(logMessage);
+			} else {
+				this.logger.error(logMessage);
+				throw userErrorMessage ?? asyncActionError;
+			}
 		}
 	};
 	replaceLogMessage = (message, logArguments) => message.replace(this.logArgumentReplaceRegexp, (match, index) => `"${logArguments?.[index] ?? match}"`);
