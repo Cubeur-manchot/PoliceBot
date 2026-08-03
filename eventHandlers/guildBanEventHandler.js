@@ -13,7 +13,7 @@ export default class GuildBanRemoveEventHandler extends EventHandler {
 			color: DiscordEmbedMessageBuilder.colors.ban,
 			title: `Un membre a été ${this.action}`,
 			thumbnailUrl: user.displayAvatarURL(),
-			description: `Le compte <@${banData.userId}> (@${user.username}) a été débanni.`,
+			description: `Le compte <@${banData.userId}> (@${user.username}) a été ${this.action}.`,
 			fields: [
 				{name: "Date de début", value: banData.startTime ? this.formatDate(banData.startTime) : "(impossible à déterminer)", inline: true},
 				{name: "Date de fin", value: banData.endTime ? this.formatDate(banData.endTime) : "(pas de date de fin)", inline: true},
