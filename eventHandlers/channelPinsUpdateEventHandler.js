@@ -2,9 +2,9 @@
 
 import Discord from "discord.js";
 import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
-import EventHandler from "./eventHandler.js";
+import MessageWatcherEventHandler from "./messageWatcherEventHandler.js";
 
-export default class ChannelPinsUpdateEventHandler extends EventHandler {
+export default class ChannelPinsUpdateEventHandler extends MessageWatcherEventHandler {
 	constructor(eventManager) {
 		super(eventManager, Discord.Events.ChannelPinsUpdate);
 	};
@@ -61,13 +61,10 @@ export default class ChannelPinsUpdateEventHandler extends EventHandler {
 				{name: "Date d'épinglage", value: this.formatDate(affectedPinnedMessage.pinnedTimestamp), inline: true}
 			]
 		});
-		if (affectedMessage.attachments.size > 0) {
-			this.logger.debug(`Sending message with ${affectedMessage.attachments.size} attachment(s)`
-				+ ` for a total size of ${affectedMessage.attachments.reduce((totalSize, attachment) => totalSize + attachment.size, 0)} bytes.`);
-		}
+		let preparedAttachments = await this.prepareAttachmentsForLog([...affectedMessage.attachments.values()]);
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [channelPinsUpdateEmbed.embed],
-			files: [...affectedMessage.attachments.values()]
+			files: preparedAttachments
 		});
 	};
 	findExtraElement = (completeList, incompleteList) => {

@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "discord.js": "^14.25.0",
-	"firebase-admin": "^13.4.0"
+	"firebase-admin": "^13.4.0",
+	"archiver": "^8.0.0"
   },
   "license": "ISC"
 }

@@ -31,6 +31,9 @@ LOG_LEVELS=debug,info,warn,error
 # Configuration of purge of info log channel : at which frequency it occurs and how much time messages are conserved
 TICK_INTERVAL_HOURS=6
 LOG_INFO_RENTENTION_DURATION_DAYS=11
+
+# Discord maximum attachments size
+ATTACHMENT_SIZE_LIMIT_BYTES=10485760
 ```
 
 ### `.env` file (sensitive variables)

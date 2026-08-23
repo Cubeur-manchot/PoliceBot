@@ -1,9 +1,9 @@
 "use strict";
 
 import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
-import EventHandler from "./eventHandler.js";
+import MessageWatcherEventHandler from "./messageWatcherEventHandler.js";
 
-export default class MessageEventHandler extends EventHandler {
+export default class MessageEventHandler extends MessageWatcherEventHandler {
 	constructor(eventManager, event, action) {
 		super(eventManager, event);
 		this.action = action;
@@ -214,13 +214,10 @@ export default class MessageEventHandler extends EventHandler {
 		}
 		this.addPartialMessageFooter(messageEmbedData, message);
 		let messageEmbed = new DiscordEmbedMessageBuilder(messageEmbedData);
-		if (attachmentCount) {
-			this.logger.debug(`Sending message with ${attachmentCount} attachment(s)`
-				+ ` for a total size of ${attachments.reduce((totalSize, attachment) => totalSize + attachment.size, 0)} bytes.`);
-		}
+		let preparedAttachments = await this.prepareAttachmentsForLog(attachments);
 		this.discordActionManager.sendInfoLogMessage({
 			embeds: [messageEmbed.embed],
-			files: attachments
+			files: preparedAttachments
 		});
 	};
 	getThumbnailUrl = message => message.member?.displayAvatarURL() ?? message.author?.displayAvatarURL();
