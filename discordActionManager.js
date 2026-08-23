@@ -10,7 +10,7 @@ export default class DiscordActionManager extends BotHelper {
 		this.discordClient = discordClientManager.discordClient;
 	};
 	setActivePresence = () => {
-		this.discordClient.user.setPresence({status: "online", activities: [{type: Discord.ActivityType.Playing, name: "surveiller Cubeurs Francophones"}]});
+		this.discordClient.user.setPresence({status: "online", activities: [{type: Discord.ActivityType.Playing, name: "Surveille Cubeurs Francophones"}]});
 		this.logger.info("Presence has been set to active.");
 	};
 	setInactivePresence = () => {
