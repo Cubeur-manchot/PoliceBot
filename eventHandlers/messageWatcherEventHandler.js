@@ -22,7 +22,6 @@ export default class MessageWatcherEventHandler extends EventHandler {
 			zipArchiver.on('error', reject);
 		});
 		for (let attachment of attachments) {
-			this.logger.debug(`Boucle sur attachment ${attachment.id}, attachments.length = ${attachments.length}`);
 			let response = await fetch(attachment.url);
 			if (!response.ok) {
 				this.logger.error(`Failed to download attachment ${attachment.name ?? attachment.id} (HTTP ${response.status})`);
