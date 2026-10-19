@@ -13,7 +13,7 @@ export default class MessageDeleteEventHandler extends MessageEventHandler {
 		}
 		let messageEmbedInput = {
 			message,
-			// do not pass attachments because they don't exist anymore
+			attachments: [], // do not pass attachments because they don't exist anymore
 			attachmentCount: this.dataManager.getCachedMessageAttachments(message.id)?.length ?? 0,
 			mentions: this.dataManager.getCachedMessageMentions(message.id),
 			deleted: true

@@ -9,6 +9,9 @@ export default class MessageWatcherEventHandler extends EventHandler {
 		super(eventManager, event);
 	};
 	prepareAttachmentsForLog = async attachments => {
+		if (!attachments || attachments.length === 0) {
+			return [];
+		}
 		let totalSize = attachments.reduce((cumulativeSize, attachment) => cumulativeSize + attachment.size, 0);
 		if (totalSize <= process.env.ATTACHMENT_SIZE_LIMIT_BYTES) { // all attachments are under the size limit, no need to compress
 			return attachments;
