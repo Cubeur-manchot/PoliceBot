@@ -16,6 +16,9 @@ export default class InviteCreateEventHandler extends EventHandler {
 		if (type !== 0) { // consider only standard invites to a channel
 			return;
 		}
+		if (!inviterUser) { // exclude invites created by the server widget or other non-user sources
+			return;
+		}
 		let inviterMember = guild.members.cache.get(inviterUser.id);
 		let inviteCreateEmbed = new DiscordEmbedMessageBuilder({
 			color: DiscordEmbedMessageBuilder.colors.invite,
