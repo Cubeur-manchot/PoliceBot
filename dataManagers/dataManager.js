@@ -176,7 +176,7 @@ export default class DataManager extends BotHelper {
 			[documentId, collectionName, JSON.stringify(newData)],
 			userErrorMessage
 		);
-		this.cache.get(collectionName).removeEntry(key);
+		this.cache.get(collectionName).removeEntry(key); // invalidate cache entry
 	};
 	getLogChannel = async nature => (await this.getData(
 		{
@@ -206,7 +206,7 @@ export default class DataManager extends BotHelper {
 	)).length !== 0;
 	addServerWhitelist = async (serverInfo, inviteId, userErrorMessage) => {
 		await this.addFirestoreData(DataManager.dataTypes.serversWhitelist.name, serverInfo.id, serverInfo, userErrorMessage);
-		await this.cache.get(DataManager.dataTypes.servers.name).replaceEntry( // update second cache type because this collection is used in hydration but not directly queried
+		await this.cache.get(DataManager.dataTypes.servers.name).setEntry( // update second cache type because this collection is used in hydration but not directly queried
 			inviteId,
 			this.cache.get(DataManager.dataTypes.servers.name).getEntry(inviteId).map(element => ({
 				id: element.id,
@@ -281,10 +281,10 @@ export default class DataManager extends BotHelper {
 	getInfractions = async (userId, userErrorMessage) => await this.getData({dataType: DataManager.dataTypes.infractions.name, keyName: "userId", keyValue: userId, userErrorMessage});
 	getCachedMessagesByAuthorIds = authorIdList => this.cache.get(DataManager.dataTypes.discordMessages.name).getEntries(authorIdList);
 	cacheMessagesByAuthorId = map => this.cache.get(DataManager.dataTypes.discordMessages.name).setEntries(map);
-	clearMessagesCache = () => this.cache.get(DataManager.dataTypes.discordMessages.name).resetData();
+	clearMessagesCache = () => this.cache.get(DataManager.dataTypes.discordMessages.name).clearData();
 	getCachedSelectedUsers = () => this.cache.get(DataManager.dataTypes.discordMembersCurrentSelection.name).getKeys(list => list[0] === true);
 	cacheSelectedUsers = map => this.cache.get(DataManager.dataTypes.discordMembersCurrentSelection.name).setEntries(map);
-	clearSelectedUsersCache = () => this.cache.get(DataManager.dataTypes.discordMembersCurrentSelection.name).resetData();
+	clearSelectedUsersCache = () => this.cache.get(DataManager.dataTypes.discordMembersCurrentSelection.name).clearData();
 	getCachedMessageAttachments = messageId => this.cache.get(DataManager.dataTypes.messageAttachments.name).getEntry(messageId);
 	cacheMessageAttachments = (messageId, attachments) => this.cache.get(DataManager.dataTypes.messageAttachments.name).setEntry(messageId, attachments);
 	getCachedMessageMentions = messageId => this.cache.get(DataManager.dataTypes.messageMentions.name).getEntry(messageId);
