@@ -1,5 +1,3 @@
-"use strict";
-
 import BotHelper from "../botHelper.js";
 
 export default class EventHandler extends BotHelper {

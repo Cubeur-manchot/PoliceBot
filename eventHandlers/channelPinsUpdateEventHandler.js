@@ -1,5 +1,3 @@
-"use strict";
-
 import Discord from "discord.js";
 import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
 import MessageWatcherEventHandler from "./messageWatcherEventHandler.js";

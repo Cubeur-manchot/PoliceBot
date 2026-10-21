@@ -1,5 +1,3 @@
-"use strict";
-
 import CommandHandler from "./commandHandler.js";
 import DiscordEmbedMessageBuilder from "../messageBuilders/discordEmbedMessageBuilder.js";
 

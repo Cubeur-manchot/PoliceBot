@@ -1,5 +1,3 @@
-"use strict";
-
 export default class BotHelper {
 	constructor(bot) {
 		this.bot = bot;

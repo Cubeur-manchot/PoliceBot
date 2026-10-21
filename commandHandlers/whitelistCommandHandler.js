@@ -1,5 +1,3 @@
-"use strict";
-
 import Command from "../command.js";
 import CommandHandler from "./commandHandler.js";
 

@@ -1,5 +1,3 @@
-"use strict";
-
 import Discord from "discord.js";
 
 export default class DiscordComponentMessageBuilder {

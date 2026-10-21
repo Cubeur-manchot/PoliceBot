@@ -1,5 +1,3 @@
-"use strict";
-
 import BotHelper from "./botHelper.js";
 import ChannelPinsUpdateEventHandler from "./eventHandlers/channelPinsUpdateEventHandler.js";
 import ClientReadyEventHandler from "./eventHandlers/clientReadyEventHandler.js";

@@ -1,5 +1,3 @@
-"use strict";
-
 export default class Logger {
 	static levels = ["debug", "info", "warn", "error"];
 	constructor(allowedLevels = []) {

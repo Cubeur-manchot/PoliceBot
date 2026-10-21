@@ -1,5 +1,3 @@
-"use strict";
-
 import Discord from "discord.js";
 import GuildBanEventHandler from "./guildBanEventHandler.js";
 

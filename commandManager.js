@@ -1,5 +1,3 @@
-"use strict";
-
 import Discord from "discord.js";
 import BotHelper from "./botHelper.js";
 import HelpCommandHandler from "./commandHandlers/helpCommandHandler.js";

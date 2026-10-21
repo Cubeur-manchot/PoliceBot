@@ -1,5 +1,3 @@
-"use strict";
-
 import {AttachmentBuilder} from 'discord.js';
 import {ZipArchive} from 'archiver';
 import EventHandler from "./eventHandler.js";

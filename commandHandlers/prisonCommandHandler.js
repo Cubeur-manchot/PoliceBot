@@ -1,5 +1,3 @@
-"use strict";
-
 import CommandHandler from "./commandHandler.js";
 
 export default class PrisonCommandHandler extends CommandHandler {

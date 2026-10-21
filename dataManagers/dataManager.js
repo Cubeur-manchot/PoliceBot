@@ -1,5 +1,3 @@
-"use strict";
-
 import * as firebase from "firebase-admin/app";
 import * as firestore from "firebase-admin/firestore";
 import BotHelper from "../botHelper.js";
