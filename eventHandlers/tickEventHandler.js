@@ -5,7 +5,7 @@ import EventHandler from "./eventHandler.js";
 export default class TickEventHandler extends EventHandler {
 	constructor(eventManager) {
 		super(eventManager, "tick");
-		this.retentionTimeMilliseconds = parseInt(process.env.LOG_INFO_RENTENTION_DURATION_DAYS) * 24 * 60 * 60 * 1000;
+		this.retentionTimeMilliseconds = parseInt(process.env.LOG_INFO_RETENTION_DURATION_DAYS) * 24 * 60 * 60 * 1000;
 	};
 	handleEvent = async () => {
 		let infoLogChannel = (await this.dataManager.getLogChannel("infoLog")).data;
